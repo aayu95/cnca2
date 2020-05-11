@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>Mashups with google.maps.Data</title>
+    <link rel="stylesheet" type="text/css" href="css/map.css">
+    </head>
+    <body>
+        <div id="controls" class="nicebox">
+            <div>
+                <select id="var">
+                    <option value="age">Age Pension</option>
+                    <option value="age2">Age Gap</option>
+                </select>
+            </div>
+            <div id="legend">
+                <div id="age-min">min</div>
+                <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
+                <div id="age-max">max</div>
+            </div>
+        </div>
+        <div id="data-box" class="nicebox">
+            <label id="data-label" for="data-value"></label>
+            <span id="data-value"></span>
+        </div>
+        <div id="map"></div>
+        <script>
+            var map;
+            var ageMin = Number.MAX_VALUE, ageMax = -Number.MAX_VALUE;
+            var ageList = [];
+
+            function initMap() {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 9,
+                    center: {
+                    lat: -37.8136,
+                    lng: 144.9631
+                    }
+                });
+
+                map.data.addListener('mouseover', mouseEnter);
+                map.data.addListener('mouseout', mouseExit);
+                var selectBox = document.getElementById('var');
+
+                google.maps.event.addDomListener(selectBox, 'change', function() {
+                    clearData();
+                    loadData(); //selectBox.options[selectBox.selectedIndex].value
+                });
+                loadBoundary();
+            }
+
+            function loadBoundary() {
+                map.data.loadGeoJson('Age-pension.json', {idPropertyName: 'SUBURB'});
+                google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
+                        google.maps.event.trigger(document.getElementById('var'), 'change');
+                    });
+            }
+
+            function loadData(parameter) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'Age-pension.json');
+                xhr.onload = function() {
+                    var data = JSON.parse(xhr.responseText);
+                    var ageVar;
+                    var pension;
+                    var id;
+                    for(var i=0; i<44; i++) {
+                        id = data.features[i].properties.id;
+                        //Replace with name of suburb
+                        ageVar=data.features[i].properties.lga_name.split(' (');
+                        ageList.push(ageVar[0]);
+                        //Replace with property name of data to be plotted
+                        pension = data.features[i].properties.age_pension; 
+                        if(pension<ageMin) {
+                            ageMin=pension;
+                        }
+                        if(pension>ageMax) {
+                            ageMax=pension;
+                        }
+                        // map.data.getFeatureById(id).setProperty('age_variable', age);
+                    }
+                    document.getElementById('age-min').textContent = ageMin.toLocaleString();
+                    document.getElementById('age-max').textContent = ageMax.toLocaleString();
+                    map.data.setStyle(styleFeature);
+                };
+                xhr.send();
+            }
+
+            function clearData() {
+                ageMin = Number.MAX_VALUE;
+                ageMax = -Number.MAX_VALUE;
+                document.getElementById('data-box').style.display = 'none';
+                document.getElementById('data-caret').style.display = 'none';
+            }
+
+            function styleFeature(feature) {
+                //CUSTOMISE ACCORDING TO NUMBER OF COLOURS
+                var low = [35, 100, 85];
+                var high = [35, 100, 5];
+                var diff = (feature.getProperty('age_pension')-ageMin) / (ageMax - ageMin);
+                var colour = [];
+                for (var i=0; i<3; i++) {
+                    colour[i] = (high[i] - low[i]) * diff + low[i];
+                }
+                // var showRow = true;
+                // if (feature.getProperty('census_variable') == null ||
+                //     isNaN(feature.getProperty('census_variable'))) {
+                // showRow = false;
+                // }
+                var outlineWeight = 0.5, zIndex = 1;
+                if (feature.getProperty('state') === 'hover') {
+                    outlineWeight = zIndex = 2;
+                }
+
+                return {
+                strokeWeight: outlineWeight,
+                strokeColor: '#000',
+                zIndex: zIndex,
+                fillColor: 'hsl(' + colour[0] + ',' + colour[1] + '%,' + colour[2] + '%)',
+                fillOpacity: 0.75
+                //visible: showRow
+                };
+            }
+
+            function mouseEnter(event) {
+                event.feature.setProperty('state', 'hover');
+                var percent = (event.feature.getProperty('age_pension') - ageMin) / (ageMax - ageMin) * 100;
+                document.getElementById('data-label').textContent =
+                event.feature.getProperty('lga_name');
+                document.getElementById('data-value').textContent =
+                event.feature.getProperty('age_pension').toLocaleString();
+                document.getElementById('data-box').style.display = 'block';
+                document.getElementById('data-caret').style.display = 'block';
+                document.getElementById('data-caret').style.paddingLeft = percent + '%';
+            }
+
+            function mouseExit(event) {
+                event.feature.setProperty('state', 'normal');
+            }
+        </script>
+        <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
+        </script>
+    </body>
+</html>
