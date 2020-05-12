@@ -37,8 +37,8 @@
         </script>
         <script>
             var map;
-            var ageMin = Number.MAX_VALUE, ageMax = -Number.MAX_VALUE;
-            var ageList = [];
+            var varMin = Number.MAX_VALUE, varMax = -Number.MAX_VALUE;
+            //var suburbList = [];
 
             function initMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
@@ -55,13 +55,15 @@
 
                 google.maps.event.addDomListener(selectBox, 'change', function() {
                     clearData();
-                    loadData(); //selectBox.options[selectBox.selectedIndex].value
+                    loadData(selectBox.options[selectBox.selectedIndex].value); 
                 });
                 loadBoundary();
             }
 
             function loadBoundary() {
-                map.data.loadGeoJson('Age-pension.json', {idPropertyName: 'SUBURB'});
+                map.data.loadGeoJson('melbourne.geojson', {}, function(feature){
+                    // console.log(map.data.getFeatureById(1).getProperty("SA2_NAME16"));
+                });
                 google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
                         google.maps.event.trigger(document.getElementById('var'), 'change');
                     });
@@ -69,37 +71,48 @@
 
             function loadData(parameter) {
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', 'Age-pension.json');
+                xhr.open('GET', parameter + '.json');
                 xhr.onload = function() {
                     var data = JSON.parse(xhr.responseText);
-                    var ageVar;
-                    var pension;
+                    var suburb;
+                    var categoryCount;
                     var id;
-                    for(var i=0; i<44; i++) {
-                        id = data.features[i].properties.id;
+                    for(var i=0; i<309; i++) {
                         //Replace with name of suburb
-                        ageVar=data.features[i].properties.lga_name.split(' (');
-                        ageList.push(ageVar[0]);
+                        id = i+1;
+                        suburb=data.features[i].properties.sa2_name16;
+                        // suburbList.push(suburb[0]);
                         //Replace with property name of data to be plotted
-                        pension = data.features[i].properties.age_pension; 
-                        if(pension<ageMin) {
-                            ageMin=pension;
+                        if(parameter === 'creative-people') {
+                            categoryCount = data.features[i].properties.p_crtve_arts_tot;
                         }
-                        if(pension>ageMax) {
-                            ageMax=pension;
+                        if(parameter === 'income'){
+                            if (data.features[i].properties.median_aud===null){
+                                continue;
+                            }
+                            categoryCount = data.features[i].properties.mean_aud;
                         }
-                        // map.data.getFeatureById(id).setProperty('age_variable', age);
+                        if(categoryCount<varMin) {
+                            varMin=categoryCount;
+                        }
+                        if(categoryCount>varMax) {
+                            varMax=categoryCount;
+                        }
+                        map.data.getFeatureById(id).setProperty('curr_variable', categoryCount);
                     }
-                    document.getElementById('age-min').textContent = ageMin.toLocaleString();
-                    document.getElementById('age-max').textContent = ageMax.toLocaleString();
+                    document.getElementById('var-min').textContent = varMin.toLocaleString();
+                    document.getElementById('var-max').textContent = varMax.toLocaleString();
                     map.data.setStyle(styleFeature);
                 };
                 xhr.send();
             }
 
             function clearData() {
-                ageMin = Number.MAX_VALUE;
-                ageMax = -Number.MAX_VALUE;
+                varMin = Number.MAX_VALUE;
+                varMax = -Number.MAX_VALUE;
+                map.data.forEach(function(row) {
+                    row.setProperty('curr_variable', undefined);
+                });
                 document.getElementById('data-box').style.display = 'none';
                 document.getElementById('data-caret').style.display = 'none';
             }
@@ -108,7 +121,7 @@
                 //CUSTOMISE ACCORDING TO NUMBER OF COLOURS
                 var low = [35, 100, 85];
                 var high = [35, 100, 5];
-                var diff = (feature.getProperty('age_pension')-ageMin) / (ageMax - ageMin);
+                var diff = (feature.getProperty('curr_variable')-varMin) / (varMax - varMin);
                 var colour = [];
                 for (var i=0; i<3; i++) {
                     colour[i] = (high[i] - low[i]) * diff + low[i];
@@ -135,11 +148,11 @@
 
             function mouseEnter(event) {
                 event.feature.setProperty('state', 'hover');
-                var percent = (event.feature.getProperty('age_pension') - ageMin) / (ageMax - ageMin) * 100;
+                var percent = (event.feature.getProperty('curr_variable') - varMin) / (varMax - varMin) * 100;
                 document.getElementById('data-label').textContent =
-                event.feature.getProperty('lga_name');
+                event.feature.getProperty('SA2_NAME16');
                 document.getElementById('data-value').textContent =
-                event.feature.getProperty('age_pension').toLocaleString();
+                event.feature.getProperty('curr_variable').toLocaleString();
                 document.getElementById('data-box').style.display = 'block';
                 document.getElementById('data-caret').style.display = 'block';
                 document.getElementById('data-caret').style.paddingLeft = percent + '%';
@@ -241,14 +254,14 @@
         <div id="controls" class="nicebox">
             <div>
                 <select id="var">
-                    <option value="age">Age Pension</option>
-                    <option value="age2">Age Gap</option>
+                    <option value="creative-people">Number of Creative People</option>
+                    <option value="income">Mean Income</option>
                 </select>
             </div>
             <div id="legend">
-                <div id="age-min">min</div>
+                <div id="var-min">min</div>
                 <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
-                <div id="age-max">max</div>
+                <div id="var-max">max</div>
             </div>
         </div>
         <div id="data-box" class="nicebox">

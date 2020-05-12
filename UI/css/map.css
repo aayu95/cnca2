@@ -30,7 +30,7 @@
           width: 360px;
           height: 20px;
         }
-        #legend { display: flex; display: -webkit-box; padding-top: 7px }
+        #legend { display: flex; display: -webkit-box; padding-top: 7px}
         .color-key {
           /*CUSTOMISE ACCORDING TO THE NUMBER OF COLOURS WANTED*/
           background: linear-gradient(to right,
@@ -51,3 +51,15 @@
         #data-label { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
         #data-label:after { content: ':' }
         #data-caret { margin-left: -5px; display: none; font-size: 14px; width: 14px}
+
+        #leg{
+          height: 200px;
+          background-color: antiquewhite;
+          border: 1px solid black;
+        }
+
+        #col{
+          height: 20px;
+          width: 20px;
+          border: 1px solid ;
+        }
