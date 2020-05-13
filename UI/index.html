@@ -11,156 +11,37 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     <body>
-        <script>
-            $(document).ready(function() {
-                "use strict";
-                $('ul.navbar-nav > li').click(function(e) {
-                    $('ul.navbar-nav > li').removeClass('active');
-                    $(this).addClass('active');
-                });
-                $(".nicebox").hide();
-                $("#legend").hide();
-                $("#map").hide();
-                $("#mapButton").click(function(e) {
-                    $("#about").hide();
-                    $("#legend").show();
-                    $(".nicebox").show();
-                    $("#map").show();
-                });
-                $("#aboutButton").click(function(e) {
-                    $("#legend").hide();
-                    $(".nicebox").hide();
-                    $("#map").hide();
-                    $("#about").show();
-                });
-            });
-        </script>
+        <script src="js/pageDisplay.js"></script>
+        <script src="js/mapDisplay.js"></script>
         <script>
             var map;
             var varMin = Number.MAX_VALUE, varMax = -Number.MAX_VALUE;
-            //var suburbList = [];
 
             function initMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 9,
-                    center: {
-                    lat: -37.8136,
-                    lng: 144.9631
+                    center: { lat: -37.8136, lng: 144.9631},
+                    mapTypeControl: false,
+                    scaleControl: false,
+                    streetViewControl: false,
+                    rotateControl: false,
+                    fullscreenControl: false,
+                    zoomControl: true,
+                    zoomControlOptions: {
+                        position: google.maps.ControlPosition.TOP_RIGHT
                     }
                 });
 
                 map.data.addListener('mouseover', mouseEnter);
                 map.data.addListener('mouseout', mouseExit);
-                var selectBox = document.getElementById('var');
-
-                google.maps.event.addDomListener(selectBox, 'change', function() {
-                    clearData();
-                    loadData(selectBox.options[selectBox.selectedIndex].value); 
-                });
+                var opt1 = document.getElementById('creative');
+                var opt2 = document.getElementById('income');
+                selectData(opt1);
+                selectData(opt2);
                 loadBoundary();
             }
 
-            function loadBoundary() {
-                map.data.loadGeoJson('melbourne.geojson', {}, function(feature){
-                    // console.log(map.data.getFeatureById(1).getProperty("SA2_NAME16"));
-                });
-                google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
-                        google.maps.event.trigger(document.getElementById('var'), 'change');
-                    });
-            }
-
-            function loadData(parameter) {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', parameter + '.json');
-                xhr.onload = function() {
-                    var data = JSON.parse(xhr.responseText);
-                    var suburb;
-                    var categoryCount;
-                    var id;
-                    for(var i=0; i<309; i++) {
-                        //Replace with name of suburb
-                        id = i+1;
-                        suburb=data.features[i].properties.sa2_name16;
-                        // suburbList.push(suburb[0]);
-                        //Replace with property name of data to be plotted
-                        if(parameter === 'creative-people') {
-                            categoryCount = data.features[i].properties.p_crtve_arts_tot;
-                        }
-                        if(parameter === 'income'){
-                            if (data.features[i].properties.median_aud===null){
-                                continue;
-                            }
-                            categoryCount = data.features[i].properties.mean_aud;
-                        }
-                        if(categoryCount<varMin) {
-                            varMin=categoryCount;
-                        }
-                        if(categoryCount>varMax) {
-                            varMax=categoryCount;
-                        }
-                        map.data.getFeatureById(id).setProperty('curr_variable', categoryCount);
-                    }
-                    document.getElementById('var-min').textContent = varMin.toLocaleString();
-                    document.getElementById('var-max').textContent = varMax.toLocaleString();
-                    map.data.setStyle(styleFeature);
-                };
-                xhr.send();
-            }
-
-            function clearData() {
-                varMin = Number.MAX_VALUE;
-                varMax = -Number.MAX_VALUE;
-                map.data.forEach(function(row) {
-                    row.setProperty('curr_variable', undefined);
-                });
-                document.getElementById('data-box').style.display = 'none';
-                document.getElementById('data-caret').style.display = 'none';
-            }
-
-            function styleFeature(feature) {
-                //CUSTOMISE ACCORDING TO NUMBER OF COLOURS
-                var low = [35, 100, 85];
-                var high = [35, 100, 5];
-                var diff = (feature.getProperty('curr_variable')-varMin) / (varMax - varMin);
-                var colour = [];
-                for (var i=0; i<3; i++) {
-                    colour[i] = (high[i] - low[i]) * diff + low[i];
-                }
-                // var showRow = true;
-                // if (feature.getProperty('census_variable') == null ||
-                //     isNaN(feature.getProperty('census_variable'))) {
-                // showRow = false;
-                // }
-                var outlineWeight = 0.5, zIndex = 1;
-                if (feature.getProperty('state') === 'hover') {
-                    outlineWeight = zIndex = 2;
-                }
-
-                return {
-                strokeWeight: outlineWeight,
-                strokeColor: '#000',
-                zIndex: zIndex,
-                fillColor: 'hsl(' + colour[0] + ',' + colour[1] + '%,' + colour[2] + '%)',
-                fillOpacity: 0.75
-                //visible: showRow
-                };
-            }
-
-            function mouseEnter(event) {
-                event.feature.setProperty('state', 'hover');
-                var percent = (event.feature.getProperty('curr_variable') - varMin) / (varMax - varMin) * 100;
-                document.getElementById('data-label').textContent =
-                event.feature.getProperty('SA2_NAME16');
-                document.getElementById('data-value').textContent =
-                event.feature.getProperty('curr_variable').toLocaleString();
-                document.getElementById('data-box').style.display = 'block';
-                document.getElementById('data-caret').style.display = 'block';
-                document.getElementById('data-caret').style.paddingLeft = percent + '%';
-            }
-
-            function mouseExit(event) {
-                event.feature.setProperty('state', 'normal');
-            }
+            
         </script>
         <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4d004d;">
             <a class="navbar-brand" href="#">Dashboard</a>
@@ -180,7 +61,7 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="#" id="mapButton">
                           Map Visualisation</a>
-                      <a class="dropdown-item" href="#">Bar Graph</a>
+                      <a class="dropdown-item" href="#" id="barButton">Bar Graph</a>
                       <a class="dropdown-item" href="#">Scatter Plot</a>
                     </div>
                   </li>
@@ -252,23 +133,53 @@
             </p>
         </div>
         <div id="controls" class="nicebox">
-            <div>
-                <select id="var">
-                    <option value="creative-people">Number of Creative People</option>
-                    <option value="income">Mean Income</option>
-                </select>
+            <div id="data-select">
+                <div style="text-align: center; padding: 6px;"><strong>AURIN Datasets</strong></div>
+                <div class="radio">
+                    <input type="radio" name="datasets" id="creative" value="creative-people">
+                    <label for="creative">Creativity</label>
+                  </div>
+                  <div class="radio">
+                    <input type="radio" name="datasets" id="income" value="income">
+                    <label for="income">Income</label>
+                  </div>
             </div>
             <div id="legend">
-                <div id="var-min">min</div>
-                <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
-                <div id="var-max">max</div>
+                <div class="rows">
+                    <div id="legend-title" style="padding: 4px; font-weight: bold;">title</div>
+                </div>
+                <div class="rows" style="margin-top: 6px;">
+                    <div class="colms" style="background-color: hsl(35, 100%, 85%); float: left;"></div>
+                    <div id="var-min" style="padding: 4px;float: left;">min</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 65%); float: left; clear: both;"></div>
+                    <div id="var-range-1" style="padding: 4px; float: left;">div1</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 45%); float: left; clear: both;"></div>
+                    <div id="var-range-2" style="padding: 4px; float: left;">div2</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 25%); float: left; clear: both;"></div>
+                    <div id="var-range-3" style="padding: 4px; float: left;">div3</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 5%); float: left; clear: both;"></div>
+                    <div id="var-max" style="padding: 4px; float: left;">max</div>
+                </div>
             </div>
         </div>
         <div id="data-box" class="nicebox">
             <label id="data-label" for="data-value"></label>
             <span id="data-value"></span>
         </div>
-    <div id="map"></div>
+        <div id="map"></div>
+
+        <div id="barGraph">
+
+        </div>
+
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
         </script>
