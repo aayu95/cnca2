@@ -1,0 +1,21 @@
+.axis {
+    font: 10px sans-serif;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+  .x_axis{
+      font: 10px sans-serif;
+      font-weight: bold;
+  }
+  .y_axis{
+      font: 10px sans-serif;
+      font-weight: bold;
+  }
+
+  #barGraph{
+      height: 43em;
+  }

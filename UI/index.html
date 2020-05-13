@@ -7,8 +7,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" type="text/css" href="css/map.css">
         <link rel="stylesheet" type="text/css" href="css/home.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/graph.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
     </head>
     <body>
         <script src="js/pageDisplay.js"></script>
@@ -34,6 +36,7 @@
 
                 map.data.addListener('mouseover', mouseEnter);
                 map.data.addListener('mouseout', mouseExit);
+
                 var opt1 = document.getElementById('creative');
                 var opt2 = document.getElementById('income');
                 selectData(opt1);
@@ -175,11 +178,83 @@
             <span id="data-value"></span>
         </div>
         <div id="map"></div>
+        <div id="barGraph"></div>
+        <script>
+            var margin = {top: 20, right: 20, bottom: 80, left: 70},
+            width = 600 - margin.left - margin.right,
+            height = 350 - margin.top - margin.bottom;
 
-        <div id="barGraph">
+            var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
 
-        </div>
+            var y = d3.scale.linear().range([height, 0]);
 
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .ticks(10);
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .ticks(10);
+
+            var svg = d3.select("#barGraph").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", 
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            d3.json("dummy_twitter.json", function(error, data) {
+                
+            x.domain(data.map(function(d) { return d.name; }));
+            y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-35)"); //rotates the axis label
+
+                svg.append("text")   
+                .attr("class", "x_axis")          
+                .attr("transform",
+                        "translate(" + (width/2) + " ," + 
+                                    (height + margin.top + 45) + ")")
+                .style("text-anchor", "middle")
+                .text("Suburb");
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em");
+
+                svg.append("text")
+                .attr("class", "y_axis")         
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 10)
+                .attr("x",0 - (height/2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Number of Tweets");  
+
+            svg.selectAll("bar")
+                .data(data)
+                .enter().append("rect")
+                .style("fill", "hsl(35, 100%, 70%)")
+                .attr("x", function(d) { return x(d.name); })
+                .attr("width", x.rangeBand())
+                .attr("y", function(d) { return y(d.num_tweets); })
+                .attr("height", function(d) { return height - y(d.num_tweets); });
+            });
+        </script>
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
         </script>

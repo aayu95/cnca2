@@ -1,3 +1,6 @@
+/**This file contains the logic for displaying the map with the gradient based on the AURIN datasets provided. A colour-coded legend and the AURIN data being mapped are also promptly displayed */
+
+//Render AURIN dataset
 function selectData(element) {
     element.addEventListener('click', function() {
         clearData();
@@ -5,6 +8,7 @@ function selectData(element) {
     });      
 }
 
+//Load boundaries of suburb only once
 function loadBoundary() {
     map.data.loadGeoJson('melbourne.geojson', {}, function(feature){
         // console.log(map.data.getFeatureById(1).getProperty("SA2_NAME16"));
@@ -14,6 +18,7 @@ function loadBoundary() {
     //     });
 }
 
+//Load AURIN dataset
 function loadData(parameter) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', parameter + '.json');
@@ -64,6 +69,7 @@ function loadData(parameter) {
     xhr.send();
 }
 
+//Clears previously set data in order to render new data correctly
 function clearData() {
     varMin = Number.MAX_VALUE;
     varMax = -Number.MAX_VALUE;
@@ -72,6 +78,7 @@ function clearData() {
     });
 }
 
+//The styling of the map according to the dataset
 function styleFeature(feature) {
     //CUSTOMISE ACCORDING TO NUMBER OF COLOURS
     var low = [35, 100, 85];
@@ -96,6 +103,7 @@ function styleFeature(feature) {
     };
 }
 
+//Show apt details when mouse hovers over suburb
 function mouseEnter(event) {
     event.feature.setProperty('state', 'hover');
     document.getElementById('data-label').textContent =
