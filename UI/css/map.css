@@ -1,5 +1,63 @@
-#map{
-    height: 45em;
-    width: 100%;
-    padding: 20em;
-}
+#map { height: 43em; width: 100%; margin: 0; padding: 20em; overflow: hidden; }
+        .nicebox {
+          position: absolute;
+          text-align: center;
+          font-family: "Roboto", "Arial", sans-serif;
+          font-size: 13px;
+          z-index: 5;
+        }
+        #controls {
+          width: 360px;
+          height: 60px;
+        }
+        #data-box {
+          top: 10px;
+          margin-left: 2em;
+          padding: 6px;
+          height: 45px;
+          line-height: 45px;
+          box-shadow: 0 4px 6px -4px #333;
+          border-radius: 0.5em;
+          margin-top: 5em;
+          background-color: white;
+          display: none;
+        }
+        #data-value { font-size: 2.0em; font-weight: bold }
+        #data-label { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
+        #data-label:after { content: ':' }
+
+        #legend{
+          height: 175px;
+          width: 180px;
+          border: 1px solid black;
+          margin-top: -13.5em;
+          margin-left: 15.5em;
+          background-color: white;
+          box-shadow: 0 4px 6px -4px #333;
+          opacity: 0.85;
+          border-radius: 0.5em;
+        }
+
+        .rows {
+          height: 20px;
+          padding: 4px;
+        }
+        .colms{
+          height: 20px;
+          width: 20px;
+          border: 1px solid gray;
+          border-radius: 0.5em;
+        }
+        #data-select{
+          text-align: left;
+          margin-top: 37em;
+          padding: 6px;
+          height: 175px;
+          width: 150px;
+          border: 1px solid black;
+          margin-left: 2em;
+          background-color: white;
+          box-shadow: 0 4px 6px -4px #333;
+          opacity: 0.85;
+          border-radius: 0.5em;
+        }
