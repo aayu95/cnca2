@@ -1,0 +1,43 @@
+[
+	{
+		"name": "Brunswick",
+		"num_tweets": 1102
+	},
+	{
+		"name": "Coburg",
+		"num_tweets": 543
+	},
+	{
+		"name": "Northcote",
+		"num_tweets": 2287
+	},
+	{
+		"name": "Thornbury",
+		"num_tweets": 1654
+	},
+	{
+		"name": "Ascot Vale",
+		"num_tweets": 223
+	},
+	{
+		"name": "Flemington",
+		"num_tweets": 945
+	},
+	{
+		"name": "Moonee Ponds",
+		"num_tweets": 3128
+	},
+	{
+		"name": "Carlton",
+		"num_tweets": 1209
+	},
+	{
+		"name": "Docklands",
+		"num_tweets": 2762
+	},
+	{
+		"name": "East Melbourne",
+		"num_tweets": 776
+	}
+
+]

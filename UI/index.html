@@ -7,147 +7,44 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" type="text/css" href="css/map.css">
         <link rel="stylesheet" type="text/css" href="css/home.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/graph.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
     </head>
     <body>
-        <script>
-            $(document).ready(function() {
-                "use strict";
-                $('ul.navbar-nav > li').click(function(e) {
-                    $('ul.navbar-nav > li').removeClass('active');
-                    $(this).addClass('active');
-                });
-                $(".nicebox").hide();
-                $("#legend").hide();
-                $("#map").hide();
-                $("#mapButton").click(function(e) {
-                    $("#about").hide();
-                    $("#legend").show();
-                    $(".nicebox").show();
-                    $("#map").show();
-                });
-                $("#aboutButton").click(function(e) {
-                    $("#legend").hide();
-                    $(".nicebox").hide();
-                    $("#map").hide();
-                    $("#about").show();
-                });
-            });
-        </script>
+        <script src="js/pageDisplay.js"></script>
+        <script src="js/mapDisplay.js"></script>
         <script>
             var map;
-            var ageMin = Number.MAX_VALUE, ageMax = -Number.MAX_VALUE;
-            var ageList = [];
+            var varMin = Number.MAX_VALUE, varMax = -Number.MAX_VALUE;
 
             function initMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 9,
-                    center: {
-                    lat: -37.8136,
-                    lng: 144.9631
+                    center: { lat: -37.8136, lng: 144.9631},
+                    mapTypeControl: false,
+                    scaleControl: false,
+                    streetViewControl: false,
+                    rotateControl: false,
+                    fullscreenControl: false,
+                    zoomControl: true,
+                    zoomControlOptions: {
+                        position: google.maps.ControlPosition.TOP_RIGHT
                     }
                 });
 
                 map.data.addListener('mouseover', mouseEnter);
                 map.data.addListener('mouseout', mouseExit);
-                var selectBox = document.getElementById('var');
 
-                google.maps.event.addDomListener(selectBox, 'change', function() {
-                    clearData();
-                    loadData(); //selectBox.options[selectBox.selectedIndex].value
-                });
+                var opt1 = document.getElementById('creative');
+                var opt2 = document.getElementById('income');
+                selectData(opt1);
+                selectData(opt2);
                 loadBoundary();
             }
 
-            function loadBoundary() {
-                map.data.loadGeoJson('Age-pension.json', {idPropertyName: 'SUBURB'});
-                google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
-                        google.maps.event.trigger(document.getElementById('var'), 'change');
-                    });
-            }
-
-            function loadData(parameter) {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', 'Age-pension.json');
-                xhr.onload = function() {
-                    var data = JSON.parse(xhr.responseText);
-                    var ageVar;
-                    var pension;
-                    var id;
-                    for(var i=0; i<44; i++) {
-                        id = data.features[i].properties.id;
-                        //Replace with name of suburb
-                        ageVar=data.features[i].properties.lga_name.split(' (');
-                        ageList.push(ageVar[0]);
-                        //Replace with property name of data to be plotted
-                        pension = data.features[i].properties.age_pension; 
-                        if(pension<ageMin) {
-                            ageMin=pension;
-                        }
-                        if(pension>ageMax) {
-                            ageMax=pension;
-                        }
-                        // map.data.getFeatureById(id).setProperty('age_variable', age);
-                    }
-                    document.getElementById('age-min').textContent = ageMin.toLocaleString();
-                    document.getElementById('age-max').textContent = ageMax.toLocaleString();
-                    map.data.setStyle(styleFeature);
-                };
-                xhr.send();
-            }
-
-            function clearData() {
-                ageMin = Number.MAX_VALUE;
-                ageMax = -Number.MAX_VALUE;
-                document.getElementById('data-box').style.display = 'none';
-                document.getElementById('data-caret').style.display = 'none';
-            }
-
-            function styleFeature(feature) {
-                //CUSTOMISE ACCORDING TO NUMBER OF COLOURS
-                var low = [35, 100, 85];
-                var high = [35, 100, 5];
-                var diff = (feature.getProperty('age_pension')-ageMin) / (ageMax - ageMin);
-                var colour = [];
-                for (var i=0; i<3; i++) {
-                    colour[i] = (high[i] - low[i]) * diff + low[i];
-                }
-                // var showRow = true;
-                // if (feature.getProperty('census_variable') == null ||
-                //     isNaN(feature.getProperty('census_variable'))) {
-                // showRow = false;
-                // }
-                var outlineWeight = 0.5, zIndex = 1;
-                if (feature.getProperty('state') === 'hover') {
-                    outlineWeight = zIndex = 2;
-                }
-
-                return {
-                strokeWeight: outlineWeight,
-                strokeColor: '#000',
-                zIndex: zIndex,
-                fillColor: 'hsl(' + colour[0] + ',' + colour[1] + '%,' + colour[2] + '%)',
-                fillOpacity: 0.75
-                //visible: showRow
-                };
-            }
-
-            function mouseEnter(event) {
-                event.feature.setProperty('state', 'hover');
-                var percent = (event.feature.getProperty('age_pension') - ageMin) / (ageMax - ageMin) * 100;
-                document.getElementById('data-label').textContent =
-                event.feature.getProperty('lga_name');
-                document.getElementById('data-value').textContent =
-                event.feature.getProperty('age_pension').toLocaleString();
-                document.getElementById('data-box').style.display = 'block';
-                document.getElementById('data-caret').style.display = 'block';
-                document.getElementById('data-caret').style.paddingLeft = percent + '%';
-            }
-
-            function mouseExit(event) {
-                event.feature.setProperty('state', 'normal');
-            }
+            
         </script>
         <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4d004d;">
             <a class="navbar-brand" href="#">Dashboard</a>
@@ -167,7 +64,7 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="#" id="mapButton">
                           Map Visualisation</a>
-                      <a class="dropdown-item" href="#">Bar Graph</a>
+                      <a class="dropdown-item" href="#" id="barButton">Bar Graph</a>
                       <a class="dropdown-item" href="#">Scatter Plot</a>
                     </div>
                   </li>
@@ -239,23 +136,125 @@
             </p>
         </div>
         <div id="controls" class="nicebox">
-            <div>
-                <select id="var">
-                    <option value="age">Age Pension</option>
-                    <option value="age2">Age Gap</option>
-                </select>
+            <div id="data-select">
+                <div style="text-align: center; padding: 6px;"><strong>AURIN Datasets</strong></div>
+                <div class="radio">
+                    <input type="radio" name="datasets" id="creative" value="creative-people">
+                    <label for="creative">Creativity</label>
+                  </div>
+                  <div class="radio">
+                    <input type="radio" name="datasets" id="income" value="income">
+                    <label for="income">Income</label>
+                  </div>
             </div>
             <div id="legend">
-                <div id="age-min">min</div>
-                <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
-                <div id="age-max">max</div>
+                <div class="rows">
+                    <div id="legend-title" style="padding: 4px; font-weight: bold;">title</div>
+                </div>
+                <div class="rows" style="margin-top: 6px;">
+                    <div class="colms" style="background-color: hsl(35, 100%, 85%); float: left;"></div>
+                    <div id="var-min" style="padding: 4px;float: left;">min</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 65%); float: left; clear: both;"></div>
+                    <div id="var-range-1" style="padding: 4px; float: left;">div1</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 45%); float: left; clear: both;"></div>
+                    <div id="var-range-2" style="padding: 4px; float: left;">div2</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 25%); float: left; clear: both;"></div>
+                    <div id="var-range-3" style="padding: 4px; float: left;">div3</div>
+                </div>
+                <div class="rows">
+                    <div class="colms" style="background-color: hsl(35, 100%, 5%); float: left; clear: both;"></div>
+                    <div id="var-max" style="padding: 4px; float: left;">max</div>
+                </div>
             </div>
         </div>
         <div id="data-box" class="nicebox">
             <label id="data-label" for="data-value"></label>
             <span id="data-value"></span>
         </div>
-    <div id="map"></div>
+        <div id="map"></div>
+        <div id="barGraph"></div>
+        <script>
+            var margin = {top: 20, right: 20, bottom: 80, left: 70},
+            width = 600 - margin.left - margin.right,
+            height = 350 - margin.top - margin.bottom;
+
+            var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+            var y = d3.scale.linear().range([height, 0]);
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .ticks(10);
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .ticks(10);
+
+            var svg = d3.select("#barGraph").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", 
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            d3.json("dummy_twitter.json", function(error, data) {
+                
+            x.domain(data.map(function(d) { return d.name; }));
+            y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-35)"); //rotates the axis label
+
+                svg.append("text")   
+                .attr("class", "x_axis")          
+                .attr("transform",
+                        "translate(" + (width/2) + " ," + 
+                                    (height + margin.top + 45) + ")")
+                .style("text-anchor", "middle")
+                .text("Suburb");
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em");
+
+                svg.append("text")
+                .attr("class", "y_axis")         
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 10)
+                .attr("x",0 - (height/2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Number of Tweets");  
+
+            svg.selectAll("bar")
+                .data(data)
+                .enter().append("rect")
+                .style("fill", "hsl(35, 100%, 70%)")
+                .attr("x", function(d) { return x(d.name); })
+                .attr("width", x.rangeBand())
+                .attr("y", function(d) { return y(d.num_tweets); })
+                .attr("height", function(d) { return height - y(d.num_tweets); });
+            });
+        </script>
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
         </script>
