@@ -2,11 +2,14 @@ const express = require('express');
 const request = require('request');
 
 const servers = ['http://localhost:3000', 'http://localhost:3001'];
-let cur = 0;
+
 let error_counter = 0;
+let request_counter=1
+let cur = (Math.floor(request_counter/20))%servers.length
 
 const handler = (req, res) => {
     //console.log(req.url);
+    console.log(cur);
 
     const _req = request({ url: servers[cur] + req.url })
         .on('response', response => {
@@ -16,6 +19,7 @@ const handler = (req, res) => {
             error_counter += 1;
             //console.log("hopping to next: "+error_counter);
             if (error_counter < 10) {
+                request_counter=cur+20
                 handler(req, res);
                 console.log(error.message)
             }
@@ -27,7 +31,9 @@ const handler = (req, res) => {
     req.pipe(_req).pipe(res);
     // console.info("executed");
     // console.log(cur);
-    cur = (cur + 1) % servers.length;
+    request_counter+=1;
+    cur = (Math.floor(request_counter/20))%servers.length;
+    //console.log(cur);
 };
 
 
