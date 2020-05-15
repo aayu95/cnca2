@@ -1,8 +1,7 @@
 const express = require('express');
 const request = require('request');
-const requestIp = require('request-ip');
 
-const servers = ['http://localhost:3000', 'http://localhost:3001'];
+const servers = ['http://localhost:3000', 'http://localhost:3001','http://localhost:3000'];
 
 let error_counter = 0;
 let request_counter=1
