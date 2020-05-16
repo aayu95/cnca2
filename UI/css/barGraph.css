@@ -1,0 +1,68 @@
+.axis {
+    font: 10px sans-serif;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+  .x_axis{
+      font: 10px sans-serif;
+      font-weight: bold;
+  }
+  .y_axis{
+      font: 10px sans-serif;
+      font-weight: bold;
+  }
+
+  #barGraph{
+      height: 43em;
+  }
+  .d3-tip {
+    line-height: 1;
+    font: 13px sans-serif;
+    font-weight: bold;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #000;
+    border-radius: 4px;
+  }
+  
+  /* Creates a small triangle extender for the tooltip */
+  .d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+  }
+  
+  /* Style northward tooltips differently */
+  .d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+  }
+
+  .bar {
+    fill: hsl(35, 100%, 65%);
+  }
+  .bar:hover {
+    fill:  hsl(35, 100%, 25%);
+  }
+
+  .dot {
+    stroke: #000;
+  }
+  
+  .tooltip {
+    position: absolute;
+    width: 200px;
+    height: 28px;
+    pointer-events: none;
+  }
