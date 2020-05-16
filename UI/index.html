@@ -7,7 +7,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" type="text/css" href="css/map.css">
         <link rel="stylesheet" type="text/css" href="css/home.css">
-        <link rel="stylesheet" type="text/css" href="css/graph.css">
+        <link rel="stylesheet" type="text/css" href="css/barGraph.css">
+        <link rel="stylesheet" type="text/css" href="css/scatterPlot.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
@@ -19,7 +20,7 @@
         <script>
             var map;
             var varMin = Number.MAX_VALUE, varMax = -Number.MAX_VALUE;
-
+            var i=0;
             function initMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 9,
@@ -40,12 +41,10 @@
 
                 var opt1 = document.getElementById('creative');
                 var opt2 = document.getElementById('income');
-                selectData(opt1);
-                selectData(opt2);
+                selectData(opt1, i);
+                selectData(opt2, i);
                 loadBoundary();
             }
-
-            
         </script>
         <!--NAVBAR-->
         <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4d004d;">
@@ -67,7 +66,7 @@
                       <a class="dropdown-item" href="#" id="mapButton">
                           Map Visualisation</a>
                       <a class="dropdown-item" href="#" id="barButton">Bar Graph</a>
-                      <a class="dropdown-item" href="#">Scatter Plot</a>
+                      <a class="dropdown-item" href="#" id="scatterButton">Scatter Plot</a>
                     </div>
                   </li>
               </ul>
@@ -79,8 +78,9 @@
 
         <!--CONTENT CONTAINER-->
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-6" style="border-right: solid 1px black;">
+            <div class="row" id="info">
+                <div class="col-6" style="border-right: solid 1px black; overflow-y: auto;
+                height: 690px;">
                     <!--ABOUT PAGE-->
                     <div id="about">
                         <h2>Scenario</h2>
@@ -144,7 +144,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="col-6" style="border-left: solid 1px black;">
+                <div class="col-6" style="border-left: solid 1px black; box-shadow: 0 4px 6px -4px #333;">
                     <div id="stream">
                         <h2>Live Data Stream</h2>
                         <br>
@@ -208,8 +208,15 @@
                      <div id="barGraph"></div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-12">
+                     <!--SCATTER PLOT-->
+                     <div id="scatterPlot"></div>
+                </div>
+            </div>
         </div>
         <script src="js/barChart.js"></script>
+        <script src="js/scatterPlot.js"></script>
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
         </script>

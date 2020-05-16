@@ -4,7 +4,4 @@
 #stream{
     padding: 2em;
 }
-.vl {
-    border-left: 6px solid green;
-    height: 500px;
-  }
+html, body {margin: 0; height: 100%; overflow: hidden}

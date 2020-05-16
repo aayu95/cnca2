@@ -1,3 +1,6 @@
+function renderChart(data) {
+    
+}
 var margin = {top: 20, right: 20, bottom: 80, left: 70},
             width = 600 - margin.left - margin.right,
             height = 350 - margin.top - margin.bottom;
@@ -35,7 +38,7 @@ var margin = {top: 20, right: 20, bottom: 80, left: 70},
             d3.json("dummy_twitter.json", function(error, data) {
                 
             x.domain(data.map(function(d) { return d.name; }));
-            y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]);
+            y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]); 
 
             svg.append("g")
                 .attr("class", "x axis")

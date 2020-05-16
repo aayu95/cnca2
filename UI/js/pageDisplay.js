@@ -8,31 +8,45 @@ $(document).ready(function() {
     $("#legend").hide();
     $("#map").hide();
     $("#barGraph").hide();
+    $("#scatterPlot").hide();
     $("#mapButton").click(function(e) {
-        $("#about").hide();
+        $("#info").hide();
         $("#legend").show();
         $(".nicebox").show();
         $("#map").show();
         $("#barGraph").hide();
+        $("#scatterPlot").hide();
     });
     $("#aboutButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
-        $("#about").show();
+        $("#info").show();
         $("#barGraph").hide();
+        $("#scatterPlot").hide();
     });
     $("#barButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
-        $("#about").hide();
+        $("#info").hide();
         $("#barGraph").show();
+        $("#scatterPlot").hide();
+    });
+    $("#scatterButton").click(function(e) {
+        $("#legend").hide();
+        $(".nicebox").hide();
+        $("#map").hide();
+        $("#info").hide();
+        $("#barGraph").hide();
+        $("#scatterPlot").show();
     });
 
     //Create table from datastream
     var data;
+    var len;
     $.getJSON('dummy_stream.json', function(result){
+        len=result.length;
         data=result;
     });
     var id=0;
@@ -53,7 +67,7 @@ $(document).ready(function() {
         id+=5;
         table+='</tbody></table>';
         $("#dataStream").html(table);
-    }, 10);
+    }, 100);
 
 
     window.setInterval(function() {
