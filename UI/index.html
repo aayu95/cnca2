@@ -8,7 +8,6 @@
         <link rel="stylesheet" type="text/css" href="css/map.css">
         <link rel="stylesheet" type="text/css" href="css/home.css">
         <link rel="stylesheet" type="text/css" href="css/barGraph.css">
-        <link rel="stylesheet" type="text/css" href="css/scatterPlot.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
@@ -41,8 +40,10 @@
 
                 var opt1 = document.getElementById('creative');
                 var opt2 = document.getElementById('income');
-                selectData(opt1, i);
-                selectData(opt2, i);
+                var opt3 = document.getElementById('sentiment');
+                selectData(opt1);
+                selectData(opt2);
+                selectData(opt3);
                 loadBoundary();
             }
         </script>
@@ -166,6 +167,10 @@
                                 <input type="radio" name="datasets" id="income" value="income">
                                 <label for="income">Income</label>
                             </div>
+                            <div class="radio">
+                                <input type="radio" name="datasets" id="sentiment" value="sentiment">
+                                <label for="income">Sentiment</label>
+                            </div>
                         </div>
                         <div id="legend">
                             <div class="rows">
@@ -197,6 +202,8 @@
                     <div id="data-box" class="nicebox">
                         <label id="data-label" for="data-value"></label>
                         <span id="data-value"></span>
+                        <label id="data-label1" for="data-value1"></label>
+                        <span id="data-value1"></span>
                     </div>
                     <!--MAP-->
                     <div id="map"></div>
