@@ -23,7 +23,9 @@
           display: none;
         }
         #data-value { font-size: 2.0em; font-weight: bold }
+        #data-value1 { font-size: 2.0em; font-weight: bold }
         #data-label { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
+        #data-label1 { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
         #data-label:after { content: ':' }
 
         #legend{
