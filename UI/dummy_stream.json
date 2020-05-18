@@ -1,0 +1,98 @@
+[
+    { 
+        "id": 1,
+        "tweet_data": "What a beautiful morning!",
+        "sentiment": "positive",
+        "location": "Carlton"
+    },
+    { 
+        "id": 2,
+        "tweet_data": "Cornovirus has ruined everything! I cant even go out to gym! This sucks!!",
+        "sentiment": "negative",
+        "location": "Moonee Ponds"
+    },
+    { 
+        "id": 3,
+        "tweet_data": "We live in a changed world from now on...",
+        "sentiment": "neutral",
+        "location": "Brunswick"
+    },
+    { 
+        "id": 4,
+        "tweet_data": "What a strange ride it has been... In Eric Foreman's basement #that70sshow #iloveit",
+        "sentiment": "positive",
+        "location": "Carlton"
+    },
+    { 
+        "id": 5,
+        "tweet_data": "Halsey has my heart! What a great album! I'm truly in love",
+        "sentiment": "positive",
+        "location": "Flemington"
+    },
+    { 
+        "id": 6,
+        "tweet_data": "Migos put out an awful tune! They really need to step it up. It sucks...",
+        "sentiment": "negative",
+        "location": "Flemington"
+    },
+    { 
+        "id": 7,
+        "tweet_data": "Going to eat pizza....",
+        "sentiment": "neutral",
+        "location": "Brunswick"
+    },
+    { 
+        "id": 8,
+        "tweet_data": "Its breakfast for dinner night",
+        "sentiment": "neutral",
+        "location": "Carlton"
+    },
+    { 
+        "id": 9,
+        "tweet_data": "Love is blind is the best show on #netflix",
+        "sentiment": "neutral",
+        "location": "Northcote"
+    },
+    { 
+        "id": 10,
+        "tweet_data": "My dog ate my homework",
+        "sentiment": "neutral",
+        "location": "Ascot Vale"
+    },
+    { 
+        "id": 11,
+        "tweet_data": "Studio Ghibli's Howls moving castle is a fantastic watch! must see...",
+        "sentiment": "positive",
+        "location": "Carlton"
+    },
+    { 
+        "id": 12,
+        "tweet_data": "Coronavirus has killed hundreds of thousands of people. I hate it. It is the worst thing to happen. Cant wait to get rid of it",
+        "sentiment": "negative",
+        "location": "Flemington"
+    },
+    { 
+        "id": 13,
+        "tweet_data": "Pacman is my favourite game",
+        "sentiment": "neutral",
+        "location": "Brunswick"
+    },
+    { 
+        "id": 14,
+        "tweet_data": "I love ice-cream",
+        "sentiment": "positive",
+        "location": "Flemington"
+    },
+    { 
+        "id": 15,
+        "tweet_data": "i really hate kale. who thought it was good idea to eat a green vegetable. so stupid. its awful",
+        "sentiment": "negative",
+        "location": "Northcote"
+    },
+    { 
+        "id": 16,
+        "tweet_data": "Fleabag #amazonprime",
+        "sentiment": "neutral",
+        "location": "Moonee Ponds"
+    }
+]

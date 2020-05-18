@@ -1,0 +1,7 @@
+#about {
+    padding: 2em;
+}
+#stream{
+    padding: 2em;
+}
+html, body {margin: 0; height: 100%; overflow: hidden}
