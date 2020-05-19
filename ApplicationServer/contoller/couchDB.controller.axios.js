@@ -1,6 +1,27 @@
 const axios = require('axios')
+const fs = require('fs');
+const readline = require('readline');
+const path = require('path');
 
-axios.defaults.baseURL = 'http://admin:qweasdzxc@172.26.131.40:5984/';
+async function setCouchURL(pathToFile) {
+  const readable = fs.createReadStream(pathToFile);
+  const reader = readline.createInterface({ input: readable });
+  const line = await new Promise((resolve) => {
+    reader.on('line', (line) => {
+      reader.close();
+      resolve(line);
+    });
+  });
+  readable.close();
+  axios.defaults.baseURL = 'http://admin:qweasdzxc@'+line+':5984/';
+  console.log(axios.defaults.baseURL);
+  return line;
+}
+
+setCouchURL(path.resolve('../Common/hosts.txt'));
+
+
+//axios.defaults.baseURL = 'http://admin:qweasdzxc@172.26.131.40:5984/';
 // axios.get('tweets_dataset/_design/twitter/_view/getTweets')
 //     .then(function (response) {
 //       console.log(response);
