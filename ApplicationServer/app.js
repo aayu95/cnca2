@@ -10,10 +10,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(express.static('../UI/',{root:'../'}));
 
-app.get('*', function(req, res){
+app.get('/ip', function(req, res){
+    res.send(req.ip)
+  });
+
+app.get('/', function(req, res){
   res.sendFile('/UI/index.html',{root:'../'});
 });
-
 
 
 require('./routes/couchDB.routes')(app);

@@ -34,4 +34,3 @@ const handler = (req, res) => {
 const server = express().get('*', handler).post('*', handler);
 
 server.listen(9876);
-
