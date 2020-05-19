@@ -75,4 +75,26 @@ getAlcoholData = 'function(doc) { emit(doc.properties.area_name, doc.properties.
 view = couchdb.design.ViewDefinition('aurin', 'alcoholCount', getAlcoholData)
 view.sync(databaseServer['aurin_alcohol_data'])
 
+# -------------------------------------------------------------------------------------------------------------------------------------
+# 												CREATE TWITTER DATABASE VIEWS
+# -------------------------------------------------------------------------------------------------------------------------------------
+
+print("... Suburb wise tweets git statsentiment view")
+sentiment_map = "function(doc) { if (doc.suburb_name != null) {emit(doc.suburb_name, {'polarity_avg':doc.sentiment_polarity, 'positive_count':doc.sentiment_positive, 'negative_count':doc.sentiment_negative, 'neutral_count':doc.sentiment_neutral, 'total_tweet_count':1});};}"
+sentiment_reduce = "function(keys, vals) {\
+var result = {'overall_sentiment':'Undefined', 'polarity_avg':0, 'positive_count':0, 'negative_count':0, 'neutral_count':0, 'total_tweet_count':0};\
+    for(var i = 0; i < vals.length; i++) {\
+      result.polarity_avg      += vals[i].polarity_avg;\
+      result.positive_count    += vals[i].positive_count;\
+      result.negative_count    += vals[i].negative_count;\
+      result.neutral_count     += vals[i].neutral_count;\
+      result.total_tweet_count += vals[i].total_tweet_count;\
+    };\
+    result.polarity_avg = result.polarity_avg / vals.length;\
+    if (result.polarity_avg>=0.2) {result.overall_sentiment='Positive';}\
+    else if (result.polarity_avg<=-0.2) {result.overall_sentiment='Negative';}\
+    else {result.overall_sentiment='Neutral'};\
+return result;}"      
+view = couchdb.design.ViewDefinition('twitter', 'getTweetSentimentAll', sentiment_map, sentiment_reduce)
+view.sync(databaseServer['twitter_melb_dump_small'])
 
