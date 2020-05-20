@@ -98,6 +98,7 @@ with open(melb_tweets_file, encoding="utf-8") as jsonfile:
 											suburbId = i
 											suburb = geodict[suburbId]['name']
 											break
+									break
 						else:
 							suburbId = None
 							suburb = None
@@ -107,6 +108,8 @@ with open(melb_tweets_file, encoding="utf-8") as jsonfile:
 					tweet_doc['suburb_id']   = suburbId
 					tweet_doc['suburb_name'] = suburb
 
+					del tweet_doc['_rev']
+					
 					database.save(tweet_doc)
 				
 				except Exception as e:
