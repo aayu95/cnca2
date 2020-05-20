@@ -27,5 +27,29 @@ with open(melb_tweets_file, encoding="utf-8") as jsonfile:
 			tweet = row.strip(',\r\n').lower()
 			if tweet != ']}':
 				tweet_doc = json.loads(tweet)['doc']
-				database.save(tweet_doc)				
+				
+				# Add sentiment properties to existing tweet documents
+				sentimentPolarity = TextBlob(tweet_doc['text']).polarity
+
+				sentiment_positive = 0
+				sentiment_negative = 0
+				sentiment_neutral  = 0
+
+				if (sentimentPolarity > 0):
+					tweet_doc['sentiment'] = "positive"
+					sentiment_positive = 1
+				elif (sentimentPolarity < 0):
+					tweet_doc['sentiment'] = "negative"
+					sentiment_negative = 1
+				else:
+					tweet_doc['sentiment'] = "neutral"
+					sentiment_neutral = 1
+					
+				tweet_doc['sentiment_neutral']  = sentiment_neutral
+				tweet_doc['sentiment_negative'] = sentiment_negative
+				tweet_doc['sentiment_positive'] = sentiment_positive   
+				tweet_doc['sentiment_polarity'] = sentimentPolarity				
+
+				database.save(tweet_doc)
+			
 		counter = counter + 1
