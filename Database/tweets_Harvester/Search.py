@@ -10,10 +10,16 @@ from shapely.geometry.polygon import Polygon
 from common import *
 
 
-# databaseServer = couchdb.Server(("http://%s:%s@%s:5984/" % (username, password, ipaddress)))
-# streamingDatabase = databaseServer['newtestsearchstream']
+searchDatabase = SearchDatabase('tweets')
 
-searchDatabase = SearchDatabase('latestviewsearchtest')
+Current = []
+with open("../../Common/current.txt", 'r') as current:
+    Current = current.readlines()
+
+APIKey = Current[1].strip()
+APISecretKey = Current[2].strip()
+AccessToken = Current[3].strip()
+AccessTokenSecret = Current[4].strip()
 
 auth = tweepy.OAuthHandler(APIKey, APISecretKey)
 auth.set_access_token(AccessToken, AccessTokenSecret)
@@ -41,9 +47,6 @@ while True:
         doc = json.loads(tweetsJson)
         docid = doc['id_str']
 
-        # if docid in searchDatabase.database or docid in streamingDatabase:
-        #     print('The tweet is already present')
-
         if docid in searchDatabase.database:
             print('The tweet is already present')
 
@@ -57,16 +60,22 @@ while True:
             docTime = doc['created_at']
             docPlace = doc['place']
             docentities = doc['entities']
+            sentiment_positive = 0
+            sentiment_negative = 0
+            sentiment_neutral  = 0
             sentimentPolarity = TextBlob(doctext).polarity
 
             if (sentimentPolarity > 0):
                 sentiment = "positive"
+                sentiment_positive = 1
             
             elif (sentimentPolarity < 0):
                 sentiment = "negative"
+                sentiment_negative = 1
             
             else:
                 sentiment = "neutral"
+                sentiment_neutral = 1
 
             try:
 
@@ -90,12 +99,15 @@ while True:
                     suburb = None
 
             except Exception:
+                suburbId = None
                 suburb = None
 
-            tweet = {'_id': docid, 'id': docId, 'text': doctext, 'user': docUser,
+            tweet = {'_id': docid, 'id_str': docid, 'id': docId, 'text': doctext, 'user': docUser,
                     'coordinates': docCoordinates, 'created_at': docTime,
                     'place': docPlace, 'entities': docentities,
-                    'addressed': False, 'sentiment': sentiment, 'suburb': suburb}
+                    'addressed': False, 'sentiment': sentiment, 'sentiment_polarity': sentimentPolarity,
+                    'sentiment_positive': sentiment_positive, 'sentiment_negative': sentiment_negative,
+                    'sentiment_neutral': sentiment_neutral, 'suburb_id': suburbId, 'suburb_name': suburb}
             searchDatabase.database.save(tweet)
 
 
