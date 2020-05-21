@@ -7,16 +7,6 @@ from shapely.geometry.polygon import Polygon
 
 username = "admin"
 password = "qweasdzxc"
-ipaddress = "172.26.131.40"
-
-
-# Twitter API Credentials (Abhijeet)
-
-APIKey = 'ZA9y0emLViVNYaxn5kNSdYrFw'
-APISecretKey = '8A7SA9DQCa4LsPaA9nFD5ckOXSV1uMc89q2yNrinbhhMFe3sEC'
-AccessToken = '1253677550447898626-39ngVfom8ol2byNs5tuyMOFrniQuGY'
-AccessTokenSecret = 'KtVLWJNnVw9ah1o8WMZyzYb61QGqADz5k0AGo787XiDjF'
-
 
 # Geolocations of Melbourne
 

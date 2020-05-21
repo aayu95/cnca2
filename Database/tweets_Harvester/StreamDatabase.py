@@ -8,7 +8,8 @@ class StreamDatabase(object):
     def __init__(self, databaseName, databaseURL = "http://localhost:5984/"):
 
         try:
-
+            with open("../../Common/current.txt", 'r') as current:
+                ipaddress = current.readline().strip()
             self.databaseServer = couchdb.Server(("http://%s:%s@%s:5984/" % (username, password, ipaddress)))
             if databaseName in self.databaseServer:
                 self.database = self.databaseServer[databaseName]
@@ -58,7 +59,7 @@ class StreamDatabase(object):
 
         view.sync(self.database)
 
-        countTweetsWithSuburb = 'function(doc) { if (doc.suburb != null) { emit((doc.id), 1);};}'
+        countTweetsWithSuburb = 'function(doc) { if (doc.suburb_name != null) { emit((doc.id), 1);};}'
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'countTweetsWithSuburb', 
                                                 countTweetsWithSuburb, 
@@ -66,7 +67,7 @@ class StreamDatabase(object):
 
         view.sync(self.database)
 
-        countTweetsBySuburb = 'function(doc) { if (doc.suburb != null) { emit((doc.suburb), 1);};}'
+        countTweetsBySuburb = 'function(doc) { if (doc.suburb_name != null) { emit((doc.suburb_name), 1);};}'
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'countTweetsBySuburb', 
                                                 countTweetsBySuburb, 
@@ -74,7 +75,7 @@ class StreamDatabase(object):
 
         view.sync(self.database)
 
-        countLateTweetsBySuburb = 'function(doc) { if ((doc.created_at.substring(11,13) == "00" || doc.created_at.substring(11,13) == "01" || doc.created_at.substring(11,13) == "02" || doc.created_at.substring(11,13) == "03") && doc.suburb != null) { emit((doc.suburb), 1);};}'
+        countLateTweetsBySuburb = 'function(doc) { if ((doc.created_at.substring(11,13) == "00" || doc.created_at.substring(11,13) == "01" || doc.created_at.substring(11,13) == "02" || doc.created_at.substring(11,13) == "03") && doc.suburb_name != null) { emit((doc.suburb_name), 1);};}'
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'countLateTweetsBySuburb', 
                                                 countLateTweetsBySuburb, 
@@ -82,7 +83,7 @@ class StreamDatabase(object):
 
         view.sync(self.database)
 
-        sentimentBySuburb = 'function(doc) { if ((doc.suburb != null) && (doc.sentiment != null)) { emit((doc.suburb.concat(", ").concat(doc.sentiment)), 1);};} '
+        sentimentBySuburb = 'function(doc) { if ((doc.suburb_name != null) && (doc.sentiment != null)) { emit((doc.suburb_name.concat(", ").concat(doc.sentiment)), 1);};} '
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'sentimentBySuburb', 
                                                 sentimentBySuburb, 
@@ -90,12 +91,38 @@ class StreamDatabase(object):
 
         view.sync(self.database)
 
-        lateSentimentBySuburb = 'function(doc) { if ((doc.created_at.substring(11,13) == "00" || doc.created_at.substring(11,13) == "01" || doc.created_at.substring(11,13) == "02" || doc.created_at.substring(11,13) == "03") && (doc.suburb != null) && (doc.sentiment != null)) { emit((doc.suburb.concat(", ").concat(doc.sentiment)), 1);};} '
+        lateSentimentBySuburb = 'function(doc) { if ((doc.created_at.substring(11,13) == "00" || doc.created_at.substring(11,13) == "01" || doc.created_at.substring(11,13) == "02" || doc.created_at.substring(11,13) == "03") && (doc.suburb_name != null) && (doc.sentiment != null)) { emit((doc.suburb_name.concat(", ").concat(doc.sentiment)), 1);};} '
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'lateSentimentBySuburb', 
                                                 lateSentimentBySuburb, 
                                                 reduce_fun=count_reduce)
 
+        view.sync(self.database)
+
+        latestTweets = 'function(doc) { { emit(doc.id, (doc.user.screen_name + " - " + doc.text + " (Suburb - " + doc.suburb_name + ", " + doc.created_at + ")"));};} '
+        view = couchdb.design.ViewDefinition('twitter', 
+                                                'latestTweets', 
+                                                latestTweets)
+
+        view.sync(self.database)
+
+        sentiment_map = "function(doc) { if (doc.suburb_name != null) {emit(doc.suburb_name, {'polarity_avg':doc.sentiment_polarity, 'positive_count':doc.sentiment_positive, 'negative_count':doc.sentiment_negative, 'neutral_count':doc.sentiment_neutral, 'total_tweet_count':1});};}"
+        sentiment_reduce = "function(keys, vals) {\
+        var result = {'overall_sentiment':'Undefined', 'polarity_avg':0, 'positive_count':0, 'negative_count':0, 'neutral_count':0, 'total_tweet_count':0};\
+            for(var i = 0; i < vals.length; i++) {\
+            result.polarity_avg      += vals[i].polarity_avg;\
+            result.positive_count    += vals[i].positive_count;\
+            result.negative_count    += vals[i].negative_count;\
+            result.neutral_count     += vals[i].neutral_count;\
+            result.total_tweet_count += vals[i].total_tweet_count;\
+            };\
+            result.polarity_avg = result.polarity_avg / vals.length;\
+            if (result.polarity_avg>=0.2) {result.overall_sentiment='Positive';}\
+            else if (result.polarity_avg<=-0.2) {result.overall_sentiment='Negative';}\
+            else {result.overall_sentiment='Neutral'};\
+        return result;}"      
+        view = couchdb.design.ViewDefinition('twitter', 'getTweetSentimentAll', sentiment_map, sentiment_reduce)
+        
         view.sync(self.database)
 
     def saveTweet(self, tweet):

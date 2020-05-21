@@ -10,7 +10,16 @@ from common import *
 
 
 
-streamDatabase = StreamDatabase('latestviewtest')
+streamDatabase = StreamDatabase('tweets')
+
+Current = []
+with open("../../Common/current.txt", 'r') as current:
+    Current = current.readlines()
+
+APIKey = Current[1].strip()
+APISecretKey = Current[2].strip()
+AccessToken = Current[3].strip()
+AccessTokenSecret = Current[4].strip()
 
 api = TwitterAPI(APIKey, APISecretKey, AccessToken, AccessTokenSecret)
 
@@ -32,13 +41,21 @@ while True:
                 docTime = tweet['created_at']
                 docPlace = tweet['place']
                 docentities = tweet['entities']
+
+                sentiment_positive = 0
+                sentiment_negative = 0
+                sentiment_neutral  = 0
                 sentimentPolarity = TextBlob(tweet['text']).polarity
+
                 if sentimentPolarity > 0:
                     sentiment = "positive"
+                    sentiment_positive = 1
                 elif sentimentPolarity < 0:
                     sentiment = "negative"
+                    sentiment_negative = 1
                 else:
                     sentiment = "neutral"
+                    sentiment_neutral = 1
 
                 
                 try:
@@ -57,18 +74,21 @@ while True:
                                     if polygon.contains(point):
                                         suburbId = i
                                         suburb = geoLocations[suburbId]['name']
-                        # return -1
+                                        
                     else:
                         suburbId = None
                         suburb = None
 
                 except Exception:
+                    suburbId = None
                     suburb = None
 
                 doc = {'_id': docid, 'id_str': docid, 'id': docId, 'text': doctext, 'user': docUser,
                     'coordinates': docCoordinates, 'created_at': docTime,
                     'place': docPlace, 'entities': docentities,
-                    'addressed': False, 'sentiment': sentiment, 'suburb': suburb}
+                    'addressed': False, 'sentiment': sentiment, 'sentiment_polarity': sentimentPolarity,
+                    'sentiment_positive': sentiment_positive, 'sentiment_negative': sentiment_negative,
+                    'sentiment_neutral': sentiment_neutral, 'suburb_id': suburbId, 'suburb_name': suburb}
                 streamDatabase.saveTweet(doc)
 
             elif 'message' in tweet and tweet['code'] == 88:
