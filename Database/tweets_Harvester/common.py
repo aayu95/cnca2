@@ -12,7 +12,7 @@ password = "qweasdzxc"
 
 global geoLocations
 geoLocations = {}
-with open('/Users/Abhi/Desktop/Search/melbourne.geojson') as melbournejson:
+with open('../Data/melbourne.geojson') as melbournejson:
     data = json.load(melbournejson)
     for suburb in data['features']:
         id = suburb['id']
