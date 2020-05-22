@@ -1,7 +1,16 @@
-function renderChart(data) {
-    
-}
-var margin = {top: 20, right: 20, bottom: 80, left: 70},
+var selectBox = document.getElementById('barGraphSelect');
+var selectBoxOption = $('#barGraphSelect option');
+$(selectBoxOption).each(function(){
+    if($(this).is(':selected')) {
+        renderChart();
+    }
+})
+$(selectBox).on('change', function(){
+    renderChart();
+});
+function renderChart() {
+    d3.select("svg").remove();
+    var margin = {top: 20, right: 20, bottom: 80, left: 70},
             width = 600 - margin.left - margin.right,
             height = 350 - margin.top - margin.bottom;
 
@@ -35,7 +44,7 @@ var margin = {top: 20, right: 20, bottom: 80, left: 70},
             
             svg.call(tip);
 
-            d3.json("dummy_twitter.json", function(error, data) {
+            d3.json(selectBox.options[selectBox.selectedIndex].value, function(error, data) {
                 
             x.domain(data.map(function(d) { return d.name; }));
             y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]); 
@@ -86,3 +95,4 @@ var margin = {top: 20, right: 20, bottom: 80, left: 70},
                 .on('mouseover', tip.show)
                 .on('mouseout', tip.hide);
             });
+}
