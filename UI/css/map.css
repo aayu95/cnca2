@@ -22,11 +22,26 @@
           background-color: white;
           display: none;
         }
+
+        #data-box-senti {
+          top: 55px;
+          margin-left: 2em;
+          padding: 6px;
+          height: auto;
+          line-height: 45px;
+          border-radius: 0.5em;
+          margin-top: 5em;
+          display: none;
+        }
+        
         #data-value { font-size: 2.0em; font-weight: bold }
         #data-value1 { font-size: 2.0em; font-weight: bold }
         #data-label { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
         #data-label1 { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
         #data-label:after { content: ':' }
+
+        #data-value-senti { font-size: 2.0em; font-weight: bold }
+        #data-label-senti { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
 
         #legend{
           height: 175px;

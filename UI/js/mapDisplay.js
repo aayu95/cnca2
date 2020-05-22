@@ -11,7 +11,6 @@ function selectData(element) {
 //Load boundaries of suburb only once
 function loadBoundary() {
     map.data.loadGeoJson('melbourne.geojson', {}, function(feature){
-        // console.log(map.data.getFeatureById(1).getProperty("SA2_NAME16"));
     });
     // google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
     //         google.maps.event.trigger(document.getElementById('var'), 'change');
@@ -27,10 +26,8 @@ function loadData(parameter) {
         var data = JSON.parse(xhr.responseText);
         var suburb;
         var categoryCount;
-        var id;
         var title;
         var item=[];
-        var sentiment=[];
         var newList = [];
         var list = suburbList();
         
@@ -49,7 +46,6 @@ function loadData(parameter) {
                 }
             }
         }
-        
         for(var i=0; i<newList.length; i++) {
             for(var j=0; j<309; j++) {
                 suburb=map.data.getFeatureById(j+1).getProperty('SA2_NAME16');
@@ -61,7 +57,7 @@ function loadData(parameter) {
                     }
                     if(parameter === 'income'){
                         if (data.features[i].properties.median_aud===null){
-                            categoryCount = -1;
+                            categoryCount = -2;
                         }
                         else{
                             categoryCount = data.features[i].properties.mean_aud;
@@ -69,11 +65,13 @@ function loadData(parameter) {
                         title='Mean Income';
                     }
                     if(parameter === 'sentiment'){
-                        categoryCount = 3+i; //Add value of prominant sentiment
-                        map.data.getFeatureById(j+1).setProperty('sentiment', newList[i].sentiment);
+                        categoryCount = data.result[i].value; //Add value of prominent sentiment
+                        map.data.getFeatureById(j+1).setProperty('sentiment', data.result[i].senti);
+                        map.data.getFeatureById(j+1).setProperty('sentiment-count', newList[i].value); 
+                        map.data.getFeatureById(j+1).setProperty('sentiment-other', newList[i].sentiment);
                         title='Sentiment Analysis';
                     }
-                    if(categoryCount!==-1) {
+                    if(categoryCount!==-2) {
                         if(categoryCount<varMin) {
                             varMin=categoryCount;
                         }
@@ -87,7 +85,13 @@ function loadData(parameter) {
             // suburbList.push(suburb[0]);
             //Replace with property name of data to be plotted
         }
-        const range = parseInt((varMax-varMin)/5);
+        var range;
+        if(parameter==='sentiment') {
+            range = parseFloat((varMax-varMin)/5);
+        }
+        else {
+            range = parseInt((varMax-varMin)/5);
+        }
         document.getElementById('legend-title').textContent = title;
         document.getElementById('var-min').textContent = varMin.toLocaleString()+' - '+(varMin+range).toLocaleString();
         document.getElementById('var-range-1').textContent = (varMin+range).toLocaleString()+' - '+(varMin+(2*range)).toLocaleString();
@@ -102,7 +106,7 @@ function loadData(parameter) {
 function suburbList(){
     var result = [];
     $.ajax({
-        url: 'sentiment.json',
+        url: 'sentiment-value.json',
         dataType: 'json',
         success: function(data) {result=data;},
         async: false
@@ -120,6 +124,12 @@ function clearData() {
     });
     map.data.forEach(function(row) {
         row.setProperty('sentiment', undefined);
+    });
+    map.data.forEach(function(row) {
+        row.setProperty('sentiment-count', undefined);
+    });
+    map.data.forEach(function(row) {
+        row.setProperty('sentiment-other', undefined);
     });
 }
 
@@ -162,9 +172,25 @@ function mouseEnter(event) {
     document.getElementById('data-value').textContent =
     event.feature.getProperty('curr_variable').toLocaleString();
     document.getElementById('data-box').style.display = 'block';
-    if(typeof event.feature.getProperty('sentiment')!== undefined) {
+    if(event.feature.getProperty('sentiment')== null || isNaN(event.feature.getProperty('sentiment'))) {
         document.getElementById('data-value1').textContent =
     event.feature.getProperty('sentiment');
+    document.getElementById('data-box-senti').style.display = 'block';
+    document.getElementById('data-box-senti').style.backgroundColor = 'white';
+    document.getElementById('data-box-senti').style.boxShadow = '0 4px 6px -4px #333';
+
+    var senti = event.feature.getProperty('sentiment-other').split(',');
+    var count = event.feature.getProperty('sentiment-count').split(',');
+    document.getElementById('data-label-senti').innerText ="";
+    document.getElementById('data-value-senti').innerText ="";
+    for(var i=0; i<senti.length; i++){
+        document.getElementById('data-label-senti').innerText+= senti[i]+": "+ count[i]+'\n';
+    }
+    
+    // document.getElementById('data-label-senti').textContent =
+    // event.feature.getProperty('sentiment-other');
+    // document.getElementById('data-value-senti').textContent =
+    // event.feature.getProperty('sentiment-count').toLocaleString();
     }
 }
 
