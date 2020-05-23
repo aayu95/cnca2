@@ -123,7 +123,7 @@ while True:
             # print(e.status_code)
             raise
 
-    except TwitterConnectionError:
+    except TwitterConnectionError as e:
         with open('stream_log','a') as f:
                 f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
                 f.write(str(e)+'\n')
