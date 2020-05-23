@@ -29,47 +29,47 @@ function loadData(parameter) {
         var title;
         var item=[];
         var newList = [];
-        var list = suburbList();
+        //var list = suburbList();
         
-        for(var i=0; i<list.result.length; i++) {
-            item=list.result[i].key.split(',');
-            newList.push({"name": item[0], "sentiment": item[1], "value": list.result[i].value.toString()});
-        }
-        for(var i=0; i<newList.length; i++) {
-            for(var j=0; j<newList.length; j++) {
-                if(i===j)
-                    continue;
-                if(newList[i].name===newList[j].name){
-                    newList[j].sentiment+=','+newList[i].sentiment;
-                    newList[j].value+=','+newList[i].value;
-                    newList.splice(i,1);
-                }
-            }
-        }
-        for(var i=0; i<newList.length; i++) {
+        // for(var i=0; i<list.result.length; i++) {
+        //     item=list.result[i].key.split(',');
+        //     newList.push({"name": item[0], "sentiment": item[1], "value": list.result[i].value.toString()});
+        // }
+        // for(var i=0; i<newList.length; i++) {
+        //     for(var j=0; j<newList.length; j++) {
+        //         if(i===j)
+        //             continue;
+        //         if(newList[i].name===newList[j].name){
+        //             newList[j].sentiment+=','+newList[i].sentiment;
+        //             newList[j].value+=','+newList[i].value;
+        //             newList.splice(i,1);
+        //         }
+        //     }
+        // }
+        // for(var i=0; i<newList.length; i++) { //Iterate over length of data!
             for(var j=0; j<309; j++) {
                 suburb=map.data.getFeatureById(j+1).getProperty('SA2_NAME16');
 
-                if(suburb.localeCompare(newList[i].name)===0) {
+                // if(suburb.localeCompare(newList[i].name)===0) {
                     if(parameter === 'creative-people') {
                         title='Number of Creative People'
-                        categoryCount = data.features[i].properties.p_crtve_arts_tot;
+                        categoryCount = data.features[j].properties.p_crtve_arts_tot;
                     }
                     if(parameter === 'income'){
-                        if (data.features[i].properties.median_aud===null){
+                        if (data.features[j].properties.median_aud===null){
                             categoryCount = -2;
                         }
                         else{
-                            categoryCount = data.features[i].properties.mean_aud;
+                            categoryCount = data.features[j].properties.mean_aud;
                         }
                         title='Mean Income';
                     }
                     if(parameter === 'sentiment'){
-                        categoryCount = data.result[i].value; //Add value of prominent sentiment
+                        categoryCount = data.result[0].value; //Add value of prominent sentiment
                         map.data.getFeatureById(j+1).setProperty('sentiment', data.result[i].senti);
-                        map.data.getFeatureById(j+1).setProperty('sentiment-count', newList[i].value); 
-                        map.data.getFeatureById(j+1).setProperty('sentiment-other', newList[i].sentiment);
-                        title='Sentiment Analysis';
+                        // map.data.getFeatureById(j+1).setProperty('sentiment-count', newList[i].value); 
+                        // map.data.getFeatureById(j+1).setProperty('sentiment-other', newList[i].sentiment);
+                        // title='Sentiment Analysis';
                     }
                     if(categoryCount!==-2) {
                         if(categoryCount<varMin) {
@@ -80,11 +80,11 @@ function loadData(parameter) {
                         }
                     }
                     map.data.getFeatureById(j+1).setProperty('curr_variable', categoryCount);
-                }
+                //}
             }
             // suburbList.push(suburb[0]);
             //Replace with property name of data to be plotted
-        }
+        //}
         var range;
         if(parameter==='sentiment') {
             range = parseFloat((varMax-varMin)/5);
@@ -103,17 +103,17 @@ function loadData(parameter) {
     xhr.send();
 }
 
-function suburbList(){
-    var result = [];
-    $.ajax({
-        url: 'sentiment-value.json',
-        dataType: 'json',
-        success: function(data) {result=data;},
-        async: false
-    });
-    return result;
-    //var marker = new google.maps.Marker({position: uluru, map: map});
-}
+// function suburbList(){
+//     var result = [];
+//     $.ajax({
+//         url: 'sentiment-value.json',
+//         dataType: 'json',
+//         success: function(data) {result=data;},
+//         async: false
+//     });
+//     return result;
+//     //var marker = new google.maps.Marker({position: uluru, map: map});
+// }
 
 //Clears previously set data in order to render new data correctly
 function clearData() {
@@ -172,25 +172,20 @@ function mouseEnter(event) {
     document.getElementById('data-value').textContent =
     event.feature.getProperty('curr_variable').toLocaleString();
     document.getElementById('data-box').style.display = 'block';
-    if(event.feature.getProperty('sentiment')== null || isNaN(event.feature.getProperty('sentiment'))) {
+    if(event.feature.getProperty('sentiment-other')!==undefined) {
+        document.getElementById('data-box-senti').style.display = 'block';
+        document.getElementById('data-box-senti').style.backgroundColor = 'white';
+        document.getElementById('data-box-senti').style.boxShadow = '0 4px 6px -4px #333';
+        
         document.getElementById('data-value1').textContent =
-    event.feature.getProperty('sentiment');
-    document.getElementById('data-box-senti').style.display = 'block';
-    document.getElementById('data-box-senti').style.backgroundColor = 'white';
-    document.getElementById('data-box-senti').style.boxShadow = '0 4px 6px -4px #333';
-
-    var senti = event.feature.getProperty('sentiment-other').split(',');
-    var count = event.feature.getProperty('sentiment-count').split(',');
-    document.getElementById('data-label-senti').innerText ="";
-    document.getElementById('data-value-senti').innerText ="";
-    for(var i=0; i<senti.length; i++){
-        document.getElementById('data-label-senti').innerText+= senti[i]+": "+ count[i]+'\n';
-    }
-    
-    // document.getElementById('data-label-senti').textContent =
-    // event.feature.getProperty('sentiment-other');
-    // document.getElementById('data-value-senti').textContent =
-    // event.feature.getProperty('sentiment-count').toLocaleString();
+        event.feature.getProperty('sentiment');
+        var senti = event.feature.getProperty('sentiment-other').split(',');
+        var count = event.feature.getProperty('sentiment-count').split(',');
+        document.getElementById('data-label-senti').innerText ="";
+        document.getElementById('data-value-senti').innerText ="";
+        for(var i=0; i<senti.length; i++){
+            document.getElementById('data-label-senti').innerText+= senti[i]+": "+ count[i]+'\n';
+        }
     }
 }
 
