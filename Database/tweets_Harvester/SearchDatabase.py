@@ -1,5 +1,6 @@
 import couchdb
 import couchdb.design
+import datetime
 from common import *
 
 class SearchDatabase(object):
@@ -17,9 +18,12 @@ class SearchDatabase(object):
             self.createViews()
         
         except Exception as e:
-            print("Database Exception")
-            print (e)
-            print (Exception)
+            # print("Database Exception")
+            # print (e)
+            # print (Exception)
+            with open('searchdabatase_log','a') as f:
+                f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
+                f.write(str(e)+'\n')
 
     def createViews(self):
 

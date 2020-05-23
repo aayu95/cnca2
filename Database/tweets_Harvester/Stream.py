@@ -6,11 +6,12 @@ import time
 from textblob import TextBlob
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
+import datetime
 from common import *
 
 
 
-streamDatabase = StreamDatabase('tweets')
+streamDatabase = StreamDatabase('slowtest')
 
 Current = []
 with open("../../Common/current.txt", 'r') as current:
@@ -30,66 +31,73 @@ while True:
         for tweet in api.request('statuses/filter', {'track': '', 'locations': melbourneBoundingBox}):
 
             if 'text' in tweet:
-                print('%s -- %s' % (tweet['user']['screen_name'], tweet['text']))
-                print('%s\n' % (tweet['created_at']))
+                # print('%s -- %s' % (tweet['user']['screen_name'], tweet['text']))
+                # print('%s\n' % (tweet['created_at']))
 
                 docid = tweet['id_str']
-                docId = tweet['id']
-                doctext = tweet['text']
-                docCoordinates = tweet['coordinates']
-                docUser = tweet['user']
-                docTime = tweet['created_at']
-                docPlace = tweet['place']
-                docentities = tweet['entities']
 
-                sentiment_positive = 0
-                sentiment_negative = 0
-                sentiment_neutral  = 0
-                sentimentPolarity = TextBlob(tweet['text']).polarity
+                if docid in streamDatabase.database:
+                    with open('stream_log','a') as f:
+                        f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
+                        f.write('The tweet is already present\n')
 
-                if sentimentPolarity > 0:
-                    sentiment = "positive"
-                    sentiment_positive = 1
-                elif sentimentPolarity < 0:
-                    sentiment = "negative"
-                    sentiment_negative = 1
                 else:
-                    sentiment = "neutral"
-                    sentiment_neutral = 1
+                    docId = tweet['id']
+                    doctext = tweet['text']
+                    docCoordinates = tweet['coordinates']
+                    docUser = tweet['user']
+                    docTime = tweet['created_at']
+                    docPlace = tweet['place']
+                    docentities = tweet['entities']
 
-                
-                try:
+                    sentiment_positive = 0
+                    sentiment_negative = 0
+                    sentiment_neutral  = 0
+                    sentimentPolarity = TextBlob(tweet['text']).polarity
 
-                    if (docCoordinates is not None):
-                        longitude = docCoordinates['coordinates'][0]
-                        latitude = docCoordinates['coordinates'][1]
-                        point = Point(longitude, latitude)
-                        for i in geoLocations.keys():
-                            if geoLocations[i]['type'] == 'polygon':
-                                if geoLocations[i]['polygon'].contains(point):
-                                    suburbId = i
-                                    suburb = geoLocations[suburbId]['name']
-                            else:
-                                for polygon in geoLocations[i]['polygons']:
-                                    if polygon.contains(point):
+                    if sentimentPolarity > 0:
+                        sentiment = "positive"
+                        sentiment_positive = 1
+                    elif sentimentPolarity < 0:
+                        sentiment = "negative"
+                        sentiment_negative = 1
+                    else:
+                        sentiment = "neutral"
+                        sentiment_neutral = 1
+
+                    
+                    try:
+
+                        if (docCoordinates is not None):
+                            longitude = docCoordinates['coordinates'][0]
+                            latitude = docCoordinates['coordinates'][1]
+                            point = Point(longitude, latitude)
+                            for i in geoLocations.keys():
+                                if geoLocations[i]['type'] == 'polygon':
+                                    if geoLocations[i]['polygon'].contains(point):
                                         suburbId = i
                                         suburb = geoLocations[suburbId]['name']
-                                        
-                    else:
+                                else:
+                                    for polygon in geoLocations[i]['polygons']:
+                                        if polygon.contains(point):
+                                            suburbId = i
+                                            suburb = geoLocations[suburbId]['name']
+                                            
+                        else:
+                            suburbId = None
+                            suburb = None
+
+                    except Exception:
                         suburbId = None
                         suburb = None
 
-                except Exception:
-                    suburbId = None
-                    suburb = None
-
-                doc = {'_id': docid, 'id_str': docid, 'id': docId, 'text': doctext, 'user': docUser,
-                    'coordinates': docCoordinates, 'created_at': docTime,
-                    'place': docPlace, 'entities': docentities,
-                    'addressed': False, 'sentiment': sentiment, 'sentiment_polarity': sentimentPolarity,
-                    'sentiment_positive': sentiment_positive, 'sentiment_negative': sentiment_negative,
-                    'sentiment_neutral': sentiment_neutral, 'suburb_id': suburbId, 'suburb_name': suburb}
-                streamDatabase.saveTweet(doc)
+                    doc = {'_id': docid, 'id_str': docid, 'id': docId, 'text': doctext, 'user': docUser,
+                        'coordinates': docCoordinates, 'created_at': docTime,
+                        'place': docPlace, 'entities': docentities,
+                        'addressed': False, 'sentiment': sentiment, 'sentiment_polarity': sentimentPolarity,
+                        'sentiment_positive': sentiment_positive, 'sentiment_negative': sentiment_negative,
+                        'sentiment_neutral': sentiment_neutral, 'suburb_id': suburbId, 'suburb_name': suburb}
+                    streamDatabase.saveTweet(doc)
 
             elif 'message' in tweet and tweet['code'] == 88:
                 time.sleep(950)
@@ -99,26 +107,35 @@ while True:
                 break 
 
     except TwitterRequestError as e:
+
+        with open('stream_log','a') as f:
+                f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
+                f.write(str(e)+'\n')
         
         if e.status_code >= 500:
-            print ("Temporary Error")
-            print ("Trying the request again")
+            # print ("Temporary Error")
+            # print ("Trying the request again")
             pass
 
         else:
-            print ("Twitter Request Error")
-            print ("Something wrong with the request")
-            print(e.status_code)
+            # print ("Twitter Request Error")
+            # print ("Something wrong with the request")
+            # print(e.status_code)
             raise
 
     except TwitterConnectionError:
-        print ("Twitter Connection Error")
-        print ("Trying the request again")
+        with open('stream_log','a') as f:
+                f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
+                f.write(str(e)+'\n')
+        # print ("Twitter Connection Error")
+        # print ("Trying the request again")
         pass
 
     except Exception as e:
-        print('Hello')
-        print (e)
-        print (Exception)
+        # print (e)
+        # print (Exception)
+        with open('stream_log','a') as f:
+                f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
+                f.write(str(e)+'\n')
         pass
 
