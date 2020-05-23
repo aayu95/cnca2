@@ -11,7 +11,7 @@ import datetime
 from common import *
 
 
-searchDatabase = SearchDatabase('slowtest')
+searchDatabase = SearchDatabase('tweets')
 
 Current = []
 with open("../../Common/current.txt", 'r') as current:
