@@ -218,7 +218,8 @@
                      <!--BAR CHART-->
                      <div>
                          <select id="barGraphSelect">
-                            <option value="dummy_twitter.json" selected>Dummy1</option>
+                            <option disabled selected value>Select Data</option>
+                            <option value="dummy_twitter.json">Dummy1</option>
                             <option value="dummy_twitter2.json">Dummy2</option>  
                             <!--Value=name of view/dataset-->
                          </select>
@@ -227,11 +228,20 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12" id="scatterCard">
                      <!--SCATTER PLOT-->
-                     <div id="scatterPlot"></div>
+                     <div>
+                        <select id="scatterPlotSelect">
+                            <option disabled selected value>Select Data</option>
+                            <option value="dummy_twitter.json">Dummy1</option>
+                            <option value="dummy_twitter2.json">Dummy2</option>  
+                        <!--Value=name of view/dataset-->
+                        </select>
+                    </div>
+                    <div id="scatterPlot"></div>
                 </div>
             </div>
+        </div>
         </div>
         <script src="js/barChart.js"></script>
         <script src="js/scatterPlot.js"></script>

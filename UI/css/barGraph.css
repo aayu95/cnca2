@@ -67,7 +67,7 @@
     pointer-events: none;
   }
 
-#barCard {
+#barCard, #scatterCard{
   position: absolute;
   text-align: center;
   font-family: "Roboto", "Arial", sans-serif;
@@ -80,3 +80,7 @@
   border-radius: 0.5em;
   background-color: white;
 }
+
+/* #scatterCard{
+  border: solid 1px black;
+} */

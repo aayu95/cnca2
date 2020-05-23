@@ -7,39 +7,39 @@ $(document).ready(function() {
     $(".nicebox").hide();
     $("#legend").hide();
     $("#map").hide();
-    $("#barGraph").hide();
-    $("#scatterPlot").hide();
+    $("#barCard").hide();
+    $("#scatterCard").hide();
     $("#mapButton").click(function(e) {
         $("#info").hide();
         $("#legend").show();
         $(".nicebox").show();
         $("#map").show();
-        $("#barGraph").hide();
-        $("#scatterPlot").hide();
+        $("#barCard").hide();
+        $("#scatterCard").hide();
     });
     $("#aboutButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").show();
-        $("#barGraph").hide();
-        $("#scatterPlot").hide();
+        $("#barCard").hide();
+        $("#scatterCard").hide();
     });
     $("#barButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").hide();
-        $("#barGraph").show();
-        $("#scatterPlot").hide();
+        $("#barCard").show();
+        $("#scatterCard").hide();
     });
     $("#scatterButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").hide();
-        $("#barGraph").hide();
-        $("#scatterPlot").show();
+        $("#barCard").hide();
+        $("#scatterCard").show();
     });
 
     //Create table from datastream

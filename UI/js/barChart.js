@@ -1,10 +1,4 @@
 var selectBox = document.getElementById('barGraphSelect');
-var selectBoxOption = $('#barGraphSelect option');
-$(selectBoxOption).each(function(){
-    if($(this).is(':selected')) {
-        renderChart();
-    }
-})
 $(selectBox).on('change', function(){
     renderChart();
 });
