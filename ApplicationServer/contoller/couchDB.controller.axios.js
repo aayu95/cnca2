@@ -46,23 +46,15 @@ exports.fetchAll = (req, res) => {
 
 };
 
+
+
 exports.getSentimentBySuburb = (req, res) => {
   streamRes = [];
   searchRes = [];
-  axios.get('newtestsearch/_design/twitter/_view/sentimentBySuburb?group_level=1')
+  axios.get('tweets/_design/twitter/_view/getTweetSentimentAll?group_level=1')
     .then(function (response) {
       //console.log(response);
-      //res.send(response.data);
-      searchRes = response.data.rows;
-      axios.get('newteststream/_design/twitter/_view/sentimentBySuburb?group_level=1')
-        .then(function (response) {
-          streamRes = response.data.rows;
-          res.send({ 'result': streamRes.concat(searchRes) });
-        })
-        .catch(function (error) {
-          //console.log(error);
-          res.send(error.response.data);
-        });
+      res.send(response.data);
     })
     .catch(function (error) {
       //console.log(error);
@@ -72,8 +64,6 @@ exports.getSentimentBySuburb = (req, res) => {
 };
 
 exports.getLateSentimentBySuburb = (req, res) => {
-  streamRes = [];
-  searchRes = [];
   axios.get('newtestsearch/_design/twitter/_view/lateSentimentBySuburb?group_level=1')
     .then(function (response) {
       //console.log(response);
@@ -97,8 +87,6 @@ exports.getLateSentimentBySuburb = (req, res) => {
 };
 
 exports.getLateTweetCountBySuburb = (req, res) => {
-  streamRes = [];
-  searchRes = [];
   axios.get('newtestsearch/_design/twitter/_view/countLateTweetsBySuburb?group_level=1')
     .then(function (response) {
       //console.log(response);
@@ -122,22 +110,36 @@ exports.getLateTweetCountBySuburb = (req, res) => {
 };
 
 exports.getTweetCountBySuburb = (req, res) => {
-  streamRes = [];
-  searchRes = [];
-  axios.get('newtestsearch/_design/twitter/_view/countTweetsBySuburb?group_level=1')
+  axios.get('tweets/_design/twitter/_view/countTweetsBySuburb?group_level=1')
     .then(function (response) {
       //console.log(response);
-      //res.send(response.data);
-      searchRes = response.data.rows;
-      axios.get('newteststream/_design/twitter/_view/countTweetsBySuburb?group_level=1')
-        .then(function (response) {
-          streamRes = response.data.rows;
-          res.send({ 'result': streamRes.concat(searchRes) });
-        })
-        .catch(function (error) {
-          //console.log(error);
-          res.send(error.response.data);
-        });
+      res.send(response.data);
+    })
+    .catch(function (error) {
+      //console.log(error);
+      res.send(error.response.data);
+    });
+
+};
+
+exports.getLatestTweets = (req, res) => {
+  axios.get('tweets/_design/twitter/_view/latestTweets?limit=10&descending=true&update=true')
+    .then(function (response) {
+      //console.log(response);
+      res.send(response.data);
+    })
+    .catch(function (error) {
+      //console.log(error);
+      res.send(error.response.data);
+    });
+
+};
+
+exports.getTweetCount = (req, res) => {
+  axios.get('tweets/_design/twitter/_view/countTweets')
+    .then(function (response) {
+      //console.log(response);
+      res.send(response.data);
     })
     .catch(function (error) {
       //console.log(error);
