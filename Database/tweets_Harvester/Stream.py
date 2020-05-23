@@ -11,7 +11,7 @@ from common import *
 
 
 
-streamDatabase = StreamDatabase('slowtest')
+streamDatabase = StreamDatabase('tweets')
 
 Current = []
 with open("../../Common/current.txt", 'r') as current:
