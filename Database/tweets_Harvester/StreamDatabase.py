@@ -19,9 +19,12 @@ class StreamDatabase(object):
             self.createViews()
         
         except Exception as e:
-            print("Database Exception")
-            print (e)
-            print (Exception)
+            # print("Database Exception")
+            # print (e)
+            # print (Exception)
+            with open('streamdabatase_log','a') as f:
+                f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
+                f.write(str(e)+'\n')
             
     def createViews(self):
 
