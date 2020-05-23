@@ -46,30 +46,34 @@ function loadData(parameter) {
         //         }
         //     }
         // }
-        // for(var i=0; i<newList.length; i++) { //Iterate over length of data!
+        var len;
+        if(parameter==='sentiment') len=data.rows.length;
+        else len=data.length;
+        for(var i=0; i<len; i++) { //Iterate over length of data!
             for(var j=0; j<309; j++) {
                 suburb=map.data.getFeatureById(j+1).getProperty('SA2_NAME16');
-
-                // if(suburb.localeCompare(newList[i].name)===0) {
+                
+                if(suburb.localeCompare(data.rows[i].key)===0) {
                     if(parameter === 'creative-people') {
                         title='Number of Creative People'
-                        categoryCount = data.features[j].properties.p_crtve_arts_tot;
+                        categoryCount = data.features[i].properties.p_crtve_arts_tot;
                     }
                     if(parameter === 'income'){
-                        if (data.features[j].properties.median_aud===null){
+                        if (data.features[i].properties.median_aud===null){
                             categoryCount = -2;
                         }
                         else{
-                            categoryCount = data.features[j].properties.mean_aud;
+                            categoryCount = data.features[i].properties.mean_aud;
                         }
                         title='Mean Income';
                     }
                     if(parameter === 'sentiment'){
-                        categoryCount = data.result[0].value; //Add value of prominent sentiment
-                        map.data.getFeatureById(j+1).setProperty('sentiment', data.result[i].senti);
-                        // map.data.getFeatureById(j+1).setProperty('sentiment-count', newList[i].value); 
-                        // map.data.getFeatureById(j+1).setProperty('sentiment-other', newList[i].sentiment);
-                        // title='Sentiment Analysis';
+                        categoryCount = data.rows[i].value.polarity_avg; 
+                        map.data.getFeatureById(j+1).setProperty('sentiment', data.rows[i].value.overall_sentiment);
+                        map.data.getFeatureById(j+1).setProperty('positive-count', data.rows[i].value.positive_count); 
+                        map.data.getFeatureById(j+1).setProperty('neutral-count', data.rows[i].value.neutral_count); 
+                        map.data.getFeatureById(j+1).setProperty('negative-count', data.rows[i].value.negative_count); 
+                        title='Sentiment Analysis';
                     }
                     if(categoryCount!==-2) {
                         if(categoryCount<varMin) {
@@ -80,11 +84,11 @@ function loadData(parameter) {
                         }
                     }
                     map.data.getFeatureById(j+1).setProperty('curr_variable', categoryCount);
-                //}
+                }
             }
             // suburbList.push(suburb[0]);
             //Replace with property name of data to be plotted
-        //}
+        }
         var range;
         if(parameter==='sentiment') {
             range = parseFloat((varMax-varMin)/5);
@@ -126,10 +130,13 @@ function clearData() {
         row.setProperty('sentiment', undefined);
     });
     map.data.forEach(function(row) {
-        row.setProperty('sentiment-count', undefined);
+        row.setProperty('positive-count', undefined);
     });
     map.data.forEach(function(row) {
-        row.setProperty('sentiment-other', undefined);
+        row.setProperty('neutral-count', undefined);
+    });
+    map.data.forEach(function(row) {
+        row.setProperty('negative-count', undefined);
     });
 }
 
@@ -172,23 +179,30 @@ function mouseEnter(event) {
     document.getElementById('data-value').textContent =
     event.feature.getProperty('curr_variable').toLocaleString();
     document.getElementById('data-box').style.display = 'block';
-    if(event.feature.getProperty('sentiment-other')!==undefined) {
+    if(event.feature.getProperty('sentiment')!==undefined) {
         document.getElementById('data-box-senti').style.display = 'block';
         document.getElementById('data-box-senti').style.backgroundColor = 'white';
         document.getElementById('data-box-senti').style.boxShadow = '0 4px 6px -4px #333';
-        
-        document.getElementById('data-value1').textContent =
+        document.getElementById('data-label-senti').textContent =
+        "Overall Sentiment: "
+        document.getElementById('data-value-senti').textContent =
         event.feature.getProperty('sentiment');
-        var senti = event.feature.getProperty('sentiment-other').split(',');
-        var count = event.feature.getProperty('sentiment-count').split(',');
-        document.getElementById('data-label-senti').innerText ="";
-        document.getElementById('data-value-senti').innerText ="";
-        for(var i=0; i<senti.length; i++){
-            document.getElementById('data-label-senti').innerText+= senti[i]+": "+ count[i]+'\n';
-        }
+        document.getElementById('data-label-senti-p').textContent =
+        "Positive: "
+        document.getElementById('data-value-senti-p').textContent =
+        event.feature.getProperty('positive-count');
+        document.getElementById('data-label-senti-nu').textContent =
+        "Neutral: "
+        document.getElementById('data-value-senti-nu').textContent =
+        event.feature.getProperty('neutral-count');
+        document.getElementById('data-label-senti-n').textContent =
+        "Negative: "
+        document.getElementById('data-value-senti-n').textContent =
+        event.feature.getProperty('negative-count');
     }
 }
 
 function mouseExit(event) {
+    if(event.feature.getProperty('sentiment')===undefined) {document.getElementById('data-box-senti').style.display = 'none';}
     event.feature.setProperty('state', 'normal');
 }
