@@ -81,7 +81,7 @@
         <div class="container-fluid">
             <div class="row" id="info">
                 <div class="col-6" style="border-right: solid 1px black; overflow-y: auto;
-                height: 690px;">
+                height: 43em;">
                     <!--ABOUT PAGE-->
                     <div id="about">
                         <h2>Scenario</h2>
@@ -145,8 +145,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="col-6" style="border-left: solid 1px black; box-shadow: 0 4px 6px -4px #333;">
-                    <div id="stream">
+                <div class="col-6" style="border-left: solid 1px black;">
+                    <div id="stream" style="overflow-y: auto; height: 43em">
                         <h2>Live Data Stream</h2>
                         <br>
                         <p id="dataStream"></p>
@@ -204,23 +204,54 @@
                         <span id="data-value"></span>
                         <label id="data-label1" for="data-value1"></label>
                         <span id="data-value1"></span>
+                        <br/>
+                        <label id="data-label-senti" for="data-value-senti"></label>
+                        <span id="data-value-senti"></span>
+                    </div>
+                    <div id="data-box-senti" class="nicebox">
+                        <h4>Number of Tweets</h4>
+                        <label id="data-label-senti-p" for="data-value-senti-p"></label>
+                        <span id="data-value-senti-p"></span>
+                        <br/>
+                        <label id="data-label-senti-nu" for="data-value-senti-nu"></label>
+                        <span id="data-value-senti-nu"></span>
+                        <br/>
+                        <label id="data-label-senti-n" for="data-value-senti-n"></label>
+                        <span id="data-value-senti-n"></span>
                     </div>
                     <!--MAP-->
                     <div id="map"></div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12" id="barCard">
                      <!--BAR CHART-->
+                     <div>
+                         <select id="barGraphSelect">
+                            <option disabled selected value>Select Data</option>
+                            <option value="dummy_twitter1.json">Dummy1</option>
+                            <option value="dummy_twitter2.json">Dummy2</option>  
+                            <!--Value=name of view/dataset-->
+                         </select>
+                     </div>
                      <div id="barGraph"></div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12" id="scatterCard">
                      <!--SCATTER PLOT-->
-                     <div id="scatterPlot"></div>
+                     <div>
+                        <select id="scatterPlotSelect">
+                            <option disabled selected value>Select Data</option>
+                            <option value="dummy_twitter.json">Dummy1</option>
+                            <option value="dummy_twitter2.json">Dummy2</option>  
+                        <!--Value=name of view/dataset-->
+                        </select>
+                    </div>
+                    <div id="scatterPlot"></div>
                 </div>
             </div>
+        </div>
         </div>
         <script src="js/barChart.js"></script>
         <script src="js/scatterPlot.js"></script>
