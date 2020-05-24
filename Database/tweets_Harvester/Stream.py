@@ -31,8 +31,6 @@ while True:
         for tweet in api.request('statuses/filter', {'track': '', 'locations': melbourneBoundingBox}):
 
             if 'text' in tweet:
-                # print('%s -- %s' % (tweet['user']['screen_name'], tweet['text']))
-                # print('%s\n' % (tweet['created_at']))
 
                 docid = tweet['id_str']
 
@@ -113,27 +111,18 @@ while True:
                 f.write(str(e)+'\n')
         
         if e.status_code >= 500:
-            # print ("Temporary Error")
-            # print ("Trying the request again")
             pass
 
         else:
-            # print ("Twitter Request Error")
-            # print ("Something wrong with the request")
-            # print(e.status_code)
             raise
 
     except TwitterConnectionError as e:
         with open('stream_log','a') as f:
                 f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
                 f.write(str(e)+'\n')
-        # print ("Twitter Connection Error")
-        # print ("Trying the request again")
         pass
 
     except Exception as e:
-        # print (e)
-        # print (Exception)
         with open('stream_log','a') as f:
                 f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
                 f.write(str(e)+'\n')
