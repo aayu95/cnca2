@@ -102,7 +102,7 @@ class StreamDatabase(object):
 
         view.sync(self.database)
 
-        latestTweets = 'function(doc) { { emit(doc.id, (doc.user.screen_name + " - " + doc.text + " (Suburb - " + doc.suburb_name + ", " + doc.created_at + ")"));};} '
+        latestTweets = 'function(doc) { { emit(("0000000000000000000"+doc.id).slice(-19), (doc.user.screen_name + " - " + doc.text + " (Suburb - " + doc.suburb_name + ", " + doc.created_at + ")"));};} '
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'latestTweets', 
                                                 latestTweets)

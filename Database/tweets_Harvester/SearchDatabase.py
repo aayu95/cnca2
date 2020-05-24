@@ -101,7 +101,7 @@ class SearchDatabase(object):
 
         view.sync(self.database)
 
-        latestTweets = 'function(tweet) { { emit(tweet.id, (tweet.user.screen_name + " - " + tweet.text + " (Suburb - " + tweet.suburb_name + ", " + tweet.created_at + ")"));};} '
+        latestTweets = 'function(tweet) { { emit(("0000000000000000000"+tweet.id).slice(-19), (tweet.user.screen_name + " - " + tweet.text + " (Suburb - " + tweet.suburb_name + ", " + tweet.created_at + ")"));};} '
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'latestTweets', 
                                                 latestTweets)
