@@ -10,4 +10,8 @@ module.exports = (app) =>{
     app.get('/getTweetCountBySuburb', couchDB.getTweetCountBySuburb)
 
     app.get('/getLateTweetCountBySuburb',couchDB.getLateTweetCountBySuburb)
+
+    app.get('/getLatestTweets',couchDB.getLatestTweets)
+
+    app.get('/getTweetCount',couchDB.getTweetCount)
 }
