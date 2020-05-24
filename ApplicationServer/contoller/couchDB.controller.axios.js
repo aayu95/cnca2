@@ -123,7 +123,7 @@ exports.getTweetCountBySuburb = (req, res) => {
 };
 
 exports.getLatestTweets = (req, res) => {
-  axios.get('tweets/_design/twitter/_view/latestTweets?limit=10&descending=true&update=true')
+  axios.get('tweets/_design/twitter/_view/latestTweets?limit=10&descending=true&update=lazy')
     .then(function (response) {
       //console.log(response);
       res.send(response.data);
