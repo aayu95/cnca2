@@ -49,14 +49,11 @@ while True:
         docid = doc['id_str']
 
         if docid in searchDatabase.database:
-            # print('The tweet is already present')
             with open('search_log','a') as f:
                 f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
                 f.write('The tweet is already present\n')
 
         else:
-            # print('%s -- %s' % (doc['user']['screen_name'], doc['text']))
-            # print('%s\n' % (doc['created_at']))
             docId = doc['id']
             doctext = doc['text']
             docCoordinates = doc['coordinates']
@@ -116,8 +113,6 @@ while True:
 
 
     except Exception as e:
-        # print(e)
-        # print(Exception)
         with open('search_log','a') as f:
                 f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
                 f.write(str(e)+'\n')
