@@ -1,5 +1,6 @@
 const express = require('express');
 const request = require('request');
+const cors = require('cors');
 
 const servers = ['http://localhost:3000', 'http://localhost:3001','http://localhost:3000'];
 
@@ -44,6 +45,6 @@ const handler = (req, res) => {
 
 
 const server = express().get('*', handler).post('*', handler);
-
+server.use(cors);
 server.listen(9876);
 
