@@ -1,6 +1,6 @@
 var selectBox = document.getElementById('barGraphSelect');
 $(selectBox).on('change', function(){
-    renderMultiChart();
+    gh();
 });
 function renderChart() {
     d3.select("svg").remove();
@@ -39,56 +39,56 @@ function renderChart() {
             svg.call(tip);
 
             d3.json(selectBox.options[selectBox.selectedIndex].value, function(error, data) {
-                
-            x.domain(data.map(function(d) { return d.name; }));
-            y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]); 
+                data = data.rows;
+                x.domain(data.map(function(d) { console.log(d); return d.key; }));
+                y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]); 
 
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis)
-                .selectAll("text")
-                .style("text-anchor", "end")
-                .attr("dx", "-.8em")
-                .attr("dy", "-.55em")
-                .attr("transform", "rotate(-35)"); //rotates the axis label
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                    .selectAll("text")
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.8em")
+                    .attr("dy", "-.55em")
+                    .attr("transform", "rotate(-35)"); //rotates the axis label
 
-                svg.append("text")   
-                .attr("class", "x_axis")          
-                .attr("transform",
-                        "translate(" + (width/2) + " ," + 
-                                    (height + margin.top + 45) + ")")
-                .style("text-anchor", "middle")
-                .text("Suburb");
+                    svg.append("text")   
+                    .attr("class", "x_axis")          
+                    .attr("transform",
+                            "translate(" + (width/2) + " ," + 
+                                        (height + margin.top + 45) + ")")
+                    .style("text-anchor", "middle")
+                    .text("Suburb");
 
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em");
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em");
 
-                svg.append("text")
-                .attr("class", "y_axis")         
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left + 10)
-                .attr("x",0 - (height/2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .text("Number of Tweets");  
+                    svg.append("text")
+                    .attr("class", "y_axis")         
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0 - margin.left + 10)
+                    .attr("x",0 - (height/2))
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Number of Tweets");  
 
-            svg.selectAll(".bar")
-                .data(data)
-                .enter().append("rect")
-                .attr("class", "bar")
-                .attr("x", function(d) { return x(d.name); })
-                .attr("width", x.rangeBand())
-                .attr("y", function(d) { return y(d.num_tweets); })
-                .attr("height", function(d) { return height - y(d.num_tweets);})
-                .on('mouseover', tip.show)
-                .on('mouseout', tip.hide);
-            });
+                svg.selectAll(".bar")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("x", function(d) { return x(d.key); })
+                    .attr("width", x.rangeBand())
+                    .attr("y", function(d) { return y(d.num_tweets); })
+                    .attr("height", function(d) { return height - y(d.num_tweets);})
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
+                });
 }
 
 function renderMultiChart() {
@@ -122,14 +122,14 @@ var svg = d3.select('#barGraph').append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("data.json", function(error, data) {
-
-  var categoriesNames = data.map(function(d) { return d.categorie; });
+d3.json("sentiment.json", function(error, data) {
+data=data.rows;
+  var categoriesNames = data.map(function(d) { return d.key; });
   var rateNames = data[0].values.map(function(d) { return d.rate; });
 
-  x0.domain(categoriesNames);
-  x1.domain(rateNames).rangeRoundBands([0, x0.rangeBand()]);
-  y.domain([0, d3.max(data, function(categorie) { return d3.max(categorie.values, function(d) { return d.value; }); })]);
+  x0.domain(data.map(function(d) { return d.key; }));
+  x1.domain(['positive_count', 'negative_count', 'neutral_count']).rangeRoundBands([0, x0.rangeBand()]);
+  y.domain([0, d3.max(data, d => d.value.positive_count > d.value.negative_count ? d.value.positive_count : d.value.negative_count)]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -154,7 +154,7 @@ d3.json("data.json", function(error, data) {
       .data(data)
       .enter().append("g")
       .attr("class", "g")
-      .attr("transform",function(d) { return "translate(" + x0(d.categorie) + ",0)"; });
+      .attr("transform",function(d) { return "translate(" + x0(d.key) + ",0)"; });
 
   slice.selectAll("rect")
       .data(function(d) { return d.values; })
@@ -201,5 +201,83 @@ d3.json("data.json", function(error, data) {
 
   legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
 
+});
+}
+
+function renderPie() {
+    var width = 600,
+    height = 350,
+    radius = Math.min(width, height) / 2;
+
+var color = d3.scale.ordinal()
+    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+var arc = d3.svg.arc()
+    .outerRadius(radius * 0.5)
+    .innerRadius(radius * 0.8);
+
+var labelArc = d3.svg.arc()
+    .outerRadius(radius * 0.9)
+    .innerRadius(radius * 0.9);
+
+var pie = d3.layout.pie()
+    .sort(null)
+    .value(function(d) { return d.value; });
+
+var svg = d3.select("#barGraph").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+
+d3.json("pie_chart.json", function(error, data) {
+  if (error) throw error;
+  data = data.rows;
+  console.log(pie(data))
+
+  var g = svg.selectAll(".arc")
+      .data(pie(data))
+    .enter().append("g")
+      .attr("class", "arc");
+
+  g.append("path")
+      .attr("d", arc)
+      .style("fill", function(d) { return color(d.data.key); });
+
+    svg
+  .selectAll('allPolylines')
+  .data(pie(data))
+  .enter()
+  .append('polyline')
+    .attr("stroke", "black")
+    .style("fill", "none")
+    .attr("stroke-width", 1)
+    .attr('points', function(d) {
+      var posA = arc.centroid(d) // line insertion in the slice
+      var posB = labelArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+      var posC = labelArc.centroid(d); // Label position = almost the same as posB
+      var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
+      posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+      return [posA, posB, posC]
+    })
+
+// Add the polylines between chart and labels:
+svg
+  .selectAll('allLabels')
+  .data(pie(data))
+  .enter()
+  .append('text')
+    .text( function(d) {return d.data.key+': '+d.data.value})
+    .attr('transform', function(d) {
+        var pos = labelArc.centroid(d);
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
+        return 'translate(' + pos + ')';
+    })
+    .style('text-anchor', function(d) {
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        return (midangle < Math.PI ? 'start' : 'end')
+    })
 });
 }
