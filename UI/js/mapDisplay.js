@@ -38,13 +38,13 @@ function loadBoundary() {
 function loadData(parameter) {
     var file;
     if(parameter==='late-senti')
-        file='http://localhost:30000/getLateSentimentBySuburb';
+        file='http://localhost:3000/getLateSentimentBySuburb';
     else if(parameter==='late-sentif')
-        file='http://localhost:30000/getSentimentBySuburb';
+        file='http://localhost:3000/getSentimentBySuburb';
     else if(parameter==='late-tweet')
-        file='http://localhost:30000/getLateTweetCountBySuburb';
+        file='http://localhost:3000/getLateTweetCountBySuburb';
     else if(parameter==='late-tweetf')
-        file='http://localhost:30000/getTweetCountBySuburb';
+        file='http://localhost:3000/getTweetCountBySuburb';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', file);
     xhr.onload = function() {
@@ -99,10 +99,6 @@ function loadData(parameter) {
                         title='Sentiment Analysis';
                     }
                     else if(parameter === 'late-tweet'|| parameter==='late-tweetf'){
-                        if(parameter=='late-tweet')
-                            flag=1;
-                        else
-                            flag=0;
                         categoryCount = data.rows[i].value; 
                         title='Number of Tweets';
                     }
@@ -264,54 +260,46 @@ function styleFeature(feature) {
     var high = [100, 100, 10];
     var diff = (feature.getProperty('curr_variable')-varMin) / (varMax - varMin);
     var colour = [];
-    if(flag==1) {
-
-
-
-        if(feature.getProperty('curr_variable')>=1 && feature.getProperty('curr_variable')<=600) {
+        if(feature.getProperty('curr_variable')>=7800){
             colour[0] = 100;
             colour[1] = 100;
-            colour[2] = 10;
+            colour[2] = 5;
         }
-        else if(feature.getProperty('curr_variable')>=600 && feature.getProperty('curr_variable')<=1500) {
+        else if(feature.getProperty('curr_variable')>=5000){
             colour[0] = 100;
             colour[1] = 100;
-            colour[2] = 20;
+            colour[2] = 15;
         }
-        else if(feature.getProperty('curr_variable')>=1500 && feature.getProperty('curr_variable')<=2500) {
+        else if(feature.getProperty('curr_variable')>=3800){
             colour[0] = 100;
             colour[1] = 100;
-            colour[2] = 30;
+            colour[2] = 25;
         }
-        else if(feature.getProperty('curr_variable')>=2500 && feature.getProperty('curr_variable')<=3800) {
+        else if(feature.getProperty('curr_variable')>=2000){
             colour[0] = 100;
             colour[1] = 100;
-            colour[2] = 20;
+            colour[2] = 35;
         }
-        else if(feature.getProperty('curr_variable')>=3800 && feature.getProperty('curr_variable')<=5000) {
+        else if(feature.getProperty('curr_variable')>=1000){
             colour[0] = 100;
             colour[1] = 100;
-            colour[2] = 20;
+            colour[2] = 55;
         }
-        else if(feature.getProperty('curr_variable')>=5000 && feature.getProperty('curr_variable')<=6400) {
+        else if(feature.getProperty('curr_variable')>=300){
             colour[0] = 100;
             colour[1] = 100;
-            colour[2] = 20;
+            colour[2] = 75;
         }
-        else if(feature.getProperty('curr_variable')>=6400 && feature.getProperty('curr_variable')<=7800) {
-            colour[0] = 100;
-            colour[1] = 100;
-            colour[2] = 20;
-        }
-        else {
+        else if(feature.getProperty('curr_variable')>=50){
             colour[0] = 100;
             colour[1] = 100;
             colour[2] = 85;
         }
-
-    }
-
-    console.log(colour);
+        else if(feature.getProperty('curr_variable')>=1){
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 95;
+        }
     
     // for (var i=0; i<3; i++) {
     //     colour[i] = (high[i] - low[i]) * diff + low[i];

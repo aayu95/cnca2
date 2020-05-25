@@ -7,39 +7,34 @@ $(document).ready(function() {
     $(".nicebox").hide();
     $("#legend").hide();
     $("#map").hide();
-    $("#barCard").hide();
-    $("#scatterCard").hide();
+    $("#age").hide();
     $("#mapButton").click(function(e) {
         $("#info").hide();
         $("#legend").show();
         $(".nicebox").show();
         $("#map").show();
-        $("#barCard").hide();
-        $("#scatterCard").hide();
+        $("#age").hide();
     });
     $("#aboutButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").show();
-        $("#barCard").hide();
-        $("#scatterCard").hide();
+        $("#age").hide();
     });
-    $("#barButton").click(function(e) {
+    $("#ageButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").hide();
-        $("#barCard").show();
-        $("#scatterCard").show();
+        $("#age").show();
     });
     $("#scatterButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").hide();
-        $("#barCard").hide();
-        $("#scatterCard").show();
+        $("#age").hide();
     });
 
     //Create table from datastream

@@ -1,16 +1,17 @@
 var suburbs = ["Albert Park", "Melbourne", "Brighton (Vic.)", "Brunswick", "Burwood", "Carlton", "Caulfield - North", "Clayton", "Dandenong", "Docklands", "East Melbourne", "Fitzroy", "Footscray", "Hawthorn", "Kensington (Vic.)", "Laverton", "Malvern East", "Melbourne Airport", "Mooroolbark", "North Melbourne", "Parkville", "Prahran - Windsor", "Richmond (Vic.)", "Skye - Sandhurst", "South Melbourne", "South Yarra - East", "Southbank", "St Kilda", "Yarra Valley"];
 $(document).ready(function(){
     renderPlots();
-    var file;
-    file='http://localhost:30000/getAurinAgeData'
+    var file='http://localhost:3000/getAurinAgeData';
+    var line = 'http://localhost:3000/getTweetCountBySuburb';
     //d3.select("svg").remove();
     var margin = {top: 20, right: 20, bottom: 80, left: 70},
-            width = 600 - margin.left - margin.right,
-            height = 350 - margin.top - margin.bottom;
+            width = 900 - margin.left - margin.right,
+            height = 370 - margin.top - margin.bottom;
 
             var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
 
             var y = d3.scale.linear().range([height, 0]);
+            var y1 = d3.scale.linear().range([height, 0]);
 
             var xAxis = d3.svg.axis()
                 .scale(x)
@@ -22,17 +23,19 @@ $(document).ready(function(){
                 .orient("left")
                 .ticks(10);
 
+            var yAxisRight = d3.svg.axis().scale(y1)
+                .orient("right").ticks(10); 
+
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function(d) {
-                    console.log('hi');
                   return "<strong>Count:</strong> <span style='color:black;'>" + d.value + "</span>";
                 });
 
             var svg = d3.select("#barGraph").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
+                .attr("width", width + margin.left + margin.right + 20)
+                .attr("height", height + margin.top + margin.bottom + 60)
                 .append("g")
                 .attr("transform", 
                     "translate(" + margin.left + "," + margin.top + ")");
@@ -42,7 +45,7 @@ $(document).ready(function(){
             d3.json(file, function(error, data) {
                 data = data.rows;
                 data = data.filter(function(d) {return suburbs.includes(d.key)});
-                x.domain(data.map(function(d) { console.log(d); return d.key; }));
+                x.domain(data.map(function(d) { return d.key; }));
                 y.domain([0, d3.max(data, function(d) { return d.value; })]); 
 
                 svg.append("g")
@@ -54,14 +57,6 @@ $(document).ready(function(){
                     .attr("dx", "-.8em")
                     .attr("dy", "-.55em")
                     .attr("transform", "rotate(-35)"); //rotates the axis label
-
-                    svg.append("text")   
-                    .attr("class", "x_axis")          
-                    .attr("transform",
-                            "translate(" + (width/2) + " ," + 
-                                        (height + margin.top + 45) + ")")
-                    .style("text-anchor", "middle")
-                    .text("Suburb");
 
                 svg.append("g")
                     .attr("class", "y axis")
@@ -78,9 +73,13 @@ $(document).ready(function(){
                     .attr("x",0 - (height/2))
                     .attr("dy", "1em")
                     .style("text-anchor", "middle")
-                    .text("Number of Tweets");  
+                    .text("Number of Persons(Age 15 - 40)");  
 
-                svg.selectAll(".bar")
+                    var	valueline = d3.svg.line()
+                    .x(function(d) { return x(d.key); })
+                    .y(function(d) { return y(d.value); });
+
+                    svg.selectAll(".bar")
                     .data(data)
                     .enter().append("rect")
                     .attr("class", "bar")
@@ -90,20 +89,207 @@ $(document).ready(function(){
                     .attr("height", function(d) { return height - y(d.value);})
                     .on('mouseover', tip.show)
                     .on('mouseout', tip.hide);
-                });
+                    
+
+                    d3.json("http://localhost:3000/getTweetCountBySuburb", function(error, data) {
+                        data=data.rows;
+                        data = data.filter(function(d) {return suburbs.includes(d.key)});
+                          // Scale the range of the data
+                          x.domain(data.map(function(d){return d.key}));
+                          y1.domain([0, d3.max(data, function(d) { return d.value; })]);
+                       
+                          svg.append("g")				
+                            .attr("class", "y axis")	
+                            .attr("transform", "translate(" + width + " ,0)")	
+                            .call(yAxisRight);
+
+                          // Add the valueline path.
+                          svg.append("g").
+                          selectAll("rect").data(data).enter().append("g")
+                          .append("path")
+                          .attr("class", "line") // Assign a class for styling
+                          .attr("d", valueline(data));
+
+                          var bisect = d3.bisector(function(d) { return d.key; }).left
+                          var focus = svg
+                          .append('g')
+                          .append('circle')
+                            .style("fill", "steelblue")
+                            .attr("stroke", "black")
+                            .attr('r', 2.5)
+                            .style("opacity", 0)
+                      
+                        // Create the text that travels along the curve of chart
+                        var focusText = svg
+                          .append('g')
+                          .append('text')
+                            .style("opacity", 0)
+                            .attr("text-anchor", "left")
+                            .attr("alignment-baseline", "middle")
+                      
+                            svg
+                          .append('rect')
+                          .style("fill", "none")
+                          .style("pointer-events", "all")
+                          .attr('width', width)
+                          .attr('height', height)
+                          .on('mouseover', mouseover)
+                          .on('mousemove', mousemove)
+                          .on('mouseout', mouseout);
+                      
+                      
+                        // What happens when the mouse move -> show the annotations at the right positions.
+                        function mouseover() {
+                          focus.style("opacity", 1)
+                          focusText.style("opacity",1)
+                        }
+                      
+                        function mousemove() {
+                          // recover coordinate we need
+                          var xPos = d3.mouse(this)[0];
+                          var leftEdges = x.range();
+                          var width = x.rangeBand();
+                          var j;
+                          for(j=0; xPos > (leftEdges[j] + width); j++) {}
+                          var x0 = x.domain()[j];
+                          var i = bisect(data, x0, 1);
+                          selectedData = data[i]
+                          focus
+                            .attr("cx", x(selectedData.key))
+                            .attr("cy", y(selectedData.value))
+                          focusText
+                            .html(selectedData.key + "\n" + "Tweets: " + selectedData.value)
+                            .attr("x", x(selectedData.key))
+                            .attr("y", y(selectedData.value))
+                          }
+                        function mouseout() {
+                          focus.style("opacity", 0)
+                          focusText.style("opacity", 0)
+                        }
+                          
+            });     
+            });
+            //renderLines1();
     
 });
 
+function renderLines1() {
+    var	margin = {top: 30, right: 20, bottom: 30, left: 50},
+      width = 900 - margin.left - margin.right,
+      height = 350 - margin.top - margin.bottom;
+   
+  // Set the ranges
+  var	x = d3.scale.ordinal().rangeRoundBands([0, width]);
+  var	y = d3.scale.linear().range([height, 0]);
+   
+  // Define the axes
+  var	xAxis = d3.svg.axis().scale(x)
+    .orient("bottom").ticks(29);
+   
+  var	yAxis = d3.svg.axis().scale(y)
+      .orient("left").ticks(5);
+   
+  // Define the line
+  var	valueline = d3.svg.line()
+      .x(function(d) { return x(d.key); })
+      .y(function(d) { return y(d.value); });
+      
+  // Adds the svg canvas
+  var	svg = d3.select("#scatterPlot")
+      .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+   
+  // Get the data
+  d3.json("http://localhost:3000/getTweetCountBySuburb", function(error, data) {
+    data=data.rows;
+    data = data.filter(function(d) {return suburbs.includes(d.key)});
+      // Scale the range of the data
+      x.domain(data.map(function(d){return d.key}));
+      y.domain([0, d3.max(data, function(d) { return d.value; })]);
+   
+      // Add the valueline path.
+      svg.append("path")	
+          .attr("class", "line")
+          .attr("d", valueline(data));
+   
+      // Add the X Axis
+      svg.append("g")		
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+   
+      // Add the Y Axis
+      svg.append("g")		
+          .attr("class", "y axis")
+      .call(yAxis);
+      
+      var bisect = d3.bisector(function(d) { return d.key; }).left
+      var focus = svg
+      .append('g')
+      .append('circle')
+        .style("fill", "steelblue")
+        .attr("stroke", "black")
+        .attr('r', 2.5)
+        .style("opacity", 0)
+  
+    // Create the text that travels along the curve of chart
+    var focusText = svg
+      .append('g')
+      .append('text')
+        .style("opacity", 0)
+        .attr("text-anchor", "left")
+        .attr("alignment-baseline", "middle")
+  
+        svg
+      .append('rect')
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .attr('width', width)
+      .attr('height', height)
+      .on('mouseover', mouseover)
+      .on('mousemove', mousemove)
+      .on('mouseout', mouseout);
+  
+  
+    // What happens when the mouse move -> show the annotations at the right positions.
+    function mouseover() {
+      focus.style("opacity", 1)
+      focusText.style("opacity",1)
+    }
+  
+    function mousemove() {
+      // recover coordinate we need
+      var x0 = x.invert(d3.mouse(this)[0]);
+      var i = bisect(data, x0, 1);
+      selectedData = data[i]
+      focus
+        .attr("cx", x(selectedData.key))
+        .attr("cy", y(selectedData.value))
+      focusText
+        .html("\nTime:" + parseDate(selectedData.key) + "hrs \n" + "Tweets: " + selectedData.value)
+        .attr("x", x(selectedData.key))
+        .attr("y", y(selectedData.value))
+      }
+    function mouseout() {
+      focus.style("opacity", 0)
+      focusText.style("opacity", 0)
+    }
+  
+  });
+}
 
 function renderPlots() {
     //Scatter Plot 
-    console.log("hhhhhh");
+   
     var marginS = {top: 20, right: 20, bottom: 30, left: 40},
                     widthS = 600 - marginS.left - marginS.right,
                     heightS = 350 - marginS.top - marginS.bottom;
                 
                 // setup x 
-                var xValue = function(d) { console.log('hi11'); return d.total_pop;}, // data -> value
+                var xValue = function(d) {return d.total_pop;}, // data -> value
                     xScale = d3.scale.linear().range([0, widthS]), // value -> display
                     xMap = function(d) { return xScale(xValue(d));}, // data -> display
                     xAxisS = d3.svg.axis().scale(xScale).orient("bottom");
@@ -196,6 +382,7 @@ function renderPlots() {
     }
 
 function renderLine() {
+    var	parseDate = d3.time.format("%H");
     d3.select("svg").remove();
     var	marginL = {top: 30, right: 20, bottom: 30, left: 50},
       widthL = 900 - marginL.left - marginL.right,
@@ -230,7 +417,7 @@ function renderLine() {
           .attr("transform", "translate(" + marginL.left + "," + marginL.top + ")");
    
   // Get the data
-  d3.json("http://localhost:30000/getTimeTrend", function(error, data) {
+  d3.json("http://localhost:3000/getTimeTrend", function(error, data) {
     data=data.rows;
       // Scale the range of the data
       xL.domain(d3.extent(data, function(d) { return d.key; }));
