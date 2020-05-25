@@ -41,6 +41,10 @@ function loadData(parameter) {
         file='http://localhost:3000/getLateSentimentBySuburb';
     else if(parameter==='late-sentif')
         file='http://localhost:3000/getSentimentBySuburb';
+    else if(parameter==='late-tweet')
+        file='http://localhost:3000/getLateTweetCountBySuburb';
+    else if(parameter==='late-tweetf')
+        file='http://localhost:3000/getTweetCountBySuburb';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', file);
     xhr.onload = function() {
@@ -95,6 +99,10 @@ function loadData(parameter) {
                         map.data.getFeatureById(j+1).setProperty('negative-count', data.rows[i].value.negative_count); 
                         title='Sentiment Analysis';
                     }
+                    if(parameter === 'late-tweet'|| parameter==='late-tweetf'){
+                        categoryCount = data.rows[i].value; 
+                        title='Number of Tweets';
+                    }
                     if(categoryCount!==-2) {
                         if(categoryCount<varMin) {
                             varMin=categoryCount;
@@ -111,17 +119,99 @@ function loadData(parameter) {
         }
         var range;
         if(parameter==='late-senti'||parameter==='late-sentif') {
-            range = parseFloat((varMax-varMin)/5);
+            range = parseFloat((varMax-varMin)/4);
         }
         else {
-            range = parseInt((varMax-varMin)/5);
+            range = parseInt((varMax-varMin)/4);
         }
         document.getElementById('legend-title').textContent = title;
         document.getElementById('var-min').textContent = varMin.toLocaleString()+' - '+(varMin+range).toLocaleString();
         document.getElementById('var-range-1').textContent = (varMin+range).toLocaleString()+' - '+(varMin+(2*range)).toLocaleString();
         document.getElementById('var-range-2').textContent = (varMin+(2*range)).toLocaleString()+' - '+(varMin+(3*range)).toLocaleString();
-        document.getElementById('var-range-3').textContent = (varMin+(3*range)).toLocaleString()+' - '+(varMin+(4*range)).toLocaleString();
-        document.getElementById('var-max').textContent = (varMin+(4*range)).toLocaleString()+ ' - '+varMax.toLocaleString();
+        document.getElementById('var-range-3').textContent = (varMin+(3*range)).toLocaleString()+' - '+varMax.toLocaleString();
+        if(parameter==='late-senti'||parameter=='late-tweet')
+            map.setOptions({styles: [
+                {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+                {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+                {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+                {
+                  featureType: 'administrative.locality',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#d59563'}]
+                },
+                {
+                  featureType: 'poi',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#d59563'}]
+                },
+                {
+                  featureType: 'poi.park',
+                  elementType: 'geometry',
+                  stylers: [{color: '#263c3f'}]
+                },
+                {
+                  featureType: 'poi.park',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#6b9a76'}]
+                },
+                {
+                  featureType: 'road',
+                  elementType: 'geometry',
+                  stylers: [{color: '#38414e'}]
+                },
+                {
+                  featureType: 'road',
+                  elementType: 'geometry.stroke',
+                  stylers: [{color: '#212a37'}]
+                },
+                {
+                  featureType: 'road',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#9ca5b3'}]
+                },
+                {
+                  featureType: 'road.highway',
+                  elementType: 'geometry',
+                  stylers: [{color: '#746855'}]
+                },
+                {
+                  featureType: 'road.highway',
+                  elementType: 'geometry.stroke',
+                  stylers: [{color: '#1f2835'}]
+                },
+                {
+                  featureType: 'road.highway',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#f3d19c'}]
+                },
+                {
+                  featureType: 'transit',
+                  elementType: 'geometry',
+                  stylers: [{color: '#2f3948'}]
+                },
+                {
+                  featureType: 'transit.station',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#d59563'}]
+                },
+                {
+                  featureType: 'water',
+                  elementType: 'geometry',
+                  stylers: [{color: '#17263c'}]
+                },
+                {
+                  featureType: 'water',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#515c6d'}]
+                },
+                {
+                  featureType: 'water',
+                  elementType: 'labels.text.stroke',
+                  stylers: [{color: '#17263c'}]
+                }
+              ]})
+        else
+              map.setOptions({styles: null});
         map.data.setStyle(styleFeature);
     };
     xhr.send();

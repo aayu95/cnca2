@@ -40,12 +40,10 @@
 
                 var opt1 = document.getElementById('creative');
                 var opt2 = document.getElementById('income');
-                var opt3 = document.getElementById('sentiment');
                 var opt4 = document.getElementById('late-tweet');
                 var opt5 = document.getElementById('late-senti');
                 selectData(opt1);
                 selectData(opt2);
-                selectData(opt3);
                 selectTweetData(opt4);
                 selectTweetData(opt5);
                 loadBoundary();
@@ -171,11 +169,6 @@
                                 <input type="radio" name="datasets" id="income" value="income">
                                 <label for="income">Income</label>
                             </div>
-                            <div class="radio">
-                                <input type="radio" name="datasets" id="sentiment" value="sentiment">
-                                <label for="sentiment">Sentiment</label>
-                            </div>
-                            
                         </div>
                         <!--TWITTER DATASET SELECT-->
                         <div id="data-select-twitter">
@@ -205,20 +198,16 @@
                                 <div id="var-min" style="padding: 4px;float: left;">min</div>
                             </div>
                             <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 65%); float: left; clear: both;"></div>
+                                <div class="colms" style="background-color: hsl(35, 100%, 45%); float: left; clear: both;"></div>
                                 <div id="var-range-1" style="padding: 4px; float: left;">div1</div>
                             </div>
                             <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 45%); float: left; clear: both;"></div>
+                                <div class="colms" style="background-color: hsl(35, 100%, 25%); float: left; clear: both;"></div>
                                 <div id="var-range-2" style="padding: 4px; float: left;">div2</div>
                             </div>
                             <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 25%); float: left; clear: both;"></div>
-                                <div id="var-range-3" style="padding: 4px; float: left;">div3</div>
-                            </div>
-                            <div class="rows">
                                 <div class="colms" style="background-color: hsl(35, 100%, 5%); float: left; clear: both;"></div>
-                                <div id="var-max" style="padding: 4px; float: left;">max</div>
+                                <div id="var-range-3" style="padding: 4px; float: left;">max</div>
                             </div>
                         </div>
                     </div>
