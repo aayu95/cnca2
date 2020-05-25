@@ -1,11 +1,28 @@
 /**This file contains the logic for displaying the map with the gradient based on the AURIN datasets provided. A colour-coded legend and the AURIN data being mapped are also promptly displayed */
-
+var flag;
 //Render AURIN dataset
 function selectData(element) {
     element.addEventListener('click', function() {
         clearData();
         loadData(element.value);
     });      
+}
+
+//Render Twitter data
+function selectTweetData(element) {
+    element.addEventListener('change', function() {
+        if(this.checked) {
+            console.log('hi')
+            clearData();
+            loadData(element.value);
+        }
+        else {
+            console.log('by')
+            clearData();
+            loadData(element.value+'f');
+        }
+       
+    });
 }
 
 //Load boundaries of suburb only once
@@ -19,9 +36,17 @@ function loadBoundary() {
 
 //Load AURIN dataset
 function loadData(parameter) {
-    //for sentiment - load one here and other in suburb list!
+    var file;
+    if(parameter==='late-senti')
+        file='http://localhost:30000/getLateSentimentBySuburb';
+    else if(parameter==='late-sentif')
+        file='http://localhost:30000/getSentimentBySuburb';
+    else if(parameter==='late-tweet')
+        file='http://localhost:30000/getLateTweetCountBySuburb';
+    else if(parameter==='late-tweetf')
+        file='http://localhost:30000/getTweetCountBySuburb';
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', parameter + '.json');
+    xhr.open('GET', file);
     xhr.onload = function() {
         var data = JSON.parse(xhr.responseText);
         var suburb;
@@ -46,10 +71,8 @@ function loadData(parameter) {
         //         }
         //     }
         // }
-        var len;
-        if(parameter==='sentiment') len=data.rows.length;
-        else len=data.length;
-        for(var i=0; i<len; i++) { //Iterate over length of data!
+        var len = data.rows.length;
+        for(var i=0; i<len; i++) {
             for(var j=0; j<309; j++) {
                 suburb=map.data.getFeatureById(j+1).getProperty('SA2_NAME16');
                 
@@ -58,7 +81,7 @@ function loadData(parameter) {
                         title='Number of Creative People'
                         categoryCount = data.features[i].properties.p_crtve_arts_tot;
                     }
-                    if(parameter === 'income'){
+                    else if(parameter === 'income'){
                         if (data.features[i].properties.median_aud===null){
                             categoryCount = -2;
                         }
@@ -67,13 +90,21 @@ function loadData(parameter) {
                         }
                         title='Mean Income';
                     }
-                    if(parameter === 'sentiment'){
+                    else if(parameter === 'late-senti'|| parameter==='late-sentif'){
                         categoryCount = data.rows[i].value.polarity_avg; 
                         map.data.getFeatureById(j+1).setProperty('sentiment', data.rows[i].value.overall_sentiment);
                         map.data.getFeatureById(j+1).setProperty('positive-count', data.rows[i].value.positive_count); 
                         map.data.getFeatureById(j+1).setProperty('neutral-count', data.rows[i].value.neutral_count); 
                         map.data.getFeatureById(j+1).setProperty('negative-count', data.rows[i].value.negative_count); 
                         title='Sentiment Analysis';
+                    }
+                    else if(parameter === 'late-tweet'|| parameter==='late-tweetf'){
+                        if(parameter=='late-tweet')
+                            flag=1;
+                        else
+                            flag=0;
+                        categoryCount = data.rows[i].value; 
+                        title='Number of Tweets';
                     }
                     if(categoryCount!==-2) {
                         if(categoryCount<varMin) {
@@ -90,18 +121,104 @@ function loadData(parameter) {
             //Replace with property name of data to be plotted
         }
         var range;
-        if(parameter==='sentiment') {
-            range = parseFloat((varMax-varMin)/5);
+        if(parameter==='late-senti'||parameter==='late-sentif') {
+            range = parseFloat((varMax-varMin)/8);
         }
         else {
-            range = parseInt((varMax-varMin)/5);
+            range = parseInt((varMax-varMin)/8);
         }
         document.getElementById('legend-title').textContent = title;
         document.getElementById('var-min').textContent = varMin.toLocaleString()+' - '+(varMin+range).toLocaleString();
         document.getElementById('var-range-1').textContent = (varMin+range).toLocaleString()+' - '+(varMin+(2*range)).toLocaleString();
         document.getElementById('var-range-2').textContent = (varMin+(2*range)).toLocaleString()+' - '+(varMin+(3*range)).toLocaleString();
         document.getElementById('var-range-3').textContent = (varMin+(3*range)).toLocaleString()+' - '+(varMin+(4*range)).toLocaleString();
-        document.getElementById('var-max').textContent = (varMin+(4*range)).toLocaleString()+ ' - '+varMax.toLocaleString();
+        document.getElementById('var-range-4').textContent = (varMin+(4*range)).toLocaleString()+' - '+(varMin+(5*range)).toLocaleString();
+        document.getElementById('var-range-5').textContent = (varMin+(5*range)).toLocaleString()+' - '+(varMin+(6*range)).toLocaleString();
+        document.getElementById('var-range-6').textContent = (varMin+(6*range)).toLocaleString()+' - '+(varMin+(7*range)).toLocaleString();
+        document.getElementById('var-range-7').textContent = (varMin+(7*range)).toLocaleString()+' - '+varMax.toLocaleString();
+        if(parameter==='late-senti'||parameter=='late-tweet')
+            map.setOptions({styles: [
+                {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+                {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+                {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+                {
+                  featureType: 'administrative.locality',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#d59563'}]
+                },
+                {
+                  featureType: 'poi',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#d59563'}]
+                },
+                {
+                  featureType: 'poi.park',
+                  elementType: 'geometry',
+                  stylers: [{color: '#263c3f'}]
+                },
+                {
+                  featureType: 'poi.park',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#6b9a76'}]
+                },
+                {
+                  featureType: 'road',
+                  elementType: 'geometry',
+                  stylers: [{color: '#38414e'}]
+                },
+                {
+                  featureType: 'road',
+                  elementType: 'geometry.stroke',
+                  stylers: [{color: '#212a37'}]
+                },
+                {
+                  featureType: 'road',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#9ca5b3'}]
+                },
+                {
+                  featureType: 'road.highway',
+                  elementType: 'geometry',
+                  stylers: [{color: '#746855'}]
+                },
+                {
+                  featureType: 'road.highway',
+                  elementType: 'geometry.stroke',
+                  stylers: [{color: '#1f2835'}]
+                },
+                {
+                  featureType: 'road.highway',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#f3d19c'}]
+                },
+                {
+                  featureType: 'transit',
+                  elementType: 'geometry',
+                  stylers: [{color: '#2f3948'}]
+                },
+                {
+                  featureType: 'transit.station',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#d59563'}]
+                },
+                {
+                  featureType: 'water',
+                  elementType: 'geometry',
+                  stylers: [{color: '#17263c'}]
+                },
+                {
+                  featureType: 'water',
+                  elementType: 'labels.text.fill',
+                  stylers: [{color: '#515c6d'}]
+                },
+                {
+                  featureType: 'water',
+                  elementType: 'labels.text.stroke',
+                  stylers: [{color: '#17263c'}]
+                }
+              ]})
+        else
+              map.setOptions({styles: null});
         map.data.setStyle(styleFeature);
     };
     xhr.send();
@@ -143,13 +260,62 @@ function clearData() {
 //The styling of the map according to the dataset
 function styleFeature(feature) {
     //CUSTOMISE ACCORDING TO NUMBER OF COLOURS
-    var low = [35, 100, 85];
-    var high = [35, 100, 5];
+    var low = [100, 100, 80];
+    var high = [100, 100, 10];
     var diff = (feature.getProperty('curr_variable')-varMin) / (varMax - varMin);
     var colour = [];
-    for (var i=0; i<3; i++) {
-        colour[i] = (high[i] - low[i]) * diff + low[i];
+    if(flag==1) {
+
+
+
+        if(feature.getProperty('curr_variable')>=1 && feature.getProperty('curr_variable')<=600) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 10;
+        }
+        else if(feature.getProperty('curr_variable')>=600 && feature.getProperty('curr_variable')<=1500) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=1500 && feature.getProperty('curr_variable')<=2500) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 30;
+        }
+        else if(feature.getProperty('curr_variable')>=2500 && feature.getProperty('curr_variable')<=3800) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=3800 && feature.getProperty('curr_variable')<=5000) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=5000 && feature.getProperty('curr_variable')<=6400) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=6400 && feature.getProperty('curr_variable')<=7800) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 85;
+        }
+
     }
+
+    console.log(colour);
+    
+    // for (var i=0; i<3; i++) {
+    //     colour[i] = (high[i] - low[i]) * diff + low[i];
+    // }
     var showRow = true;
         if (feature.getProperty('curr_variable') == null ||
             isNaN(feature.getProperty('curr_variable'))) {

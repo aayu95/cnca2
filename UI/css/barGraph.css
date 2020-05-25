@@ -67,7 +67,7 @@
     pointer-events: none;
   }
 
-#barCard, #scatterCard{
+#barCard{
   position: absolute;
   text-align: center;
   font-family: "Roboto", "Arial", sans-serif;
@@ -80,7 +80,20 @@
   border-radius: 0.5em;
   background-color: white;
 }
-
+#scatterCard {
+  position: absolute;
+  text-align: center;
+  font-family: "Roboto", "Arial", sans-serif;
+  font-size: 13px;
+  z-index: 5;
+  padding: 2em;
+  height: 55%;
+  margin-top: 31em;
+  border: solid 1px black;
+  box-shadow: 0 4px 6px -4px #333;
+  border-radius: 0.5em;
+  background-color: white;
+}
 .arc text {
   font: 10px sans-serif;
   text-anchor: middle;
@@ -88,4 +101,10 @@
 
 .arc path {
   stroke: #fff;
+}
+
+path { 
+  stroke: steelblue;
+  stroke-width: 2;
+  fill: none;
 }

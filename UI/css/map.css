@@ -44,11 +44,12 @@
         #data-label-senti, #data-label-senti-p, #data-label-senti-nu, #data-label-senti-n { font-size: 1.5em; font-weight: normal; padding-right: 10px; }
 
         #legend{
-          height: 175px;
+          float: left;
+          height: 250px;
           width: 180px;
           border: 1px solid black;
-          margin-top: -13.5em;
-          margin-left: 15.5em;
+          margin-top: -23.5em;
+          margin-left: 74em;
           background-color: white;
           box-shadow: 0 4px 6px -4px #333;
           opacity: 0.85;
@@ -67,14 +68,30 @@
         }
         #data-select{
           text-align: left;
+          float: left;
           margin-top: 37em;
           padding: 6px;
           height: 175px;
           width: 150px;
           border: 1px solid black;
-          margin-left: 2em;
+          margin-left: 1.5em;
           background-color: white;
           box-shadow: 0 4px 6px -4px #333;
+          opacity: 0.85;
+          border-radius: 0.5em;
+          display: none;
+        }
+        #data-select-twitter{
+          text-align: left;
+          float: left;
+          padding: 6px;
+          height: 175px;
+          width: 45%;
+          margin-top: 37em;
+          margin-left: 1.5em;
+          border: 1px solid black;
+          box-shadow: 0 4px 6px -4px #333;
+          background-color: white;
           opacity: 0.85;
           border-radius: 0.5em;
         }
