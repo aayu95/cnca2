@@ -71,9 +71,8 @@ function loadData(parameter) {
         //         }
         //     }
         // }
-        var len;
-        len=data.rows.length;
-        for(var i=0; i<len; i++) { //Iterate over length of data!
+        var len = data.rows.length;
+        for(var i=0; i<len; i++) {
             for(var j=0; j<309; j++) {
                 suburb=map.data.getFeatureById(j+1).getProperty('SA2_NAME16');
                 
@@ -82,7 +81,7 @@ function loadData(parameter) {
                         title='Number of Creative People'
                         categoryCount = data.features[i].properties.p_crtve_arts_tot;
                     }
-                    if(parameter === 'income'){
+                    else if(parameter === 'income'){
                         if (data.features[i].properties.median_aud===null){
                             categoryCount = -2;
                         }
@@ -91,7 +90,7 @@ function loadData(parameter) {
                         }
                         title='Mean Income';
                     }
-                    if(parameter === 'late-senti'|| parameter==='late-sentif'){
+                    else if(parameter === 'late-senti'|| parameter==='late-sentif'){
                         categoryCount = data.rows[i].value.polarity_avg; 
                         map.data.getFeatureById(j+1).setProperty('sentiment', data.rows[i].value.overall_sentiment);
                         map.data.getFeatureById(j+1).setProperty('positive-count', data.rows[i].value.positive_count); 
@@ -99,7 +98,7 @@ function loadData(parameter) {
                         map.data.getFeatureById(j+1).setProperty('negative-count', data.rows[i].value.negative_count); 
                         title='Sentiment Analysis';
                     }
-                    if(parameter === 'late-tweet'|| parameter==='late-tweetf'){
+                    else if(parameter === 'late-tweet'|| parameter==='late-tweetf'){
                         categoryCount = data.rows[i].value; 
                         title='Number of Tweets';
                     }

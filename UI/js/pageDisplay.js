@@ -46,7 +46,7 @@ $(document).ready(function() {
     var id=0;
     (function worker() {
         $.ajax({
-            url: 'dummy_stream.json', 
+            url: 'http://localhost:3000/getLatestTweets', 
             success: function(data) {
               var table = '<table border="1" id="tweetData"><thead><tr><th style="padding: 6px; text-align: center">Tweet</th></tr></thead><tbody>';
               for(var i = id; i<data.rows.length; i++){
@@ -59,7 +59,7 @@ $(document).ready(function() {
             },
             complete: function() {
               // Schedule the next request when the current one's complete
-              setTimeout(worker, 10000);
+              setTimeout(worker, 150000);
             }
           });
         })();
