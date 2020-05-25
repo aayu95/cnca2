@@ -8,6 +8,23 @@ function selectData(element) {
     });      
 }
 
+//Render Twitter data
+function selectTweetData(element) {
+    element.addEventListener('change', function() {
+        if(this.checked) {
+            console.log('hi')
+            clearData();
+            loadData(element.value);
+        }
+        else {
+            console.log('by')
+            clearData();
+            loadData(element.value+'f');
+        }
+       
+    });
+}
+
 //Load boundaries of suburb only once
 function loadBoundary() {
     map.data.loadGeoJson('melbourne.geojson', {}, function(feature){
@@ -19,9 +36,13 @@ function loadBoundary() {
 
 //Load AURIN dataset
 function loadData(parameter) {
-    //for sentiment - load one here and other in suburb list!
+    var file;
+    if(parameter==='late-senti')
+        file='http://localhost:3000/getLateSentimentBySuburb';
+    else if(parameter==='late-sentif')
+        file='http://localhost:3000/getSentimentBySuburb';
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', parameter + '.json');
+    xhr.open('GET', file);
     xhr.onload = function() {
         var data = JSON.parse(xhr.responseText);
         var suburb;
@@ -47,8 +68,7 @@ function loadData(parameter) {
         //     }
         // }
         var len;
-        if(parameter==='sentiment') len=data.rows.length;
-        else len=data.length;
+        len=data.rows.length;
         for(var i=0; i<len; i++) { //Iterate over length of data!
             for(var j=0; j<309; j++) {
                 suburb=map.data.getFeatureById(j+1).getProperty('SA2_NAME16');
@@ -67,7 +87,7 @@ function loadData(parameter) {
                         }
                         title='Mean Income';
                     }
-                    if(parameter === 'sentiment'){
+                    if(parameter === 'late-senti'|| parameter==='late-sentif'){
                         categoryCount = data.rows[i].value.polarity_avg; 
                         map.data.getFeatureById(j+1).setProperty('sentiment', data.rows[i].value.overall_sentiment);
                         map.data.getFeatureById(j+1).setProperty('positive-count', data.rows[i].value.positive_count); 
@@ -90,7 +110,7 @@ function loadData(parameter) {
             //Replace with property name of data to be plotted
         }
         var range;
-        if(parameter==='sentiment') {
+        if(parameter==='late-senti'||parameter==='late-sentif') {
             range = parseFloat((varMax-varMin)/5);
         }
         else {

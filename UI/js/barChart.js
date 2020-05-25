@@ -1,6 +1,6 @@
 var selectBox = document.getElementById('barGraphSelect');
 $(selectBox).on('change', function(){
-    gh();
+    renderPie();
 });
 function renderChart() {
     d3.select("svg").remove();
@@ -231,10 +231,10 @@ var svg = d3.select("#barGraph").append("svg")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 
-d3.json("pie_chart.json", function(error, data) {
+d3.json("pie_chart.json", function(error, data) { //http://localhost:3000/getTweetCountBySuburb
   if (error) throw error;
   data = data.rows;
-  console.log(pie(data))
+  //console.log(pie(data))
 
   var g = svg.selectAll(".arc")
       .data(pie(data))

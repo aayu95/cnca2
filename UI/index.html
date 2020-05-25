@@ -41,9 +41,13 @@
                 var opt1 = document.getElementById('creative');
                 var opt2 = document.getElementById('income');
                 var opt3 = document.getElementById('sentiment');
+                var opt4 = document.getElementById('late-tweet');
+                var opt5 = document.getElementById('late-senti');
                 selectData(opt1);
                 selectData(opt2);
                 selectData(opt3);
+                selectTweetData(opt4);
+                selectTweetData(opt5);
                 loadBoundary();
             }
         </script>
@@ -155,7 +159,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                     <!--LEGEND-->
+                     <!--AURIN DATASET SELECTION-->
                      <div id="controls" class="nicebox">
                         <div id="data-select">
                             <div style="text-align: center; padding: 6px;"><strong>AURIN Datasets</strong></div>
@@ -169,9 +173,29 @@
                             </div>
                             <div class="radio">
                                 <input type="radio" name="datasets" id="sentiment" value="sentiment">
-                                <label for="income">Sentiment</label>
+                                <label for="sentiment">Sentiment</label>
+                            </div>
+                            
+                        </div>
+                        <!--TWITTER DATASET SELECT-->
+                        <div id="data-select-twitter">
+                            <div style="text-align: center; padding: 6px;"><strong>Twitter Data</strong></div>
+                            <div>
+                            <label class="switch">
+                                <input type="checkbox" id="late-tweet" value="late-tweet" name="tweets">
+                                <span class="slider round"></span>
+                              </label>
+                              <label>Late-Night Tweets</label>
+                            </div>
+                            <div>
+                                <label class="switch">
+                                    <input type="checkbox" id="late-senti" value="late-senti" name="tweets">
+                                    <span class="slider round"></span>
+                                  </label>
+                                  <label>Late-Night Sentiment</label>
                             </div>
                         </div>
+                         <!--LEGEND-->
                         <div id="legend">
                             <div class="rows">
                                 <div id="legend-title" style="padding: 4px; font-weight: bold;">title</div>
@@ -209,7 +233,6 @@
                         <span id="data-value-senti"></span>
                     </div>
                     <div id="data-box-senti" class="nicebox">
-                        <h4>Number of Tweets</h4>
                         <label id="data-label-senti-p" for="data-value-senti-p"></label>
                         <span id="data-value-senti-p"></span>
                         <br/>
