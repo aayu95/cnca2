@@ -14,7 +14,7 @@
           top: 10px;
           margin-left: 2em;
           padding: 6px;
-          height: 45px;
+          height: auto;
           line-height: 45px;
           box-shadow: 0 4px 6px -4px #333;
           border-radius: 0.5em;
@@ -22,11 +22,26 @@
           background-color: white;
           display: none;
         }
-        #data-value { font-size: 2.0em; font-weight: bold }
-        #data-value1 { font-size: 2.0em; font-weight: bold }
-        #data-label { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
-        #data-label1 { font-size: 2.0em; font-weight: normal; padding-right: 10px; }
+
+        #data-box-senti {
+          top: 150px;
+          margin-left: 2em;
+          padding: 6px;
+          height: auto;
+          line-height: 45px;
+          border-radius: 0.5em;
+          margin-top: 5em;
+          display: none;
+        }
+
+        #data-value { font-size: 1.5em; font-weight: bold }
+        #data-value1 { font-size: 1.5em; font-weight: bold }
+        #data-label { font-size: 1.50em; font-weight: normal; padding-right: 10px; }
+        #data-label1 { font-size: 1.5em; font-weight: normal; padding-right: 10px; }
         #data-label:after { content: ':' }
+
+        #data-value-senti, #data-value-senti-p, #data-value-senti-nu, #data-value-senti-n  { font-size: 1.5em; font-weight: bold }
+        #data-label-senti, #data-label-senti-p, #data-label-senti-nu, #data-label-senti-n { font-size: 1.5em; font-weight: normal; padding-right: 10px; }
 
         #legend{
           height: 175px;

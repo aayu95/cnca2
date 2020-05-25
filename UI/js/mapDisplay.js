@@ -11,7 +11,6 @@ function selectData(element) {
 //Load boundaries of suburb only once
 function loadBoundary() {
     map.data.loadGeoJson('melbourne.geojson', {}, function(feature){
-        // console.log(map.data.getFeatureById(1).getProperty("SA2_NAME16"));
     });
     // google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
     //         google.maps.event.trigger(document.getElementById('var'), 'change');
@@ -27,41 +26,41 @@ function loadData(parameter) {
         var data = JSON.parse(xhr.responseText);
         var suburb;
         var categoryCount;
-        var id;
         var title;
         var item=[];
-        var sentiment=[];
         var newList = [];
-        var list = suburbList();
+        //var list = suburbList();
         
-        for(var i=0; i<list.result.length; i++) {
-            item=list.result[i].key.split(',');
-            newList.push({"name": item[0], "sentiment": item[1], "value": list.result[i].value.toString()});
-        }
-        for(var i=0; i<newList.length; i++) {
-            for(var j=0; j<newList.length; j++) {
-                if(i===j)
-                    continue;
-                if(newList[i].name===newList[j].name){
-                    newList[j].sentiment+=','+newList[i].sentiment;
-                    newList[j].value+=','+newList[i].value;
-                    newList.splice(i,1);
-                }
-            }
-        }
-        
-        for(var i=0; i<newList.length; i++) {
+        // for(var i=0; i<list.result.length; i++) {
+        //     item=list.result[i].key.split(',');
+        //     newList.push({"name": item[0], "sentiment": item[1], "value": list.result[i].value.toString()});
+        // }
+        // for(var i=0; i<newList.length; i++) {
+        //     for(var j=0; j<newList.length; j++) {
+        //         if(i===j)
+        //             continue;
+        //         if(newList[i].name===newList[j].name){
+        //             newList[j].sentiment+=','+newList[i].sentiment;
+        //             newList[j].value+=','+newList[i].value;
+        //             newList.splice(i,1);
+        //         }
+        //     }
+        // }
+        var len;
+        if(parameter==='sentiment') len=data.rows.length;
+        else len=data.length;
+        for(var i=0; i<len; i++) { //Iterate over length of data!
             for(var j=0; j<309; j++) {
                 suburb=map.data.getFeatureById(j+1).getProperty('SA2_NAME16');
-
-                if(suburb.localeCompare(newList[i].name)===0) {
+                
+                if(suburb.localeCompare(data.rows[i].key)===0) {
                     if(parameter === 'creative-people') {
                         title='Number of Creative People'
                         categoryCount = data.features[i].properties.p_crtve_arts_tot;
                     }
                     if(parameter === 'income'){
                         if (data.features[i].properties.median_aud===null){
-                            categoryCount = -1;
+                            categoryCount = -2;
                         }
                         else{
                             categoryCount = data.features[i].properties.mean_aud;
@@ -69,11 +68,14 @@ function loadData(parameter) {
                         title='Mean Income';
                     }
                     if(parameter === 'sentiment'){
-                        categoryCount = 3+i; //Add value of prominant sentiment
-                        map.data.getFeatureById(j+1).setProperty('sentiment', newList[i].sentiment);
+                        categoryCount = data.rows[i].value.polarity_avg; 
+                        map.data.getFeatureById(j+1).setProperty('sentiment', data.rows[i].value.overall_sentiment);
+                        map.data.getFeatureById(j+1).setProperty('positive-count', data.rows[i].value.positive_count); 
+                        map.data.getFeatureById(j+1).setProperty('neutral-count', data.rows[i].value.neutral_count); 
+                        map.data.getFeatureById(j+1).setProperty('negative-count', data.rows[i].value.negative_count); 
                         title='Sentiment Analysis';
                     }
-                    if(categoryCount!==-1) {
+                    if(categoryCount!==-2) {
                         if(categoryCount<varMin) {
                             varMin=categoryCount;
                         }
@@ -87,7 +89,13 @@ function loadData(parameter) {
             // suburbList.push(suburb[0]);
             //Replace with property name of data to be plotted
         }
-        const range = parseInt((varMax-varMin)/5);
+        var range;
+        if(parameter==='sentiment') {
+            range = parseFloat((varMax-varMin)/5);
+        }
+        else {
+            range = parseInt((varMax-varMin)/5);
+        }
         document.getElementById('legend-title').textContent = title;
         document.getElementById('var-min').textContent = varMin.toLocaleString()+' - '+(varMin+range).toLocaleString();
         document.getElementById('var-range-1').textContent = (varMin+range).toLocaleString()+' - '+(varMin+(2*range)).toLocaleString();
@@ -99,17 +107,17 @@ function loadData(parameter) {
     xhr.send();
 }
 
-function suburbList(){
-    var result = [];
-    $.ajax({
-        url: 'sentiment.json',
-        dataType: 'json',
-        success: function(data) {result=data;},
-        async: false
-    });
-    return result;
-    //var marker = new google.maps.Marker({position: uluru, map: map});
-}
+// function suburbList(){
+//     var result = [];
+//     $.ajax({
+//         url: 'sentiment-value.json',
+//         dataType: 'json',
+//         success: function(data) {result=data;},
+//         async: false
+//     });
+//     return result;
+//     //var marker = new google.maps.Marker({position: uluru, map: map});
+// }
 
 //Clears previously set data in order to render new data correctly
 function clearData() {
@@ -120,6 +128,15 @@ function clearData() {
     });
     map.data.forEach(function(row) {
         row.setProperty('sentiment', undefined);
+    });
+    map.data.forEach(function(row) {
+        row.setProperty('positive-count', undefined);
+    });
+    map.data.forEach(function(row) {
+        row.setProperty('neutral-count', undefined);
+    });
+    map.data.forEach(function(row) {
+        row.setProperty('negative-count', undefined);
     });
 }
 
@@ -162,12 +179,30 @@ function mouseEnter(event) {
     document.getElementById('data-value').textContent =
     event.feature.getProperty('curr_variable').toLocaleString();
     document.getElementById('data-box').style.display = 'block';
-    if(typeof event.feature.getProperty('sentiment')!== undefined) {
-        document.getElementById('data-value1').textContent =
-    event.feature.getProperty('sentiment');
+    if(event.feature.getProperty('sentiment')!==undefined) {
+        document.getElementById('data-box-senti').style.display = 'block';
+        document.getElementById('data-box-senti').style.backgroundColor = 'white';
+        document.getElementById('data-box-senti').style.boxShadow = '0 4px 6px -4px #333';
+        document.getElementById('data-label-senti').textContent =
+        "Overall Sentiment: "
+        document.getElementById('data-value-senti').textContent =
+        event.feature.getProperty('sentiment');
+        document.getElementById('data-label-senti-p').textContent =
+        "Positive: "
+        document.getElementById('data-value-senti-p').textContent =
+        event.feature.getProperty('positive-count');
+        document.getElementById('data-label-senti-nu').textContent =
+        "Neutral: "
+        document.getElementById('data-value-senti-nu').textContent =
+        event.feature.getProperty('neutral-count');
+        document.getElementById('data-label-senti-n').textContent =
+        "Negative: "
+        document.getElementById('data-value-senti-n').textContent =
+        event.feature.getProperty('negative-count');
     }
 }
 
 function mouseExit(event) {
+    if(event.feature.getProperty('sentiment')===undefined) {document.getElementById('data-box-senti').style.display = 'none';}
     event.feature.setProperty('state', 'normal');
 }

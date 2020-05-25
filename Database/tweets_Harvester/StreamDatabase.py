@@ -19,9 +19,6 @@ class StreamDatabase(object):
             self.createViews()
         
         except Exception as e:
-            # print("Database Exception")
-            # print (e)
-            # print (Exception)
             with open('streamdabatase_log','a') as f:
                 f.write("["+datetime.datetime.now().__str__()+"]"+'\n')
                 f.write(str(e)+'\n')
@@ -102,7 +99,7 @@ class StreamDatabase(object):
 
         view.sync(self.database)
 
-        latestTweets = 'function(doc) { { emit(doc.id, (doc.user.screen_name + " - " + doc.text + " (Suburb - " + doc.suburb_name + ", " + doc.created_at + ")"));};} '
+        latestTweets = 'function(doc) { { emit(("0000000000000000000"+doc.id).slice(-19), (doc.user.screen_name + " - " + doc.text + " (Suburb - " + doc.suburb_name + ", " + doc.created_at + ")"));};} '
         view = couchdb.design.ViewDefinition('twitter', 
                                                 'latestTweets', 
                                                 latestTweets)
@@ -126,6 +123,30 @@ class StreamDatabase(object):
         return result;}"      
         view = couchdb.design.ViewDefinition('twitter', 'getTweetSentimentAll', sentiment_map, sentiment_reduce)
         
+        view.sync(self.database)
+
+        lateSentiment_map = 'function(doc) { if ((doc.created_at.substring(11,13) == "00" || doc.created_at.substring(11,13) == "01" || doc.created_at.substring(11,13) == "02" || doc.created_at.substring(11,13) == "03") && doc.suburb_name != null) {emit(doc.suburb_name, {"polarity_avg":doc.sentiment_polarity, "positive_count":doc.sentiment_positive, "negative_count":doc.sentiment_negative, "neutral_count":doc.sentiment_neutral, "total_tweet_count":1});};}'
+        view = couchdb.design.ViewDefinition('twitter', 'getLateTweetSentimentAll', lateSentiment_map, sentiment_reduce)
+
+        view.sync(self.database)
+
+        tweetsTimeTrend = 'function(doc) { {emit (doc.created_at.substring(11,13), 1);};}'
+        view = couchdb.design.ViewDefinition('twitter', 
+                                                'tweetsTimeTrend', 
+                                                tweetsTimeTrend, 
+                                                reduce_fun=count_reduce)
+
+        view.sync(self.database)
+
+        topSuburbs = 'function(doc) { \
+            var suburbs = ["Melbourne","North Melbourne","Southbank","East Melbourne","Richmond (Vic.)","St Kilda","Docklands","Carlton","Melbourne Airport","South Yarra - East","Fitzroy","Prahran - Windsor","South Melbourne","Brunswick","Albert Park","Hawthorn","Kensington (Vic.)","Parkville","Mooroolbark","Skye - Sandhurst","Footscray","Clayton","Yarra Valley","Laverton","Dandenong","Brighton (Vic.)","Collingwood","Burwood","Caulfield - North","Malvern East"];\
+            if (doc.suburb_name != null && suburbs.includes(doc.suburb_name)) { emit (doc.suburb_name, 1)};\
+            }'
+        view = couchdb.design.ViewDefinition('twitter', 
+                                                'topSuburbs', 
+                                                topSuburbs, 
+                                                reduce_fun=count_reduce)
+
         view.sync(self.database)
 
     def saveTweet(self, tweet):

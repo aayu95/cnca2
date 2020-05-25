@@ -1,6 +1,13 @@
-var marginS = {top: 20, right: 20, bottom: 30, left: 40},
-                widthS = 960 - marginS.left - marginS.right,
-                heightS = 500 - marginS.top - marginS.bottom;
+var selectBoxScatter = document.getElementById('scatterPlotSelect');
+$(selectBoxScatter).on('change', function(){
+    renderPlot();
+});
+
+function renderPlot() {
+  d3.select("svg").remove();
+  var marginS = {top: 20, right: 20, bottom: 30, left: 40},
+                widthS = 600 - marginS.left - marginS.right,
+                heightS = 350 - marginS.top - marginS.bottom;
             
             // setup x 
             var xValue = function(d) { return d.total_pop;}, // data -> value
@@ -31,7 +38,7 @@ var marginS = {top: 20, right: 20, bottom: 30, left: 40},
                 .style("opacity", 0);
             
             // load data
-            d3.json("dummy_twitter.json", function(error, data) {
+            d3.json(selectBoxScatter.options[selectBoxScatter.selectedIndex].value, function(error, data) {
             
               //change string (from CSV) into number format
               data.forEach(function(d) {
@@ -115,3 +122,4 @@ var marginS = {top: 20, right: 20, bottom: 30, left: 40},
             //       .text(function(d) { return d;})
             });
             
+}
