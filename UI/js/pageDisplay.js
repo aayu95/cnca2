@@ -7,34 +7,76 @@ $(document).ready(function() {
     $(".nicebox").hide();
     $("#legend").hide();
     $("#map").hide();
-    $("#age").hide();
+    $("#ageB").hide();
+    $("#ageS").hide();
+    $("#alcohol").hide();
+    $("#disease").hide();
+    $("#creative").hide();
     $("#mapButton").click(function(e) {
         $("#info").hide();
         $("#legend").show();
         $(".nicebox").show();
         $("#map").show();
-        $("#age").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#alcohol").hide();
+        $("#disease").hide();
+        $("#creative").hide();
     });
     $("#aboutButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").show();
-        $("#age").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#alcohol").hide();
+        $("#disease").hide();
+        $("#creative").hide();
     });
     $("#ageButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").hide();
-        $("#age").show();
+        $("#ageB").show();
+        $("#ageS").show();
+        $("#alcohol").hide();
+        $("#disease").hide();
+        $("#creative").hide();
     });
-    $("#scatterButton").click(function(e) {
+    $("#alcoholButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").hide();
-        $("#age").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#alcohol").show();
+        $("#disease").hide();
+        $("#creative").hide();
+    });
+    $("#diseaseButton").click(function(e) {
+        $("#legend").hide();
+        $(".nicebox").hide();
+        $("#map").hide();
+        $("#info").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#alcohol").hide();
+        $("#disease").show();
+        $("#creative").hide();
+    });
+    $("#alcoholButton").click(function(e) {
+        $("#legend").hide();
+        $(".nicebox").hide();
+        $("#map").hide();
+        $("#info").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#alcohol").hide();
+        $("#disease").hide();
+        $("#creative").show();
     });
 
     //Create table from datastream
