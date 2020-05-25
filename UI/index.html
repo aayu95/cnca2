@@ -68,8 +68,8 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="#" id="mapButton">
                           Map Visualisation</a>
-                      <a class="dropdown-item" href="#" id="barButton">Bar Graph</a>
-                      <a class="dropdown-item" href="#" id="scatterButton">Scatter Plot</a>
+                      <a class="dropdown-item" href="#" id="barButton">Age Correlation</a>
+                      <a class="dropdown-item" href="#" id="scatterButton">Alcohol Correlation</a>
                     </div>
                   </li>
               </ul>
@@ -194,20 +194,36 @@
                                 <div id="legend-title" style="padding: 4px; font-weight: bold;">title</div>
                             </div>
                             <div class="rows" style="margin-top: 6px;">
-                                <div class="colms" style="background-color: hsl(35, 100%, 85%); float: left;"></div>
+                                <div class="colms" style="background-color: hsl(100, 100%, 80%); float: left;"></div>
                                 <div id="var-min" style="padding: 4px;float: left;">min</div>
                             </div>
                             <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 45%); float: left; clear: both;"></div>
+                                <div class="colms" style="background-color: hsl(100, 100%, 70%); float: left; clear: both;"></div>
                                 <div id="var-range-1" style="padding: 4px; float: left;">div1</div>
                             </div>
                             <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 25%); float: left; clear: both;"></div>
+                                <div class="colms" style="background-color: hsl(100, 100%, 60%); float: left; clear: both;"></div>
                                 <div id="var-range-2" style="padding: 4px; float: left;">div2</div>
                             </div>
                             <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 5%); float: left; clear: both;"></div>
-                                <div id="var-range-3" style="padding: 4px; float: left;">max</div>
+                                <div class="colms" style="background-color: hsl(100, 100%, 50%); float: left; clear: both;"></div>
+                                <div id="var-range-3" style="padding: 4px; float: left;">div3</div>
+                            </div>
+                            <div class="rows">
+                                <div class="colms" style="background-color: hsl(100, 100%, 40%); float: left; clear: both;"></div>
+                                <div id="var-range-4" style="padding: 4px; float: left;">div4</div>
+                            </div>
+                            <div class="rows">
+                                <div class="colms" style="background-color: hsl(100, 100%, 30%); float: left; clear: both;"></div>
+                                <div id="var-range-5" style="padding: 4px; float: left;">div5</div>
+                            </div>
+                            <div class="rows">
+                                <div class="colms" style="background-color: hsl(100, 100%, 20%); float: left; clear: both;"></div>
+                                <div id="var-range-6" style="padding: 4px; float: left;">div6</div>
+                            </div>
+                            <div class="rows">
+                                <div class="colms" style="background-color: hsl(100, 100%, 10%); float: left; clear: both;"></div>
+                                <div id="var-range-7" style="padding: 4px; float: left;">max</div>
                             </div>
                         </div>
                     </div>
@@ -237,35 +253,17 @@
             </div>
             <div class="row">
                 <div class="col-12" id="barCard">
-                     <!--BAR CHART-->
-                     <div>
-                         <select id="barGraphSelect">
-                            <option disabled selected value>Select Data</option>
-                            <option value="dummy_twitter1.json">Dummy1</option>
-                            <option value="dummy_twitter2.json">Dummy2</option>  
-                            <!--Value=name of view/dataset-->
-                         </select>
-                     </div>
                      <div id="barGraph"></div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-12" id="scatterCard">
-                     <!--SCATTER PLOT-->
-                     <div>
-                        <select id="scatterPlotSelect">
-                            <option disabled selected value>Select Data</option>
-                            <option value="dummy_twitter.json">Dummy1</option>
-                            <option value="dummy_twitter2.json">Dummy2</option>  
-                        <!--Value=name of view/dataset-->
-                        </select>
-                    </div>
-                    <div id="scatterPlot"></div>
+                     <div id="scatterPlot">j</div>
                 </div>
             </div>
         </div>
         </div>
-        <script src="js/barChart.js"></script>
+        <script src="js/ageChart.js"></script>
         <script src="js/scatterPlot.js"></script>
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">

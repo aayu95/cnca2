@@ -31,7 +31,7 @@ $(document).ready(function() {
         $("#map").hide();
         $("#info").hide();
         $("#barCard").show();
-        $("#scatterCard").hide();
+        $("#scatterCard").show();
     });
     $("#scatterButton").click(function(e) {
         $("#legend").hide();
@@ -59,7 +59,7 @@ $(document).ready(function() {
             },
             complete: function() {
               // Schedule the next request when the current one's complete
-              setTimeout(worker, 150000);
+              setTimeout(worker, 30000);
             }
           });
         })();

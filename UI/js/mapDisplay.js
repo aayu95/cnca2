@@ -1,5 +1,5 @@
 /**This file contains the logic for displaying the map with the gradient based on the AURIN datasets provided. A colour-coded legend and the AURIN data being mapped are also promptly displayed */
-
+var flag;
 //Render AURIN dataset
 function selectData(element) {
     element.addEventListener('click', function() {
@@ -38,13 +38,13 @@ function loadBoundary() {
 function loadData(parameter) {
     var file;
     if(parameter==='late-senti')
-        file='http://localhost:3000/getLateSentimentBySuburb';
+        file='http://localhost:30000/getLateSentimentBySuburb';
     else if(parameter==='late-sentif')
-        file='http://localhost:3000/getSentimentBySuburb';
+        file='http://localhost:30000/getSentimentBySuburb';
     else if(parameter==='late-tweet')
-        file='http://localhost:3000/getLateTweetCountBySuburb';
+        file='http://localhost:30000/getLateTweetCountBySuburb';
     else if(parameter==='late-tweetf')
-        file='http://localhost:3000/getTweetCountBySuburb';
+        file='http://localhost:30000/getTweetCountBySuburb';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', file);
     xhr.onload = function() {
@@ -99,6 +99,10 @@ function loadData(parameter) {
                         title='Sentiment Analysis';
                     }
                     else if(parameter === 'late-tweet'|| parameter==='late-tweetf'){
+                        if(parameter=='late-tweet')
+                            flag=1;
+                        else
+                            flag=0;
                         categoryCount = data.rows[i].value; 
                         title='Number of Tweets';
                     }
@@ -118,16 +122,20 @@ function loadData(parameter) {
         }
         var range;
         if(parameter==='late-senti'||parameter==='late-sentif') {
-            range = parseFloat((varMax-varMin)/4);
+            range = parseFloat((varMax-varMin)/8);
         }
         else {
-            range = parseInt((varMax-varMin)/4);
+            range = parseInt((varMax-varMin)/8);
         }
         document.getElementById('legend-title').textContent = title;
         document.getElementById('var-min').textContent = varMin.toLocaleString()+' - '+(varMin+range).toLocaleString();
         document.getElementById('var-range-1').textContent = (varMin+range).toLocaleString()+' - '+(varMin+(2*range)).toLocaleString();
         document.getElementById('var-range-2').textContent = (varMin+(2*range)).toLocaleString()+' - '+(varMin+(3*range)).toLocaleString();
-        document.getElementById('var-range-3').textContent = (varMin+(3*range)).toLocaleString()+' - '+varMax.toLocaleString();
+        document.getElementById('var-range-3').textContent = (varMin+(3*range)).toLocaleString()+' - '+(varMin+(4*range)).toLocaleString();
+        document.getElementById('var-range-4').textContent = (varMin+(4*range)).toLocaleString()+' - '+(varMin+(5*range)).toLocaleString();
+        document.getElementById('var-range-5').textContent = (varMin+(5*range)).toLocaleString()+' - '+(varMin+(6*range)).toLocaleString();
+        document.getElementById('var-range-6').textContent = (varMin+(6*range)).toLocaleString()+' - '+(varMin+(7*range)).toLocaleString();
+        document.getElementById('var-range-7').textContent = (varMin+(7*range)).toLocaleString()+' - '+varMax.toLocaleString();
         if(parameter==='late-senti'||parameter=='late-tweet')
             map.setOptions({styles: [
                 {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
@@ -252,13 +260,62 @@ function clearData() {
 //The styling of the map according to the dataset
 function styleFeature(feature) {
     //CUSTOMISE ACCORDING TO NUMBER OF COLOURS
-    var low = [35, 100, 85];
-    var high = [35, 100, 5];
+    var low = [100, 100, 80];
+    var high = [100, 100, 10];
     var diff = (feature.getProperty('curr_variable')-varMin) / (varMax - varMin);
     var colour = [];
-    for (var i=0; i<3; i++) {
-        colour[i] = (high[i] - low[i]) * diff + low[i];
+    if(flag==1) {
+
+
+
+        if(feature.getProperty('curr_variable')>=1 && feature.getProperty('curr_variable')<=600) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 10;
+        }
+        else if(feature.getProperty('curr_variable')>=600 && feature.getProperty('curr_variable')<=1500) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=1500 && feature.getProperty('curr_variable')<=2500) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 30;
+        }
+        else if(feature.getProperty('curr_variable')>=2500 && feature.getProperty('curr_variable')<=3800) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=3800 && feature.getProperty('curr_variable')<=5000) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=5000 && feature.getProperty('curr_variable')<=6400) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else if(feature.getProperty('curr_variable')>=6400 && feature.getProperty('curr_variable')<=7800) {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 20;
+        }
+        else {
+            colour[0] = 100;
+            colour[1] = 100;
+            colour[2] = 85;
+        }
+
     }
+
+    console.log(colour);
+    
+    // for (var i=0; i<3; i++) {
+    //     colour[i] = (high[i] - low[i]) * diff + low[i];
+    // }
     var showRow = true;
         if (feature.getProperty('curr_variable') == null ||
             isNaN(feature.getProperty('curr_variable'))) {

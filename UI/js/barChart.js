@@ -1,8 +1,12 @@
 var selectBox = document.getElementById('barGraphSelect');
 $(selectBox).on('change', function(){
-    renderPie();
+    renderPie(selectBox.options[selectBox.selectedIndex].value);
 });
-function renderChart() {
+var suburbs = ["Albert Park", "Melbourne", "Brighton (Vic.)", "Brunswick", "Burwood", "Carlton", "Caulfield - North", "Clayton", "Dandenong", "Docklands", "East Melbourne", "Fitzroy", "Footscray", "Hawthorn", "Kensington (Vic.)", "Laverton", "Malvern East", "Melbourne Airport", "Mooroolbark", "North Melbourne", "Parkville", "Prahran - Windsor", "Richmond (Vic.)", "Skye - Sandhurst", "South Melbourne", "South Yarra - East", "Southbank", "St Kilda", "Yarra Valley"];
+function renderChart(parameter) {
+    var file;
+    if(parameter==='pie')
+        file='http://localhost:3000/getAurinAgeData'
     d3.select("svg").remove();
     var margin = {top: 20, right: 20, bottom: 80, left: 70},
             width = 600 - margin.left - margin.right,
@@ -26,8 +30,9 @@ function renderChart() {
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function(d) {
-                  return "<strong>Tweets:</strong> <span style='color:black;'>" + d.num_tweets + "</span>";
-                })
+                    console.log('hi');
+                  return "<strong>Count:</strong> <span style='color:black;'>" + d.value + "</span>";
+                });
 
             var svg = d3.select("#barGraph").append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -38,10 +43,11 @@ function renderChart() {
             
             svg.call(tip);
 
-            d3.json(selectBox.options[selectBox.selectedIndex].value, function(error, data) {
+            d3.json(file, function(error, data) {
                 data = data.rows;
+                data = data.filter(function(d) {return suburbs.includes(d.key)});
                 x.domain(data.map(function(d) { console.log(d); return d.key; }));
-                y.domain([0, d3.max(data, function(d) { return d.num_tweets; })]); 
+                y.domain([0, d3.max(data, function(d) { return d.value; })]); 
 
                 svg.append("g")
                     .attr("class", "x axis")
@@ -84,8 +90,8 @@ function renderChart() {
                     .attr("class", "bar")
                     .attr("x", function(d) { return x(d.key); })
                     .attr("width", x.rangeBand())
-                    .attr("y", function(d) { return y(d.num_tweets); })
-                    .attr("height", function(d) { return height - y(d.num_tweets);})
+                    .attr("y", function(d) { return y(d.value); })
+                    .attr("height", function(d) { return height - y(d.value);})
                     .on('mouseover', tip.show)
                     .on('mouseout', tip.hide);
                 });
@@ -204,9 +210,13 @@ data=data.rows;
 });
 }
 
-function renderPie() {
-    var width = 600,
-    height = 350,
+function renderPie(parameter) {
+    var file;
+    if(parameter==='pie')
+        file='http://localhost:3000/getTweetCountBySuburb'
+    var margin = {top: 20, right: 20, bottom: 80, left: 70},
+    width = 800 - margin.left - margin.right,
+    height = 550 - margin.top - margin.bottom;
     radius = Math.min(width, height) / 2;
 
 var color = d3.scale.ordinal()
@@ -231,10 +241,11 @@ var svg = d3.select("#barGraph").append("svg")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 
-d3.json("pie_chart.json", function(error, data) { //http://localhost:3000/getTweetCountBySuburb
+d3.json(file, function(error, data) {
   if (error) throw error;
   data = data.rows;
-  //console.log(pie(data))
+  data = data.filter(function(d) {return suburbs.includes(d.key)})
+  console.log(pie(data))
 
   var g = svg.selectAll(".arc")
       .data(pie(data))

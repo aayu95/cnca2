@@ -45,10 +45,10 @@
 
         #legend{
           float: left;
-          height: 175px;
+          height: 250px;
           width: 180px;
           border: 1px solid black;
-          margin-top: -13.5em;
+          margin-top: -23.5em;
           margin-left: 74em;
           background-color: white;
           box-shadow: 0 4px 6px -4px #333;
@@ -79,6 +79,7 @@
           box-shadow: 0 4px 6px -4px #333;
           opacity: 0.85;
           border-radius: 0.5em;
+          display: none;
         }
         #data-select-twitter{
           text-align: left;
