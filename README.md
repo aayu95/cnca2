@@ -1,4 +1,4 @@
-# TEAM 15 - ASSIGNMENT 2
+# Team 15 - Assignment 2
 
 - Aayush Mehta - 1105081 
 - Abhijeet Singh - 1094984
@@ -6,16 +6,16 @@
 - Muhammad Atif - 924009
 - Siddharth Agarwal - 1077275
 
-# cnca2
+# Cluster & Cloud Computing @ The University of Melbourne
 
 Assignment 2 for Cloud and Cluster computing : COMP90024
 
-# CONFIGURE AND DEPLOY INSTANCES - 
+# Configure and deploy instances - 
 
 Run Ansible/runTest.sh file to start automated deployment and configuration of NeCTAR instances.
 - Command - sh Ansible/runTest.sh
 
-# SCRIPT BEHAVIOUR -
+# Script Behaviour -
 This will perform following actions - 
 
 1. Create SSH Key Pair, Security Groups, Volumes & Instances.
