@@ -1,264 +1,468 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Analyse Twitter Data</title>
 
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" type="text/css" href="css/map.css">
-        <link rel="stylesheet" type="text/css" href="css/home.css">
-        <link rel="stylesheet" type="text/css" href="css/barGraph.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
-        <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-    </head>
-    <body>
-        <script src="js/pageDisplay.js"></script>
-        <script src="js/mapDisplay.js"></script>
-        <script>
-            var map;
-            var varMin = Number.MAX_VALUE, varMax = -Number.MAX_VALUE;
-            var i=0;
-            function initMap() {
-                map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 9,
-                    center: { lat: -37.8136, lng: 144.9631},
-                    mapTypeControl: false,
-                    scaleControl: false,
-                    streetViewControl: false,
-                    rotateControl: false,
-                    fullscreenControl: false,
-                    zoomControl: true,
-                    zoomControlOptions: {
-                        position: google.maps.ControlPosition.TOP_RIGHT
-                    }
-                });
+<head>
+    <title>Analyse Twitter Data</title>
 
-                map.data.addListener('mouseover', mouseEnter);
-                map.data.addListener('mouseout', mouseExit);
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="css/map.css">
+    <link rel="stylesheet" type="text/css" href="css/home.css">
+    <link rel="stylesheet" type="text/css" href="css/barGraph.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+</head>
 
-                var opt1 = document.getElementById('creative');
-                var opt2 = document.getElementById('income');
-                var opt3 = document.getElementById('sentiment');
-                selectData(opt1);
-                selectData(opt2);
-                selectData(opt3);
-                loadBoundary();
-            }
-        </script>
-        <!--NAVBAR-->
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4d004d;">
-            <a class="navbar-brand" href="#">Dashboard</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarText">
-              <ul class="navbar-nav mr-auto">
+<body>
+    <script src="js/pageDisplay.js"></script>
+    <script src="js/mapDisplay.js"></script>
+    <script>
+        var map;
+        var varMin = Number.MAX_VALUE, varMax = -Number.MAX_VALUE;
+        var i = 0;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 9,
+                center: { lat: -37.8136, lng: 144.9631 },
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: false,
+                zoomControl: true,
+                zoomControlOptions: {
+                    position: google.maps.ControlPosition.TOP_RIGHT
+                }
+            });
+
+            map.data.addListener('mouseover', mouseEnter);
+            map.data.addListener('mouseout', mouseExit);
+
+            var opt1 = document.getElementById('creative');
+            var opt2 = document.getElementById('income');
+            var opt4 = document.getElementById('late-tweet');
+            var opt5 = document.getElementById('late-senti');
+            selectData(opt1);
+            selectData(opt2);
+            selectTweetData(opt4);
+            selectTweetData(opt5);
+            loadBoundary();
+        }
+    </script>
+    <!--NAVBAR-->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4d004d;">
+        <a class="navbar-brand" href="#">Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
 
                 <li class="nav-item active">
-                  <a class="nav-link" href="#" id="aboutButton">About<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="#" id="aboutButton">About<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Visualisations
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Visualisations
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item" href="#" id="mapButton">
-                          Map Visualisation</a>
-                      <a class="dropdown-item" href="#" id="barButton">Bar Graph</a>
-                      <a class="dropdown-item" href="#" id="scatterButton">Scatter Plot</a>
+                        <a class="dropdown-item" href="#" id="mapButton">
+                            Map Visualisation</a>
+                        <a class="dropdown-item" href="#" id="overallButton" onclick="renderPie();renderLine()">Overall Analysis</a>
+                        <a class="dropdown-item" href="#" id="ageButton" onclick="renderBarGraph('age');renderPlots('age')">Age Correlation</a>
+                        <a class="dropdown-item" href="#" id="alcoholButton" onclick="renderBarGraph('alcohol');renderPlots('alcohol')">Alcohol Correlation</a>
+                        <a class="dropdown-item" href="#" id="diseaseButton" onclick="renderBarGraph('disease'); renderPlots('disease')">Disease Correlation</a>
+                        <a class="dropdown-item" href="#" id="nationButton" onclick="renderBarGraph('nation'); renderPlots('nation')">Nationality Correlation</a>
+                        <a class="dropdown-item" href="#" id="healthButton" onclick="renderBarGraph('health'); renderPlots('health')">Health Correlation</a>
+                        <a class="dropdown-item" href="#" id="incomeButton" onclick="renderBarGraph('income'); renderPlots('income')">Income Correlation</a>
+                        <a class="dropdown-item" href="#" id="lifeButton" onclick="renderBarGraph('life'); renderPlots('life')">Life Satisfaction Correlation</a>
+                        <a class="dropdown-item" href="#" id="creativeButton" onclick="renderBarGraph('creative'); renderPlots('creative')">Creativity Correlation</a>
                     </div>
-                  </li>
-              </ul>
-              <span class="navbar-text">
+                </li>
+            </ul>
+            <span class="navbar-text">
                 Team 15
-              </span>
-            </div>
-        </nav>
+            </span>
+            <span class="navbar-text" id="ip" style="margin-left: 1em;">
+                Team 15
+            </span>
+        </div>
+    </nav>
+    <script>
+                function doGET(path, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                // The request is done; did it work?
+                if (xhr.status == 200) {
+                    // ***Yes, use `xhr.responseText` here***
+                    callback(xhr.responseText);
+                } else {
+                    // ***No, tell the callback the call failed***
+                    callback(null);
+                }
+            }
+        };
+        xhr.open("GET", path, false);
+        xhr.send();
+    }
 
-        <!--CONTENT CONTAINER-->
-        <div class="container-fluid">
-            <div class="row" id="info">
-                <div class="col-6" style="border-right: solid 1px black; overflow-y: auto;
+    function handleFileData(fileData) {
+        if (!fileData) {
+            // Show error
+            return;
+        }
+        ip = fileData.split('\n').shift();
+        document.getElementById('ip').innerHTML = '('+ip+')';
+        // Use the file data
+    }
+    // Do the request
+    doGET("./current.txt", handleFileData);
+    </script>
+
+    <!--CONTENT CONTAINER-->
+    <div class="container-fluid">
+        <div class="row" id="info">
+            <div class="col-6" style="border-right: solid 1px black; overflow-y: auto;
                 height: 43em;">
-                    <!--ABOUT PAGE-->
-                    <div id="about">
-                        <h2>Scenario</h2>
-                        <br>
-                        <p>
-                            The idea is to select a broader theme (sleeping late at night) and build a stroy around it. Benefit here might be that because of filtering tweets on time (and not keywords), we might be able to get more volume of tweets, hence more confidence in our conclusions.
-                        </p>
-                        <p>
-                            <strong> Purpose: </strong> Verify various research studies that suggest different reasons and consequences of sleeping late at night. <br>
-                            Twitter data: Count of all Tweets per suburb that have a timestamp between 12 AM to 3 AM <br>
-                            Aurin data: Suburb wise numbers
-                            <ol>
+                <!--ABOUT PAGE-->
+                <div id="about">
+                    <h2>Team Details</h2>
+                    <strong>Team 15</strong>
+                    <br/>
+                    <p>Area under investigation: <strong>Melbourne</strong></p>
+                    <table style="border:solid 1px black">
+                        <thead>
+                            <tr style="border:solid 1px black">
+                                <th style="padding: 6px; text-align: center; border: solid 1px black">Name</th>
+                                <th style="padding: 6px; text-align: center;border: solid 1px black">Student ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border:solid 1px black">
+                                <td style="padding: 6px; border: solid 1px black">Aayush Mehta</td>
+                                <td style="padding: 6px; border: solid 1px black">1105081</td>
+                            </tr>
+                            <tr style="border:solid 1px black">
+                                <td style="padding: 6px; border: solid 1px black">Abhijeet Singh</td>
+                                <td style="padding: 6px; border: solid 1px black">1094984</td>
+                            </tr>
+                            <tr style="border:solid 1px black">
+                                <td style="padding: 6px; border: solid 1px black">Anoushka Doctor</td>
+                                <td style="padding: 6px; border: solid 1px black">1012827</td>
+                            </tr>
+                            <tr style="border:solid 1px black">
+                                <td style="padding: 6px; border: solid 1px black">Muhammad Atif</td>
+                                <td style="padding: 6px; border: solid 1px black">924009</td>
+                            </tr>
+                            <tr style="border:solid 1px black">
+                                <td style="padding: 6px; border: solid 1px black">Siddharth Agarwal</td>
+                                <td style="padding: 6px; border: solid 1px black">1077275</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <h2>Scenario</h2>
+                    <br>
+                    <p>
+                        The idea is to select a broader theme (sleeping late at night) and build a stroy around it.
+                        Benefit here might be that because of filtering tweets on time (and not keywords), we might be
+                        able to get more volume of tweets, hence more confidence in our conclusions.
+                    </p>
+                    <p>
+                        <strong> Purpose: </strong> Verify various research studies that suggest different reasons and
+                        consequences of sleeping late at night. <br>
+                        Twitter data: Count of all Tweets per suburb that have a timestamp between 12 AM to 4 AM <br>
+                        Aurin data: Suburb wise numbers
+                        <br/>
+                        <br/>
+                        <span><strong>Analysis type: What are the causes and consequences of sleeping late?</strong></span>
+                            <ul>
                                 <li>
-                                    <strong>Analysis type: What are the reasons for sleeping late?</strong>
-                                    <ul>
-                                        <li>
-                                            Number of entertainment facilities (restaurants, bars, clubs etc.)
-                                        </li>
-                                        <li>
-                                            Age (young people tend to sleep late?)
-                                        </li>
-                                        <li>
-                                            No. of hours spent on digital devices (Your electronic devices, including laptops, tablets, TVs, and phones, emit something called blue light. According to the National Sleep Foundation, the blue light emitted from your devices can delay the release of melatonin, the sleep hormone. This can prevent you from becoming sleepy. Is this true?)
-                                        </li>
-                                        <li>
-                                            Cultural - People from certain countries sleep late more often? (Histogram of number of tweets vs. language of tweets)
-                                        </li>
-                                    </ul>
+                                    Age (young people tend to sleep late?)
                                 </li>
-                                <br>
                                 <li>
-                                   <strong>Analysis type: What are the consequences of sleeping late?</strong>
-                                    <ul>
-                                        <li>
-                                            Percentage of education levels in suburbs (There are studies which suggests that people who stay up late at nights might be smarter?)
-                                        </li>
-                                        <li>
-                                            Percentage of income levels in suburbs
-                                        </li>
-                                        <li>
-                                            Percentage of people with auto-immune disorders (There are studies that late sleep can weaken immune system?)
-                                        </li>
-                                        <li>
-                                            Percentage of people with diseases (Does it increase chances of getting affected by a disease?)
-                                        </li>
-                                        <li>
-                                            Percentage of people with specific occupations (Studies suggests staying up late is linked with creativity? Do people from creating/innovative professions (e.g. artists, writers, cartoonists, novelists, scientists) tend to stay up late at night?)
-                                        </li>
-                                        <li>
-                                            Percentage of people with stress levels (There is a popular belief that early risers have low stress levels?)
-                                        </li>
-                                        <li>
-                                            Coffee/Energy drinks consumption (People who sleep late have an increased coffee intake?)
-                                        </li>
-                                        <li>
-                                            Sentiment analysis (Does it make feel more happy or sad?)
-                                        </li>
-                                    </ul>
+                                    Cultural - People from certain countries sleep late more often?
                                 </li>
-                            </ol>
-                        </p>
-                    </div>
-                </div>
-                <div class="col-6" style="border-left: solid 1px black;">
-                    <div id="stream" style="overflow-y: auto; height: 43em">
-                        <h2>Live Data Stream</h2>
-                        <br>
-                        <p id="dataStream"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                     <!--LEGEND-->
-                     <div id="controls" class="nicebox">
-                        <div id="data-select">
-                            <div style="text-align: center; padding: 6px;"><strong>AURIN Datasets</strong></div>
-                            <div class="radio">
-                                <input type="radio" name="datasets" id="creative" value="creative-people">
-                                <label for="creative">Creativity</label>
-                            </div>
-                            <div class="radio">
-                                <input type="radio" name="datasets" id="income" value="income">
-                                <label for="income">Income</label>
-                            </div>
-                            <div class="radio">
-                                <input type="radio" name="datasets" id="sentiment" value="sentiment">
-                                <label for="income">Sentiment</label>
-                            </div>
-                        </div>
-                        <div id="legend">
-                            <div class="rows">
-                                <div id="legend-title" style="padding: 4px; font-weight: bold;">title</div>
-                            </div>
-                            <div class="rows" style="margin-top: 6px;">
-                                <div class="colms" style="background-color: hsl(35, 100%, 85%); float: left;"></div>
-                                <div id="var-min" style="padding: 4px;float: left;">min</div>
-                            </div>
-                            <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 65%); float: left; clear: both;"></div>
-                                <div id="var-range-1" style="padding: 4px; float: left;">div1</div>
-                            </div>
-                            <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 45%); float: left; clear: both;"></div>
-                                <div id="var-range-2" style="padding: 4px; float: left;">div2</div>
-                            </div>
-                            <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 25%); float: left; clear: both;"></div>
-                                <div id="var-range-3" style="padding: 4px; float: left;">div3</div>
-                            </div>
-                            <div class="rows">
-                                <div class="colms" style="background-color: hsl(35, 100%, 5%); float: left; clear: both;"></div>
-                                <div id="var-max" style="padding: 4px; float: left;">max</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--DISPLAY DATA VALUE-->
-                    <div id="data-box" class="nicebox">
-                        <label id="data-label" for="data-value"></label>
-                        <span id="data-value"></span>
-                        <label id="data-label1" for="data-value1"></label>
-                        <span id="data-value1"></span>
-                        <br/>
-                        <label id="data-label-senti" for="data-value-senti"></label>
-                        <span id="data-value-senti"></span>
-                    </div>
-                    <div id="data-box-senti" class="nicebox">
-                        <h4>Number of Tweets</h4>
-                        <label id="data-label-senti-p" for="data-value-senti-p"></label>
-                        <span id="data-value-senti-p"></span>
-                        <br/>
-                        <label id="data-label-senti-nu" for="data-value-senti-nu"></label>
-                        <span id="data-value-senti-nu"></span>
-                        <br/>
-                        <label id="data-label-senti-n" for="data-value-senti-n"></label>
-                        <span id="data-value-senti-n"></span>
-                    </div>
-                    <!--MAP-->
-                    <div id="map"></div>
+                                <li>
+                                    Income levels in suburbs
+                                </li>
+                                <li>
+                                    People with diseases (Does it increase chances of getting affected by
+                                    a disease?)
+                                </li>
+                                <li>
+                                    People with specific occupations (Studies suggests staying up late is
+                                    linked with creativity? Do people from creating/innovative professions (e.g.
+                                    artists, writers, cartoonists, novelists, scientists) tend to stay up late at
+                                    night?)
+                                </li>
+                                <li>
+                                    People with life satisfaction (There is a popular belief that early risers
+                                    are more satisfied with their lives?)
+                                </li>
+                                <li>
+                                    People who are healthier tweet lesser at night?
+                                </li>
+                                <li>
+                                    People who drink alcohol tweet more at night?
+                                </li>
+                                <li>
+                                    Sentiment analysis (Does it make feel more happy or sad?)
+                                </li>
+                                <li>
+                                    People living near the CBD tend to sleep late
+                                </li>
+                            </ul>
+                    </p>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-12" id="barCard">
-                     <!--BAR CHART-->
-                     <div>
-                         <select id="barGraphSelect">
-                            <option disabled selected value>Select Data</option>
-                            <option value="dummy_twitter1.json">Dummy1</option>
-                            <option value="dummy_twitter2.json">Dummy2</option>  
-                            <!--Value=name of view/dataset-->
-                         </select>
-                     </div>
-                     <div id="barGraph"></div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12" id="scatterCard">
-                     <!--SCATTER PLOT-->
-                     <div>
-                        <select id="scatterPlotSelect">
-                            <option disabled selected value>Select Data</option>
-                            <option value="dummy_twitter.json">Dummy1</option>
-                            <option value="dummy_twitter2.json">Dummy2</option>  
-                        <!--Value=name of view/dataset-->
-                        </select>
-                    </div>
-                    <div id="scatterPlot"></div>
+            <div class="col-6" style="border-left: solid 1px black;">
+                <div id="stream" style="overflow-y: auto; height: 43em">
+                    <h2>Live Data Stream</h2>
+                    <br>
+                    <p id="dataStream"></p>
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-12">
+                <!--AURIN DATASET SELECTION-->
+                <div id="controls" class="nicebox">
+                    <div id="data-select">
+                        <div style="text-align: center; padding: 6px;"><strong>AURIN Datasets</strong></div>
+                        <div class="radio">
+                            <input type="radio" name="datasets" id="creative" value="creative-people">
+                            <label for="creative">Creativity</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="datasets" id="income" value="income">
+                            <label for="income">Income</label>
+                        </div>
+                    </div>
+                    <!--TWITTER DATASET SELECT-->
+                    <div id="data-select-twitter">
+                        <div style="text-align: center; padding: 6px;"><strong>Twitter Data</strong></div>
+                        <div>
+                            <label class="switch">
+                                <input type="checkbox" id="late-tweet" value="late-tweet" name="tweets">
+                                <span class="slider round"></span>
+                            </label>
+                            <label>Late-Night Tweets</label>
+                        </div>
+                        <div>
+                            <label class="switch">
+                                <input type="checkbox" id="late-senti" value="late-senti" name="tweets">
+                                <span class="slider round"></span>
+                            </label>
+                            <label>Late-Night Sentiment</label>
+                        </div>
+                    </div>
+                    <!--LEGEND-->
+                    <div id="legend">
+                        <div class="rows">
+                            <div id="legend-title" style="padding: 4px; font-weight: bold;">title</div>
+                        </div>
+                        <div class="rows" style="margin-top: 6px;">
+                            <div class="colms" style="background-color: hsl(100, 100%, 80%); float: left;"></div>
+                            <div id="var-min" style="padding: 4px;float: left;">min</div>
+                        </div>
+                        <div class="rows">
+                            <div class="colms" style="background-color: hsl(100, 100%, 70%); float: left; clear: both;">
+                            </div>
+                            <div id="var-range-1" style="padding: 4px; float: left;">div1</div>
+                        </div>
+                        <div class="rows">
+                            <div class="colms" style="background-color: hsl(100, 100%, 60%); float: left; clear: both;">
+                            </div>
+                            <div id="var-range-2" style="padding: 4px; float: left;">div2</div>
+                        </div>
+                        <div class="rows">
+                            <div class="colms" style="background-color: hsl(100, 100%, 50%); float: left; clear: both;">
+                            </div>
+                            <div id="var-range-3" style="padding: 4px; float: left;">div3</div>
+                        </div>
+                        <div class="rows">
+                            <div class="colms" style="background-color: hsl(100, 100%, 40%); float: left; clear: both;">
+                            </div>
+                            <div id="var-range-4" style="padding: 4px; float: left;">div4</div>
+                        </div>
+                        <div class="rows">
+                            <div class="colms" style="background-color: hsl(100, 100%, 30%); float: left; clear: both;">
+                            </div>
+                            <div id="var-range-5" style="padding: 4px; float: left;">div5</div>
+                        </div>
+                        <div class="rows">
+                            <div class="colms" style="background-color: hsl(100, 100%, 20%); float: left; clear: both;">
+                            </div>
+                            <div id="var-range-6" style="padding: 4px; float: left;">div6</div>
+                        </div>
+                        <div class="rows">
+                            <div class="colms" style="background-color: hsl(100, 100%, 10%); float: left; clear: both;">
+                            </div>
+                            <div id="var-range-7" style="padding: 4px; float: left;">max</div>
+                        </div>
+                    </div>
+                </div>
+                <!--DISPLAY DATA VALUE-->
+                <div id="data-box" class="nicebox">
+                    <label id="data-label" for="data-value"></label>
+                    <span id="data-value"></span>
+                    <label id="data-label1" for="data-value1"></label>
+                    <span id="data-value1"></span>
+                    <br />
+                    <label id="data-label-senti" for="data-value-senti"></label>
+                    <span id="data-value-senti"></span>
+                </div>
+                <div id="data-box-senti" class="nicebox">
+                    <label id="data-label-senti-p" for="data-value-senti-p"></label>
+                    <span id="data-value-senti-p"></span>
+                    <br />
+                    <label id="data-label-senti-nu" for="data-value-senti-nu"></label>
+                    <span id="data-value-senti-nu"></span>
+                    <br />
+                    <label id="data-label-senti-n" for="data-value-senti-n"></label>
+                    <span id="data-value-senti-n"></span>
+                </div>
+                <!--MAP-->
+                <div id="map"></div>
+            </div>
         </div>
-        <script src="js/barChart.js"></script>
-        <script src="js/scatterPlot.js"></script>
-        <script async defer
+        <div class="row" id="pie">
+            <div class="col-12" id="pieCard">
+                <h5 style="text-align: left;">Overall Analysis</h5>
+                <h6 style="text-align: left;">Number of Tweets per Suburb</h6>
+                <div id="pieChart" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="line">
+            <div class="col-12" id="lineCard">
+                <h6 style="text-align: left;">Time of the day vs Number of Tweets</h6>
+                <div class="col-12" id="lineChart"></div>
+            </div>
+        </div>
+        <div class="row" id="ageB">
+            <div class="col-12" id="barCard">
+                <h5 style="text-align: left;">Correlation between age and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with age of the population</h6>
+                <div id="barGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="ageS">
+            <div class="col-12" id="scatterCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with age of population</h6>
+                <div class="col-12" id="scatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="alcoholB">
+            <div class="col-12" id="alcoholBCard">
+                <h5 style="text-align: left;">Correlation between alcohol consumption and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with alcohol consumption</h6>
+                <div id="alcoholBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="alcoholS">
+            <div class="col-12" id="alcoholSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with alcohol consumption</h6>
+                <div class="col-12" id="alcoholScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="diseaseB">
+            <div class="col-12" id="diseaseBCard">
+                <h5 style="text-align: left;">Correlation between diseases and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with diseased population</h6>
+                <div id="diseaseBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="diseaseS">
+            <div class="col-12" id="diseaseSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with diseased population</h6>
+                <div class="col-12" id="diseaseScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="nationB">
+            <div class="col-12" id="nationBCard">
+                <h5 style="text-align: left;">Correlation between nationality and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with foreign population</h6>
+                <div id="nationBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="nationS">
+            <div class="col-12" id="nationSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with foreign population</h6>
+                <div class="col-12" id="nationScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="healthB">
+            <div class="col-12" id="healthBCard">
+                <h5 style="text-align: left;">Correlation between health of the population and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with healthy people</h6>
+                <div id="healthBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="healthS">
+            <div class="col-12" id="healthSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with number of healthy people</h6>
+                <div class="col-12" id="healthScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="incomeB">
+            <div class="col-12" id="incomeBCard">
+                <h5 style="text-align: left;">Correlation between income of the population and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with the wealth of people</h6>
+                <div id="incomeBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="incomeS">
+            <div class="col-12" id="incomeSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with the wealth of people</h6>
+                <div class="col-12" id="incomeScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="lifeB">
+            <div class="col-12" id="lifeBCard">
+                <h5 style="text-align: left;">Correlation between life satisfaction and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with the life satisfaction of people</h6>
+                <div id="lifeBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="lifeS">
+            <div class="col-12" id="lifeSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with the life satisfaction of people</h6>
+                <div class="col-12" id="lifeScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="creativeB">
+            <div class="col-12" id="creativeBCard">
+                <h5 style="text-align: left;">Correlation between creativity and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with the creativity of people</h6>
+                <div id="creativeBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="creativeS">
+            <div class="col-12" id="creativeSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with the creativity of people</h6>
+                <div class="col-12" id="creativeScatterPlot"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="js/ageChart.js"></script>
+    <script src="js/overallChart.js"></script>
+    <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
         </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+        crossorigin="anonymous"></script>
+</body>
+
 </html>

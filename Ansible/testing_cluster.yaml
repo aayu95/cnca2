@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  vars_files:
+    - host_vars/variables.yaml
+  gather_facts: true
+
+  roles:
+    - role: expose_to_external_internet #working
+    - role: install_infra_dependencies  #working
+    - role: install_docker              #working
+    - role: mount_volumes               #working
+    - role: install_couchdb             #working
+    - role: configure_couchdb_cluster   #working
+    - role: dockerise_code              #working
+    - role: deploy_server               #working
+    
