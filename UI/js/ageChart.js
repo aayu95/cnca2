@@ -4,7 +4,7 @@ function renderBarGraph(parameter) {
     var formatNum = d3.format(".1f");
     var file, id, yTitle;
     var ip;
-    const port = 30006;
+    const port = 30000;
 
     function doGET(path, callback) {
         var xhr = new XMLHttpRequest();
@@ -246,7 +246,7 @@ function renderBarGraph(parameter) {
 
 function renderPlots(parameter) {
     var ip;
-    const port = 30006;
+    const port = 30000;
 
     function doGET(path, callback) {
         var xhr = new XMLHttpRequest();
