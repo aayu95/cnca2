@@ -1,0 +1,80 @@
+---
+
+
+#sudo apt-get update
+- name: apt get update
+  become: yes
+  apt:
+    update_cache: yes
+
+
+- name: install apt transport https
+  become: yes
+  apt:
+    name: apt-transport-https
+    state: present
+    update_cache: yes
+
+#sudo apt install docker.io
+- name: install docker.io
+  become: yes
+  retries: 5
+  delay: 4
+  apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+
+
+#sudo systemctl start docker
+#sudo systemctl enable docker
+- name: start docker service
+  become: yes
+  retries: 5
+  delay: 4
+  systemd: 
+    name: docker
+    state: started
+    enabled: yes
+
+- name: make docker directory
+  become: yes
+  file:
+    path: '{{ docker_dir }}'
+    state: directory
+    mode: 777
+
+
+- name: write docker service file 
+  become: yes
+  retries: 5
+  delay: 4
+  blockinfile:
+    path: '{{ service_dir }}'
+    block: |
+      [Service]
+      Environment='HTTP_PROXY=http://wwwproxy.unimelb.edu.au:8000/'
+      Environment='HTTPS_PROXY=http://wwwproxy.unimelb.edu.au:8000/'
+      Environment='NO_PROXY=localhost,127.0.0.1,localaddress,172.16.0.0/12,.melbourne.rc.nector.org.au,.storage.unimelb.edu.au,.cloud.unimelb.edu.au'
+    create: yes
+
+
+
+- name: system reload daemon 
+  become: yes
+  retries: 5
+  delay: 4
+  shell: systemctl daemon-reload
+  # systemd:
+  #   #state: restarted
+  #   daemon_reload: yes
+  #   #name: docker
+
+- name: restart docker service
+  become: yes
+  retries: 5
+  delay: 4
+  systemd: 
+    name: docker
+    state: restarted
+    

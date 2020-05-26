@@ -1,0 +1,31 @@
+---
+
+
+- name: Create security KeyPair
+  os_keypair:
+    # cloud: 
+    state: present
+    name: '{{ instance_key_name }}'
+    wait: yes
+    timeout: 10
+  register: key
+
+
+# - name: Debug variable
+#   debug:
+#       msg: " {{ key.key.private_key }}" 
+
+
+- name: create private key file
+  become: yes
+  file:
+    state: touch
+    mode: 700
+    path: '{{ key_file_path }}' 
+
+
+- name: save private key to file 
+  become: yes
+  blockinfile:
+    dest: '{{ key_file_path }}'
+    block: '{{ key.key.private_key }}'

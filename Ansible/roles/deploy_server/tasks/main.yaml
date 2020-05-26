@@ -1,0 +1,69 @@
+---
+
+
+
+- name: create the load balancer .js file
+  become: yes
+  file:
+    path: '{{ destdir }}/ApplicationServer/loadbalancer.js'
+    state: touch
+    mode: 777
+  when: " 'Master' in {{ group_names }} "
+
+
+- name: create the Dockerfile
+  become: yes
+  file:
+    path: '{{ destdir }}/Dockerfile'
+    state: touch
+    mode: 777
+  when: " 'Master' in {{ group_names }}"
+
+- name: add content from jinja template for MAster
+  become: yes
+  template:
+    src: loadbalancer.j2
+    dest: '{{ destdir }}/ApplicationServer/loadbalancer.js'
+  when: " 'Master' in {{ group_names }}"
+
+
+- name: add content from jinja template for Master Dockerfile
+  become: yes
+  template:
+    src: dockerfile_lb.j2
+    dest: '{{ destdir }}/Dockerfile'
+  when: " 'Master' in {{ group_names }}"
+
+
+
+
+- name: build image for Loadbalancer
+  become: yes
+  command: "{{ item }}"
+  args:
+    chdir: '{{ destdir }}'
+  when: " 'Master' in {{ group_names }}"
+  with_items:
+    - docker build -t {{ lb_docker_name }} .
+    - docker run -p {{ lb_out_port }}:{{ lb_in_port }} -d {{ lb_docker_name }}
+
+
+
+- name: add content from jinja template for Workers
+  become: yes
+  template:
+    src: dockerfile.j2
+    dest: '{{ destdir }}/Dockerfile'
+  when: " 'Master' not in {{ group_names }}"
+
+
+- name: build image for Servers
+  become: yes
+  command: "{{ item }}"
+  args:
+    chdir: '{{ destdir }}'
+  when: " 'Master' not in {{ group_names }}"
+  with_items:
+    - docker build -t {{ server_image }} .
+    - docker run -p {{ lb_out_port }}:{{ lb_in_port }} -d {{ server_image }}
+

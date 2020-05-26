@@ -1,0 +1,32 @@
+---
+
+- name: create deployment
+  command: sudo kubectl create deployment {{ deployment_name }} --image={{ server_image }}
+  when: " 'Master' in {{ group_names }}"
+
+
+- name: edit the /etc/kubernetes/manifests/kube-apiserver.yaml
+  become: yes
+  lineinfile:
+    dest: '{{ manifests_path }}/{{ file_name }}'
+    insertbefore: '^    env:$'
+    line: '    - --service-node-port-range={{ server_out_range }}'
+  when: " 'Master' in {{ group_names }}"
+  
+  
+  
+- name: wait command 
+  become: yes 
+  wait_for:
+    timeout: 20
+
+
+
+- name: expose deployment with load balancer at port \#3000
+  command: sudo kubectl expose deployment {{ service_name }} --type={{ service_type }} --port={{ server_in_port }} --target-port={{ server_in_port }}  
+  when: " 'Master' in {{ group_names }}"
+
+
+- name: scale the service appserver
+  command: sudo kubectl scale --current-replicas=1 --replicas=10 {{ deployment_path }}
+  when: " 'Master' in {{ group_names }}"

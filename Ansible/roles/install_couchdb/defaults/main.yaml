@@ -1,0 +1,12 @@
+---
+
+
+inet_port: 9100
+master: Master 
+worker_1: Worker_1
+worker_2: Worker_2
+worker_3: Worker_3
+nodes: 4
+vm_args: /opt/couchdb/etc/vm.args
+local: /opt/couchdb/etc/local.ini
+database_dir: /cnc2/data
