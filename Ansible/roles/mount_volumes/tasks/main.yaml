@@ -1,12 +1,17 @@
 ---
-- name: Install dependencies
-  tags: 'volumes'
-  become: yes
-  apt:
-    name: ['xfsprogs']
-    state: latest
-    install_recommends: no
-    update_cache: yes
+
+## Team number: 15
+## City: Melbourne 
+## Team Members: Aayush Mehta (1105081); Abhijeet Singh (1094984); Anoushka Doctor (1012827); Muhammad Atif (924009); Siddharth Agarwal (1077275)
+
+# - name: Install dependencies
+#   tags: 'volumes'
+#   become: yes
+#   apt:
+#     name: ['xfsprogs']
+#     state: latest
+#     install_recommends: no
+#     update_cache: yes
 
 # make filesystem at /dev/vdb
 - name: Make file system

@@ -1,4 +1,7 @@
 ---
+## Team number: 15
+## City: Melbourne 
+## Team Members: Aayush Mehta (1105081); Abhijeet Singh (1094984); Anoushka Doctor (1012827); Muhammad Atif (924009); Siddharth Agarwal (1077275)
 
 - name: make git directory
   become: yes
@@ -102,15 +105,4 @@
 
 
 
-  # cron:
-  #   name: "search"
-  #   minute: "*/2"
-  #   hour: "*"
-  #   user: ubuntu
-  #   job: 'sh /cnc2/Code/Database/tweets_Harvester/initiateHarvester.sh'
-  # command: nohup python3 {{ item }} &
-  #   # sudo sh /cnc2/Code/Database/tweets_Harvester/initiateHarvester.sh
   
-  # with_items:
-  #   - Search.py
-  #   - Stream.py

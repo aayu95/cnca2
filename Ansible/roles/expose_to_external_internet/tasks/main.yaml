@@ -1,10 +1,8 @@
 ---
-#- hosts: Master
-  
-  
-  
-#  tasks:
-  
+## Team number: 15
+## City: Melbourne 
+## Team Members: Aayush Mehta (1105081); Abhijeet Singh (1094984); Anoushka Doctor (1012827); Muhammad Atif (924009); Siddharth Agarwal (1077275)
+
 - name: add the proxy to file /etc/environment
   become: yes
   blockinfile:
@@ -17,14 +15,6 @@
       https_proxy=http://wwwproxy.unimelb.edu.au:8000/
       no_proxy=localhost,127.0.0.1,localaddress,172.16.0.0/12,.melbourne.rc.nector.org.au,.storage.unimelb.edu.au,.cloud.unimelb.edu.au
 
-
-
-# - name: reboot the machines
-#   become: yes
-#   reboot:
-#     reboot_timeout: 3000
-#   retries: 5
-#   delay: 4
 
 
 - name: Upgrade all packages to the latest version
