@@ -35,5 +35,4 @@ module.exports = (app) => {
 
     app.get('/getAurinCreativityData', couchDB.getAurinCreativityData)
 
-
 }
