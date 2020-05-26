@@ -63,7 +63,7 @@ exports.getTweetCountBySuburb = (req, res) => {
 };
 
 exports.getLateTweetCountBySuburb = (req, res) => {
-  axios.get('tweets/_design/twitter/_view/countLateTweetsInSuburb?group_level=1&update=lazy')
+  axios.get('tweets/_design/twitter/_view/countLateTweetsBySuburb?group_level=1&update=lazy')
     .then(function (response) {
       res.send(response.data);
     })
