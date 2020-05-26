@@ -1,7 +1,7 @@
 var suburbs = ["Albert Park", "Melbourne", "Brighton (Vic.)", "Brunswick", "Burwood", "Carlton", "Caulfield - North", "Clayton", "Dandenong", "Docklands", "East Melbourne", "Fitzroy", "Footscray", "Hawthorn", "Kensington (Vic.)", "Laverton", "Malvern East", "Melbourne Airport", "Mooroolbark", "North Melbourne", "Parkville", "Prahran - Windsor", "Richmond (Vic.)", "Skye - Sandhurst", "South Melbourne", "South Yarra - East", "Southbank", "St Kilda", "Yarra Valley", "Collingwood"];
 function renderPie() {
     var ip;
-    var port = 30006;
+    var port = 30000;
     function doGET(path, callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
@@ -153,7 +153,7 @@ function renderPie() {
 function renderLine() {
 
     var ip;
-    var port = 30006;
+    var port = 30000;
     function doGET(path, callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
