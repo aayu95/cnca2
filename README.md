@@ -1,7 +1,7 @@
 # TEAM 15 - ASSIGNMENT 2
 
-Aayush Mehta - 1105081
-Abhijeet Singh - 1094984
+- Aayush Mehta - 1105081 
+- Abhijeet Singh - 1094984
 Anoushka Doctor - 1012827
 Muhammad Atif - 924009
 Siddharth Agarwal - 1077275
