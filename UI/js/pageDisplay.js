@@ -291,7 +291,7 @@ $(document).ready(function() {
     });
 
     var ip;
-    var port = 30006;
+    var port = 30000;
     function doGET(path, callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {

@@ -37,7 +37,7 @@ function loadBoundary() {
 //Load AURIN dataset
 function loadData(parameter) {
     var ip;
-    const port = 30006;
+    const port = 30000;
 
     function doGET(path, callback) {
         var xhr = new XMLHttpRequest();
