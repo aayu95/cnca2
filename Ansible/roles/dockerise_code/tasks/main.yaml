@@ -102,7 +102,7 @@
   poll: 0
   command: 'python3 load_aurin_data.py &'
   args:
-    chdir: '{{ destdir }}/Database/'
+    chdir: '{{ destdir }}/Database/tweets_Harvester/'
 
 
 
