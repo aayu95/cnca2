@@ -69,7 +69,9 @@
     pointer-events: none;
   }
 
-#barCard, #pieCard, #alcoholBCard{
+#barCard, #pieCard, #alcoholBCard,
+#diseaseBCard, #nationBCard, #healthBCard, 
+#incomeBCard{
   position: relative;
   text-align: center;
   font-family: "Roboto", "Arial", sans-serif;
@@ -82,7 +84,9 @@
   border-radius: 0.5em;
   background-color: white;
 }
-#scatterCard, #lineCard, #alcoholSCard {
+#scatterCard, #lineCard, #alcoholSCard, 
+#diseaseSCard, #nationSCard, #healthSCard,
+#incomeSCard {
   position: relative;
   text-align: center;
   font-family: "Roboto", "Arial", sans-serif;

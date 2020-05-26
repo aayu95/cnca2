@@ -74,8 +74,14 @@
                         <a class="dropdown-item" href="#" id="mapButton">
                             Map Visualisation</a>
                         <a class="dropdown-item" href="#" id="overallButton">Overall Analysis</a>
-                        <a class="dropdown-item" href="#" id="ageButton">Age Correlation</a>
-                        <a class="dropdown-item" href="#" id="alcoholButton">Alcohol Correlation</a>
+                        <a class="dropdown-item" href="#" id="ageButton" onclick="renderBarGraph('age');renderPlots('age')">Age Correlation</a>
+                        <a class="dropdown-item" href="#" id="alcoholButton" onclick="renderBarGraph('alcohol');renderPlots('alcohol')">Alcohol Correlation</a>
+                        <a class="dropdown-item" href="#" id="diseaseButton" onclick="renderBarGraph('disease'); renderPlots('disease')">Disease Correlation</a>
+                        <a class="dropdown-item" href="#" id="nationButton" onclick="renderBarGraph('nationality'); renderPlots('nationality')">Nationality Correlation</a>
+                        <a class="dropdown-item" href="#" id="healthButton" onclick="renderBarGraph('health'); renderPlots('health')">Health Correlation</a>
+                        <a class="dropdown-item" href="#" id="incomeButton" onclick="renderBarGraph('income'); renderPlots('income')">Income Correlation</a>
+                        <a class="dropdown-item" href="#" id="lifeButton" onclick="renderBarGraph('life'); renderPlots('life')">Life Satisfaction Correlation</a>
+                        <a class="dropdown-item" href="#" id="creativeButton" onclick="renderBarGraph('creative'); renderPlots('creative')">Creativity Correlation</a>
                     </div>
                 </li>
             </ul>
@@ -319,11 +325,88 @@
                 <div class="col-12" id="alcoholScatterPlot"></div>
             </div>
         </div>
+        <div class="row" id="diseaseB">
+            <div class="col-12" id="diseaseBCard">
+                <h5 style="text-align: left;">Correlation between diseases and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with diseased population</h6>
+                <div id="diseaseBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="diseaseS">
+            <div class="col-12" id="diseaseSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with diseased population</h6>
+                <div class="col-12" id="diseaseScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="nationB">
+            <div class="col-12" id="nationBCard">
+                <h5 style="text-align: left;">Correlation between nationality and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with nationality of population</h6>
+                <div id="nationBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="nationS">
+            <div class="col-12" id="nationSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with nationality of population</h6>
+                <div class="col-12" id="nationScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="healthB">
+            <div class="col-12" id="healthBCard">
+                <h5 style="text-align: left;">Correlation between health of the population and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with number healthy people</h6>
+                <div id="healthBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="healthS">
+            <div class="col-12" id="healthSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with number of healthy people</h6>
+                <div class="col-12" id="healthScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="incomeB">
+            <div class="col-12" id="incomeBCard">
+                <h5 style="text-align: left;">Correlation between income of the population and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with the wealth of people</h6>
+                <div id="incomeBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="incomeS">
+            <div class="col-12" id="incomeSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with the wealth of people</h6>
+                <div class="col-12" id="incomeScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="lifeB">
+            <div class="col-12" id="lifeBCard">
+                <h5 style="text-align: left;">Correlation between life satisfaction and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with the life satisfaction of people</h6>
+                <div id="lifeBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="lifeS">
+            <div class="col-12" id="lifeSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with the life satisfaction of people</h6>
+                <div class="col-12" id="lifeScatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="creativeB">
+            <div class="col-12" id="creativeBCard">
+                <h5 style="text-align: left;">Correlation between creativity and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with the creativity of people</h6>
+                <div id="creativeBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="creativeS">
+            <div class="col-12" id="creativeSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with the creativity of people</h6>
+                <div class="col-12" id="creativeScatterPlot"></div>
+            </div>
+        </div>
     </div>
     </div>
     <script src="js/ageChart.js"></script>
     <script src="js/overallChart.js"></script>
-    <script src="js/alcoholChart.js"></script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
         </script>

@@ -1,10 +1,37 @@
 var suburbs = ["Albert Park", "Melbourne", "Brighton (Vic.)", "Brunswick", "Burwood", "Carlton", "Caulfield - North", "Clayton", "Dandenong", "Docklands", "East Melbourne", "Fitzroy", "Footscray", "Hawthorn", "Kensington (Vic.)", "Laverton", "Malvern East", "Melbourne Airport", "Mooroolbark", "North Melbourne", "Parkville", "Prahran - Windsor", "Richmond (Vic.)", "Skye - Sandhurst", "South Melbourne", "South Yarra - East", "Southbank", "St Kilda", "Yarra Valley", "Collingwood"];
-$(document).ready(function () {
-    renderPlots();
-    var file = 'http://localhost:3000/getAurinAgeData';
+function renderBarGraph(parameter) {
+    d3.select("svg").remove();
+    var formatNum = d3.format(".1f");
+    var file, id, yTitle;
+    if(parameter==='age') {
+        file = 'http://localhost:3000/getAurinAgeData';
+        id = '#barGraph';
+        yTitle = "Population (Aged 15-40)";
+    }
+    else if(parameter==='alcohol') {
+        file = 'http://localhost:3000/getAurinAlcoholData';
+        id = '#alcoholBarGraph';
+        yTitle = "Average Alcohol Consumption";
+    }
+    else if(parameter==='disease') {
+        file = 'http://localhost:3000/getAurinDiseaseData';
+        id = '#diseaseBarGraph';
+        yTitle = "Disease Count";
+    }
+    else if(parameter==='health') {
+        file = 'http://localhost:3000/getAurinHealthData';
+        id = '#healthBarGraph';
+        yTitle = "Number of healthy people";
+    }
+    else if(parameter==='income') {
+        file = 'http://localhost:3000/getAurinIncomeData';
+        id = '#incomeBarGraph';
+        yTitle = "Income";
+    }
     var line = 'http://localhost:3000/getLateTweetCountBySuburb';
+    d3.select("svg").remove();
     var margin = { top: 30, right: 20, bottom: 80, left: 70 },
-        width = 700 - margin.left - margin.right,
+        width = 800 - margin.left - margin.right,
         height = 350 - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
@@ -32,7 +59,7 @@ $(document).ready(function () {
             return "<strong>Count:</strong> <span style='color:black;'>" + d.value + "</span>";
         });
 
-    var svg = d3.select("#barGraph").append("svg")
+    var svg = d3.select(id).append("svg")
         .attr("width", width + margin.left + margin.right + 100)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -41,14 +68,15 @@ $(document).ready(function () {
 
     svg.call(tip);
     var finData;
-    d3.json(file, function (error, data) {
-        finData = data.rows;
+    d3.json(file, function (error, dataA) {
+        finData = dataA.rows;
     });
-    d3.json(line, function (error, data) {
-        data = data.rows;
-        data = data.filter(function (d) { return suburbs.includes(d.key) });
+    d3.json(line, function (error, dataA) {
+        dataA = dataA.rows;
+        dataA = dataA.filter(function (d) { return suburbs.includes(d.key) });
+        console.log('ag',dataA[0].value, dataA[0].key);
         finData.forEach(function (item) {
-            var result = data.filter(function (datum) {
+            var result = dataA.filter(function (datum) {
                 return datum.key === item.key;
             });
             item.tweets = (result[0] !== undefined) ? result[0].value : null;
@@ -73,7 +101,7 @@ $(document).ready(function () {
             .append("text")
             .style("text-anchor", "end")
             .style("font-weight", "bold")
-            .text("Population (Aged 15-40)")
+            .text(yTitle)
             .attr("transform", "rotate(-90)")
             .attr("dy", "1em");
 
@@ -106,7 +134,7 @@ $(document).ready(function () {
         .attr("y", function(d) { return y(d.value) + 1; })
         .attr("dy", "-1em")
         .attr("dx", "-1.2em")
-        .text(function(d) { return d.value; })
+        .text(function(d) { return formatNum(d.value); })
         .style("font-weight", "bold")
         .style("font-size", "8.5px");   	  
 
@@ -175,9 +203,42 @@ $(document).ready(function () {
             focusText.style("opacity", 0)
         }
     });
-});
+}
 
-function renderPlots() {
+function renderPlots(parameter) {
+    var formatNum = d3.format(".1f");
+    var fileS, idS, yTitleS, tTip;
+    if(parameter==='age') {
+        fileS = 'http://localhost:3000/getAurinAgeData';
+        idS = '#scatterPlot';
+        yTitleS = "Population (Aged 15-40)";
+        tTip = "#scatterCard";
+    }
+    else if(parameter==='alcohol') {
+        fileS = 'http://localhost:3000/getAurinAlcoholData';
+        idS = '#alcoholScatterPlot';
+        yTitleS = "Average Alcohol Consumption";
+        tTip = "#alcoholSCard";
+    }
+    else if(parameter==='disease') {
+        fileS = 'http://localhost:3000/getAurinDiseaseData';
+        idS = '#diseaseScatterPlot';
+        yTitleS = "Disease Count";
+        tTip = "#diseaseSCard";
+    }
+    else if(parameter==='health') {
+        fileS = 'http://localhost:3000/getAurinHealthData';
+        idS = '#healthScatterPlot';
+        yTitleS = "Number of healthy people";
+        tTip = "#healthSCard";
+    }
+    else if(parameter==='income') {
+        fileS = 'http://localhost:3000/getAurinIncomeData';
+        idS = '#incomeScatterPlot';
+        yTitleS = "Income";
+        tTip = "#incomeSCard";
+    }
+    var lineS = 'http://localhost:3000/getLateTweetCountBySuburb';
     //Scatter Plot 
     var marginS = { top: 20, right: 20, bottom: 30, left: 40 },
         widthS = 600 - marginS.left - marginS.right,
@@ -196,25 +257,25 @@ function renderPlots() {
         yAxisS = d3.svg.axis().scale(yScale).orient("left");
 
     // add the graph canvas to the body of the webpage
-    var svgS = d3.select("#scatterPlot").append("svg")
+    var svgS = d3.select(idS).append("svg")
         .attr("width", widthS + marginS.left + marginS.right + 150)
         .attr("height", heightS + marginS.top + marginS.bottom)
         .append("g")
         .attr("transform", "translate(" + marginS.left + "," + marginS.top + ")");
 
     // add the tooltip area to the webpage
-    var tooltip = d3.select("#scatterCard").append("div")
+    var tooltip = d3.select(tTip).append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
     var finalData;
 
     // load data
-    d3.json('http://localhost:3000/getAurinAgeData', function (error, data) {
+    d3.json(fileS, function (error, data) {
         finalData = data.rows;
     });
 
-    d3.json('http://localhost:3000/getLateTweetCountBySuburb', function (error, data) {
+    d3.json(lineS, function (error, data) {
         data = data.rows;
         data = data.filter(function (d) { return suburbs.includes(d.key) });
         finalData.forEach(function (item) {
@@ -250,7 +311,7 @@ function renderPlots() {
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .style("font-weight", "bold")
-            .text("Population (Aged 15 - 40)");
+            .text(yTitleS);
 
         // draw dots
         svgS.selectAll(".dot")
@@ -266,9 +327,9 @@ function renderPlots() {
                     .duration(200)
                     .style("opacity", .9);
                 tooltip.html(d.key + "<br/> (" + xValue(d)
-                    + ", " + yValue(d) + ")")
+                    + ", " + formatNum(yValue(d)) + ")")
                     .style("left", (d3.event.pageX + 5) + "px")
-                    .style("top", (d3.event.pageY - 500) + "px");
+                    .style("top", (d3.event.pageY - 550) + "px");
             })
             .on("mouseout", function (d) {
                 tooltip.transition()

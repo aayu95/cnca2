@@ -13,7 +13,14 @@ $(document).ready(function() {
     $("#line").hide();
     $("#alcoholB").hide();
     $("#alcoholS").hide();
-    $("#disease").hide();
+    $("#diseaseB").hide();
+    $("#diseaseS").hide();
+    $("#nationB").hide();
+    $("#nationS").hide();
+    $("#healthB").hide();
+    $("#healthS").hide();
+    $("#incomeB").hide();
+    $("#incomeS").hide();
     $("#creative").hide();
     $("#mapButton").click(function(e) {
         $("#info").hide();
@@ -26,7 +33,14 @@ $(document).ready(function() {
         $("#line").hide();
         $("#alcoholB").hide();
         $("#alcoholS").hide();
-        $("#disease").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
         $("#creative").hide();
     });
     $("#aboutButton").click(function(e) {
@@ -40,7 +54,14 @@ $(document).ready(function() {
         $("#line").hide();
         $("#alcoholB").hide();
         $("#alcoholS").hide();
-        $("#disease").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
         $("#creative").hide();
     });
     $("#overallButton").click(function(e) {
@@ -54,7 +75,14 @@ $(document).ready(function() {
         $("#line").show();
         $("#alcoholB").hide();
         $("#alcoholS").hide();
-        $("#disease").show();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
         $("#creative").hide();
     });
     $("#ageButton").click(function(e) {
@@ -68,7 +96,14 @@ $(document).ready(function() {
         $("#line").hide();
         $("#alcoholB").hide();
         $("#alcoholS").hide();
-        $("#disease").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
         $("#creative").hide();
     });
     $("#alcoholButton").click(function(e) {
@@ -82,7 +117,14 @@ $(document).ready(function() {
         $("#line").hide();
         $("#alcoholB").show();
         $("#alcoholS").show();
-        $("#disease").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
         $("#creative").hide();
     });
     $("#diseaseButton").click(function(e) {
@@ -96,7 +138,14 @@ $(document).ready(function() {
         $("#line").hide();
         $("#alcoholB").hide();
         $("#alcoholS").hide();
-        $("#disease").show();
+        $("#diseaseB").show();
+        $("#diseaseS").show();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
         $("#creative").hide();
     });
     $("#creativeButton").click(function(e) {
@@ -110,8 +159,78 @@ $(document).ready(function() {
         $("#line").hide();
         $("#alcoholB").hide();
         $("#alcoholS").hide();
-        $("#disease").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
         $("#creative").show();
+    });
+    $("#nationButton").click(function(e) {
+        $("#legend").hide();
+        $(".nicebox").hide();
+        $("#map").hide();
+        $("#info").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").show();
+        $("#nationS").show();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
+        $("#creative").hide();
+    });
+    $("#healthButton").click(function(e) {
+        $("#legend").hide();
+        $(".nicebox").hide();
+        $("#map").hide();
+        $("#info").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").show();
+        $("#healthS").show();
+        $("#incomeB").hide();
+        $("#incomeS").hide();
+        $("#creative").hide();
+    });
+    $("#incomeButton").click(function(e) {
+        $("#legend").hide();
+        $(".nicebox").hide();
+        $("#map").hide();
+        $("#info").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
+        $("#diseaseB").hide();
+        $("#diseaseS").hide();
+        $("#nationB").hide();
+        $("#nationS").hide();
+        $("#healthB").hide();
+        $("#healthS").hide();
+        $("#incomeB").show();
+        $("#incomeS").show();
+        $("#creative").hide();
     });
 
     //Create table from datastream
