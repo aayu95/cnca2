@@ -1,0 +1,116 @@
+---
+
+- name: make git directory
+  become: yes
+  file:
+    path: '{{ destdir }}'
+    state: directory
+    mode: 777
+  # when: " 'Master' in {{ group_names }}"
+
+
+- name: install git
+  become: yes
+  apt:
+    name: git
+    state: present
+  # when: " 'Master' in {{ group_names }}"
+
+
+
+- name: Download the NodeJS code from the GitRepo
+  become: yes
+  git:
+    repo: 'https://{{ username }}:{{ password }}@github.com/SidAg26/cnca2.git'
+    dest: "{{ destdir }}"
+    force: yes
+  # when: " 'Master' in {{ group_names }}"
+
+
+
+
+- name: host file to be accessible for all 
+  become: yes
+  file: 
+    dest: '{{ destdir }}/Common/hosts.txt'
+    state: touch
+    mode: 777
+
+
+
+- name: change permissions
+  become: yes
+  file:
+    path: '{{ destdir }}/Common/hosts.txt'
+    mode: '777'
+
+
+- name: write host jinja
+  become: yes
+  template:
+    src: hosts.j2
+    dest: '{{ destdir }}/Common/hosts.txt'
+
+
+
+- name: current host file  
+  become: yes
+  file: 
+    dest: '{{ destdir }}/Common/current.txt'
+    state: touch
+    mode: 777
+
+- name: write current host file 
+  become: yes
+  template:
+    src: "{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}.j2"
+    dest: '{{ destdir }}/Common/current.txt'
+
+- name: change permissions
+  become: yes
+  file:
+    path: '{{ destdir }}/Common/current.txt'
+    mode: '777'
+
+
+- name: Run the Load AURIN script to Start Harvester
+  become: yes
+  async: 31536000
+  poll: 0
+  command: 'python3 load_aurin_data.py &'
+  args:
+    chdir: '{{ destdir }}/Database/'
+
+
+
+- name: Run the Search script to Start Harvester
+  become: yes
+  async: 31536000
+  poll: 0
+  command: 'python3 Search.py &'
+  args:
+    chdir: '{{ destdir }}/Database/tweets_Harvester/'
+
+- name: Run the Stream script to Start Harvester
+  become: yes
+  async: 31536000
+  poll: 0
+  command: 'python3 Stream.py &'
+  args:
+    chdir: '{{ destdir }}/Database/tweets_Harvester/'
+
+
+
+
+  # cron:
+  #   name: "search"
+  #   minute: "*/2"
+  #   hour: "*"
+  #   user: ubuntu
+  #   job: 'sh /cnc2/Code/Database/tweets_Harvester/initiateHarvester.sh'
+  # command: nohup python3 {{ item }} &
+  #   # sudo sh /cnc2/Code/Database/tweets_Harvester/initiateHarvester.sh
+  
+  # with_items:
+  #   - Search.py
+  #   - Stream.py

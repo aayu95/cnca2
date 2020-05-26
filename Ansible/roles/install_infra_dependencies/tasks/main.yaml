@@ -1,0 +1,43 @@
+---
+- name: Install dependencies
+  tags: 'volumes'
+  become: yes
+  apt:
+    name: ['xfsprogs']
+    state: latest
+    install_recommends: no
+    update_cache: yes
+
+
+- name: Install dependencies
+  become: yes
+  apt:
+    name: ['pkg-config','erlang','build-essential','libicu-dev','libcurl4-openssl-dev','apt-transport-https', 'build-essential', 'ca-certificates', 'curl', 'python3-dev', 'python3-pip', 'python3-setuptools', 'unzip', 'vim','python3']
+    state: latest
+    install_recommends: no
+    update_cache: yes #--
+
+- name: Fix all packages to the latest version
+  become: yes
+  apt:
+    name: "*"
+    state: fixed
+
+- name: pip install all python dependencies
+  become: yes
+  pip:
+    name: ['tweepy', 'couchdb','textblob','shapely','TwitterAPI'  ]
+    # executable: pip3
+
+
+
+
+# shell: pip3 install {{ item }}
+#   with_items: 
+#     - tweepy
+#     - couchdb
+#     - json
+#     - textblob
+#     - shapely
+#     - TwitterAPI
+  

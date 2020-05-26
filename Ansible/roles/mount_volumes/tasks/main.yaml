@@ -1,0 +1,64 @@
+---
+- name: Install dependencies
+  tags: 'volumes'
+  become: yes
+  apt:
+    name: ['xfsprogs']
+    state: latest
+    install_recommends: no
+    update_cache: yes
+
+# make filesystem at /dev/vdb
+- name: Make file system
+  tags: 'volumes'
+  become: yes
+  filesystem:
+    fstype: xfs
+    dev: "{{ item.default }}"
+  retries: 5
+  delay: 4
+  when: item.default is defined
+  with_items:
+    - "{{ mountpoint }}"
+
+#check existing folders at the new mount point
+- name: Checking folders
+  tags: 'volumes'
+  become: yes
+  stat:
+    path: "{{ item.new_mount }}"
+  register: directory_stats
+  retries: 5
+  delay: 4
+  with_items:
+    - "{{ mountpoint }}"
+
+# create new directory at new mount point
+- name: Create directory
+  tags: 'volumes'
+  become: yes
+  file:
+    path: "{{ item.item.new_mount }}"
+    recurse: yes
+    state: directory
+  retries: 5
+  delay: 4
+  when: item.stat.exists == false
+  with_items:
+    - "{{ directory_stats.results }}"
+
+
+# mount the newly created filesystem at new mount point
+- name: Mount device
+  tags: 'volumes'
+  become: yes
+  mount:
+    path: "{{ item.new_mount }}"
+    src: "{{ item.default }}"
+    fstype: xfs
+    state: mounted
+  retries: 5
+  delay: 4
+  when: item.default is defined
+  with_items:
+    - "{{ mountpoint }}"

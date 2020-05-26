@@ -1,0 +1,14 @@
+---
+
+# destdir: /cnc2/Code
+destdir: ./Code
+
+server_in_port: 3000
+server_out_range: 30000-30000
+service_name: appserver
+service_type: ClusterIP
+manifests_path: /etc/kubernetes/manifests
+file_name: kube-apiserver.yaml
+deployment_path: deployment/appserver
+deployment_name: appserver
+server_image: sid26ag/applicationserver 
