@@ -36,15 +36,47 @@ function loadBoundary() {
 
 //Load AURIN dataset
 function loadData(parameter) {
+    var ip;
+    const port = 30006;
+
+    function doGET(path, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                // The request is done; did it work?
+                if (xhr.status == 200) {
+                    // ***Yes, use `xhr.responseText` here***
+                    callback(xhr.responseText);
+                } else {
+                    // ***No, tell the callback the call failed***
+                    callback(null);
+                }
+            }
+        };
+        xhr.open("GET", path, false);
+        xhr.send();
+    }
+
+    function handleFileData(fileData) {
+        if (!fileData) {
+            // Show error
+            return;
+        }
+        ip = fileData.split('\n').shift();
+        console.log(ip);
+        // Use the file data
+    }
+    // Do the request
+    doGET("./current.txt", handleFileData);
     var file;
     if (parameter === 'late-senti')
-        file = 'http://localhost:3000/getLateSentimentBySuburb';
+        file = 'http://'+ip+':'+port+'/getLateSentimentBySuburb';
     else if (parameter === 'late-sentif')
-        file = 'http://localhost:3000/getSentimentBySuburb';
+        file = 'http://'+ip+':'+port+'/getSentimentBySuburb';
     else if (parameter === 'late-tweet')
-        file = 'http://localhost:3000/getLateTweetCountBySuburb';
+        file = 'http://'+ip+':'+port+'/getLateTweetCountBySuburb';
     else if (parameter === 'late-tweetf')
-        file = 'http://localhost:3000/getTweetCountBySuburb';
+        file = 'http://'+ip+':'+port+'/getTweetCountBySuburb';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', file);
     xhr.onload = function () {
@@ -61,7 +93,7 @@ function loadData(parameter) {
                 if (suburb.localeCompare(data.rows[i].key) === 0) {
                     if (parameter === 'late-senti' || parameter === 'late-sentif') {
                         flag = 1;
-                        categoryCount = data.rows[i].value.polarity_avg;
+                        categoryCount = data.rows[i].value.polarity_avg.toFixed(2);
                         map.data.getFeatureById(j + 1).setProperty('sentiment', data.rows[i].value.overall_sentiment);
                         map.data.getFeatureById(j + 1).setProperty('positive-count', data.rows[i].value.positive_count);
                         map.data.getFeatureById(j + 1).setProperty('neutral-count', data.rows[i].value.neutral_count);
@@ -89,20 +121,38 @@ function loadData(parameter) {
         }
         var range;
         if (parameter === 'late-senti' || parameter === 'late-sentif') {
-            range = parseFloat((varMax - varMin) / 8);
+            document.getElementById('var-range-7').textContent = '0.4 - 0.47';
+        document.getElementById('var-min').textContent = '-0.73 - 0.064';
+        document.getElementById('var-range-1').textContent = '0.064 - 0.1';
+        document.getElementById('var-range-2').textContent ='0.1 - 0.12';
+        document.getElementById('var-range-3').textContent = '0.12 - 0.14';
+        document.getElementById('var-range-4').textContent = '0.14 - 0.2';
+        document.getElementById('var-range-5').textContent = '0.2 - 0.3';
+        document.getElementById('var-range-6').textContent = '0.3 - 0.4';
+        }
+        else if(parameter=='late-tweet') {
+            document.getElementById('var-range-7').textContent = '7,800-9,817';
+        document.getElementById('var-min').textContent = '';
+        document.getElementById('var-range-1').textContent = '1 - 200';
+        document.getElementById('var-range-2').textContent ='200 - 400';
+        document.getElementById('var-range-3').textContent = '400 - 1,000';
+        document.getElementById('var-range-4').textContent = '1,000 - 3,800';
+        document.getElementById('var-range-5').textContent = '3,800 - 5,000';
+        document.getElementById('var-range-6').textContent = '5,000 - 7,800';
         }
         else {
-            range = parseInt((varMax - varMin) / 8);
+            range = (varMax-varMin)/8
+            document.getElementById('var-min').textContent = varMin.toLocaleString()+' - '+(varMin+range).toLocaleString();
+        document.getElementById('var-range-1').textContent = (varMin+range).toLocaleString()+' - '+(varMin+(2*range)).toLocaleString();
+        document.getElementById('var-range-2').textContent = (varMin+(2*range)).toLocaleString()+' - '+(varMin+(3*range)).toLocaleString();
+        document.getElementById('var-range-3').textContent = (varMin+(3*range)).toLocaleString()+' - '+(varMin+(4*range)).toLocaleString();
+        document.getElementById('var-range-4').textContent = (varMin+(4*range)).toLocaleString()+' - '+(varMin+(5*range)).toLocaleString();
+        document.getElementById('var-range-5').textContent = (varMin+(5*range)).toLocaleString()+' - '+(varMin+(6*range)).toLocaleString();
+        document.getElementById('var-range-6').textContent = (varMin+(6*range)).toLocaleString()+' - '+(varMin+(7*range)).toLocaleString();
+        document.getElementById('var-range-7').textContent = (varMin+(7*range)).toLocaleString()+' - '+varMax.toLocaleString();
         }
         document.getElementById('legend-title').textContent = title;
-        document.getElementById('var-min').textContent = varMin.toLocaleString() + ' - ' + (varMin + range).toLocaleString();
-        document.getElementById('var-range-1').textContent = (varMin + range).toLocaleString() + ' - ' + (varMin + (2 * range)).toLocaleString();
-        document.getElementById('var-range-2').textContent = (varMin + (2 * range)).toLocaleString() + ' - ' + (varMin + (3 * range)).toLocaleString();
-        document.getElementById('var-range-3').textContent = (varMin + (3 * range)).toLocaleString() + ' - ' + (varMin + (4 * range)).toLocaleString();
-        document.getElementById('var-range-4').textContent = (varMin + (4 * range)).toLocaleString() + ' - ' + (varMin + (5 * range)).toLocaleString();
-        document.getElementById('var-range-5').textContent = (varMin + (5 * range)).toLocaleString() + ' - ' + (varMin + (6 * range)).toLocaleString();
-        document.getElementById('var-range-6').textContent = (varMin + (6 * range)).toLocaleString() + ' - ' + (varMin + (7 * range)).toLocaleString();
-        document.getElementById('var-range-7').textContent = (varMin + (7 * range)).toLocaleString() + ' - ' + varMax.toLocaleString();
+        
         if (parameter === 'late-senti' || parameter == 'late-tweet')
             map.setOptions({
                 styles: [
@@ -237,17 +287,17 @@ function styleFeature(feature) {
         colour[1] = 100;
         colour[2] = 25;
     }
-    else if (feature.getProperty('curr_variable') >= 2000) {
+    else if (feature.getProperty('curr_variable') >= 1000) {
         colour[0] = 100;
         colour[1] = 100;
         colour[2] = 35;
     }
-    else if (feature.getProperty('curr_variable') >= 1000) {
+    else if (feature.getProperty('curr_variable') >= 400) {
         colour[0] = 100;
         colour[1] = 100;
         colour[2] = 55;
     }
-    else if (feature.getProperty('curr_variable') >= 300) {
+    else if (feature.getProperty('curr_variable') >= 200) {
         colour[0] = 100;
         colour[1] = 100;
         colour[2] = 75;
@@ -337,17 +387,18 @@ function mouseEnter(event) {
     event.feature.setProperty('state', 'hover');
     document.getElementById('data-label').textContent =
         event.feature.getProperty('SA2_NAME16');
-    document.getElementById('data-value').textContent =
-        event.feature.getProperty('curr_variable').toLocaleString();
     document.getElementById('data-box').style.display = 'block';
     if (event.feature.getProperty('sentiment') !== undefined) {
+        document.getElementById('data-value').textContent = "";
         document.getElementById('data-box-senti').style.display = 'block';
         document.getElementById('data-box-senti').style.backgroundColor = 'white';
         document.getElementById('data-box-senti').style.boxShadow = '0 4px 6px -4px #333';
+        document.getElementById('data-label-senti').style.display = 'inline-block';
+    document.getElementById('data-value-senti').style.display = 'inline-block';
         document.getElementById('data-label-senti').textContent =
-            "Overall Sentiment: "
+            "Sentiment Polarity: "
         document.getElementById('data-value-senti').textContent =
-            event.feature.getProperty('sentiment');
+            event.feature.getProperty('curr_variable');
         document.getElementById('data-label-senti-p').textContent =
             "Positive: "
         document.getElementById('data-value-senti-p').textContent =
@@ -361,9 +412,15 @@ function mouseEnter(event) {
         document.getElementById('data-value-senti-n').textContent =
             event.feature.getProperty('negative-count');
     }
+    else {
+        document.getElementById('data-value').textContent = event.feature.getProperty('curr_variable').toLocaleString();
+    }
 }
 
 function mouseExit(event) {
-    if (event.feature.getProperty('sentiment') === undefined) { document.getElementById('data-box-senti').style.display = 'none'; }
+    if (event.feature.getProperty('sentiment') === undefined) { document.getElementById('data-box-senti').style.display = 'none';
+    document.getElementById('data-label-senti').style.display = 'none';
+    document.getElementById('data-value-senti').style.display = 'none';
+    }
     event.feature.setProperty('state', 'normal');
 }

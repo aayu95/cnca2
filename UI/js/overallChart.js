@@ -1,6 +1,38 @@
 var suburbs = ["Albert Park", "Melbourne", "Brighton (Vic.)", "Brunswick", "Burwood", "Carlton", "Caulfield - North", "Clayton", "Dandenong", "Docklands", "East Melbourne", "Fitzroy", "Footscray", "Hawthorn", "Kensington (Vic.)", "Laverton", "Malvern East", "Melbourne Airport", "Mooroolbark", "North Melbourne", "Parkville", "Prahran - Windsor", "Richmond (Vic.)", "Skye - Sandhurst", "South Melbourne", "South Yarra - East", "Southbank", "St Kilda", "Yarra Valley", "Collingwood"];
 function renderPie() {
-    var file = 'http://localhost:3000/getTweetCountBySuburb'
+    var ip;
+    var port = 30006;
+    function doGET(path, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                // The request is done; did it work?
+                if (xhr.status == 200) {
+                    // ***Yes, use `xhr.responseText` here***
+                    callback(xhr.responseText);
+                } else {
+                    // ***No, tell the callback the call failed***
+                    callback(null);
+                }
+            }
+        };
+        xhr.open("GET", path, false);
+        xhr.send();
+    }
+
+    function handleFileData(fileData) {
+        if (!fileData) {
+            // Show error
+            return;
+        }
+        ip = fileData.split('\n').shift();
+        console.log(ip);
+        // Use the file data
+    }
+    // Do the request
+    doGET("./current.txt", handleFileData);
+
+    var file = 'http://'+ip+':'+port+'/getTweetCountBySuburb'
     var margin = { top: 20, right: 20, bottom: 80, left: 70 },
         width = 700 - margin.left - margin.right + 20,
         height = 450 - margin.top - margin.bottom ;
@@ -27,6 +59,11 @@ function renderPie() {
         .append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
+        svg.append("text")
+    .attr("x", 5 )
+    .attr("y", 170)
+    .style("text-anchor", "middle")
+    .text("Hover to know tweet count per suburb");
 
     d3.json(file, function (error, data) {
         if (error) throw error;
@@ -63,7 +100,7 @@ function renderPie() {
             tooltip.style('text-align', 'center');
             tooltip.style('padding', '4px');
             tooltip.style('display', 'block');
-			tooltip.style('opacity',0.9);
+			tooltip.style('opacity',0.8);
         })
 
         path.on('mousemove', function(d) {
@@ -114,6 +151,40 @@ function renderPie() {
 }
 
 function renderLine() {
+
+    var ip;
+    var port = 30006;
+    function doGET(path, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                // The request is done; did it work?
+                if (xhr.status == 200) {
+                    // ***Yes, use `xhr.responseText` here***
+                    callback(xhr.responseText);
+                } else {
+                    // ***No, tell the callback the call failed***
+                    callback(null);
+                }
+            }
+        };
+        xhr.open("GET", path, false);
+        xhr.send();
+    }
+
+    function handleFileData(fileData) {
+        if (!fileData) {
+            // Show error
+            return;
+        }
+        ip = fileData.split('\n').shift();
+        console.log(ip);
+        // Use the file data
+    }
+    // Do the request
+    doGET("./current.txt", handleFileData);
+
+    var file = 'http://'+ip+':'+port+'/getTimeTrend'
     //d3.select("svg").remove();
     var marginL = { top: 30, right: 20, bottom: 30, left: 60 },
         widthL = 900 - marginL.left - marginL.right,
@@ -148,7 +219,7 @@ function renderLine() {
         .attr("transform", "translate(" + marginL.left + "," + marginL.top + ")");
 
     // Get the data
-    d3.json("http://localhost:3000/getTimeTrend", function (error, data) {
+    d3.json(file, function (error, data) {
         data = data.rows;
         // Scale the range of the data
         xL.domain(d3.extent(data, function (d) { return d.key; }));

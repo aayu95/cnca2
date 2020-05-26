@@ -290,11 +290,43 @@ $(document).ready(function() {
         $("#creativeS").hide();
     });
 
+    var ip;
+    var port = 30006;
+    function doGET(path, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                // The request is done; did it work?
+                if (xhr.status == 200) {
+                    // ***Yes, use `xhr.responseText` here***
+                    callback(xhr.responseText);
+                } else {
+                    // ***No, tell the callback the call failed***
+                    callback(null);
+                }
+            }
+        };
+        xhr.open("GET", path, false);
+        xhr.send();
+    }
+
+    function handleFileData(fileData) {
+        if (!fileData) {
+            // Show error
+            return;
+        }
+        ip = fileData.split('\n').shift();
+        console.log(ip);
+        // Use the file data
+    }
+    // Do the request
+    doGET("./current.txt", handleFileData);
+
     //Create table from datastream
     var id=0;
     (function worker() {
         $.ajax({
-            url: 'http://localhost:3000/getLatestTweets', 
+            url: 'http://'+ip+':'+port+'/getLatestTweets', 
             success: function(data) {
               var table = '<table border="1" id="tweetData"><thead><tr><th style="padding: 6px; text-align: center">Tweet</th></tr></thead><tbody>';
               for(var i = id; i<data.rows.length; i++){
@@ -307,7 +339,7 @@ $(document).ready(function() {
             },
             complete: function() {
               // Schedule the next request when the current one's complete
-              setTimeout(worker, 30000);
+              setTimeout(worker, 10000);
             }
           });
         })();
