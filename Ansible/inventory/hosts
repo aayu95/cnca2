@@ -1,0 +1,51 @@
+
+[Master]
+Master
+[Master:vars]
+
+ansible_ssh_private_key_file=./keypair/Private_key.pem
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_user=ubuntu
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+
+
+[Workers]
+Worker_1
+Worker_2
+Worker_3
+
+[Workers:vars]
+; command_warnings=False
+ansible_ssh_private_key_file=./keypair/Private_key.pem
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_user=ubuntu
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+
+; [Worker_1]
+; Worker_1
+
+; [Worker_1:vars]
+; ansible_ssh_private_key_file=./ClusterTest.pem
+; ansible_python_interpreter=/usr/bin/python
+; ansible_ssh_user=ubuntu
+; ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+; [Worker_2]
+; Worker_2
+
+; [Worker_2:vars]
+; ansible_ssh_private_key_file=./ClusterTest.pem
+; ansible_python_interpreter=/usr/bin/python
+; ansible_ssh_user=ubuntu
+; ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+; [Worker_3]
+; Worker_3
+
+; [Worker_3:vars]
+; ansible_ssh_private_key_file=./ClusterTest.pem
+; ansible_python_interpreter=/usr/bin/python
+; ansible_ssh_user=ubuntu
+; ansible_ssh_common_args='-o StrictHostKeyChecking=no'

@@ -1,0 +1,4 @@
+--- 
+
+docker_dir: /etc/systemd/system/docker.service.d
+service_dir: /etc/systemd/system/docker.service.d/http-proxy.conf

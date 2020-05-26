@@ -1,0 +1,106 @@
+---
+
+
+#sudo kubeadm init
+- name: initialise kubeadm module
+  become: yes
+  shell: kubeadm init --apiserver-advertise-address={{ item }} --service-cidr=10.96.0.0/16 --pod-network-cidr=10.244.0.0/16
+  when: " 'Master' in {{ group_names }}"
+  with_items:
+    - "{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+        
+#check variables
+- name: check HOME
+  shell: echo $HOME
+  register: home
+  when: " 'Master' in {{ group_names }}"
+
+- name: print home
+  debug:
+    var: home
+  when: " 'Master' in {{ group_names }}"
+
+#make dir
+- name: make dir
+  become: yes
+  file:
+    path: "{{ home.stdout }}/.kube"
+    state: directory
+  when: " 'Master' in {{ group_names }}"
+
+
+- name: check user
+  shell: echo $(id -u)
+  register: userid
+  when: " 'Master' in {{ group_names }}"
+
+- name: check HOgroupME
+  shell: echo $(id -g)
+  register: grpid
+  when: " 'Master' in {{ group_names }}"
+
+- name: print user
+  debug:
+    var: userid
+  when: " 'Master' in {{ group_names }}"
+
+- name: print group
+  debug:
+    var: grpid
+  when: " 'Master' in {{ group_names }}"
+
+#configuration file and CNI install 
+- name: config file 
+  retries: 5
+  delay: 4
+  become: yes
+  shell: "{{ item }}"
+  with_items:
+    - cp -i /etc/kubernetes/admin.conf {{ home.stdout }}/.kube/config
+  when: " 'Master' in {{ group_names }}"
+
+
+- name: change permissions for config file
+  shell: "{{ item }}"
+  become: yes
+  with_items:
+    - chown {{ userid.stdout }}:{{ grpid.stdout }} {{ home.stdout }}/.kube/config
+    - chmod 777 {{ home.stdout }}/.kube/config
+  when: " 'Master' in {{ group_names }}"
+
+
+
+# - name: wait for 20 seconds
+#   wait_for:
+#     timeout: 20
+
+- name: create the join command and set the fact
+  become: yes
+  shell: kubeadm token create --print-join-command
+  register: join
+  when: " 'Master' in {{ group_names }}"
+  
+
+- name: run command on workers
+  become: yes
+  retries: 5
+  delay: 4
+  shell: "sudo {{ join.stdout }} --v=5"
+  # debug:
+  #   msg: '{{ join.stdout }}'
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['Workers'] }}"
+  when: " 'Master' in {{ group_names }}"
+
+
+
+- name: install CNI
+  retries: 5
+  delay: 4
+  # become: yes
+  shell: "{{ item }}"
+  with_items:
+    - export KUBECONFIG={{ home.stdout }}/.kube/config
+    - sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    - sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
+  when: " 'Master' in {{ group_names }}"

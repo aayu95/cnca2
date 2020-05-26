@@ -1,0 +1,19 @@
+---
+
+- hosts: localhost
+  vars_files:
+    - host_vars/variables.yaml
+  gather_facts: true
+
+  roles:
+    - role: install_local_dependencies #working
+    - role: create_keypair             #working
+    - role: create_security_groups     #working
+    - role: create_volumes             #working
+    - role: create_instances           #working
+
+
+
+
+
+
