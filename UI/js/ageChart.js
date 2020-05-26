@@ -33,8 +33,8 @@ $(document).ready(function () {
         });
 
     var svg = d3.select("#barGraph").append("svg")
-        .attr("width", width + margin.left + margin.right + 20)
-        .attr("height", height + margin.top + margin.bottom + 60)
+        .attr("width", width + margin.left + margin.right + 100)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
@@ -71,13 +71,21 @@ $(document).ready(function () {
             .attr("class", "y axis")
             .call(yAxis)
             .append("text")
+            .style("text-anchor", "end")
+            .style("font-weight", "bold")
+            .text("Population (Aged 15-40)")
             .attr("transform", "rotate(-90)")
-            .attr("dy", ".71em");
+            .attr("dy", "1em");
 
         svg.append("g")
-            .attr("class", "y axis")
+            .attr("class", "y axis1")
             .attr("transform", "translate(" + width + " ,0)")
-            .call(yAxisRight);
+            .call(yAxisRight)
+            .append("text")
+            .style("text-anchor", "end")
+            .text("Late Night tweets")
+            .attr("transform", "rotate(-90)")
+            .attr("dy", "-0.8em");
 
         svg.selectAll(".bar")
             .data(finData)
@@ -86,9 +94,21 @@ $(document).ready(function () {
             .attr("x", function (d) { return x(d.key); })
             .attr("width", x.rangeBand())
             .attr("y", function (d) { return y(d.value); })
-            .attr("height", function (d) { return height - y(d.value); })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
+            .attr("height", function (d) { return height - y(d.value); });
+
+
+        svg.selectAll(".text")  		
+        .data(finData)
+        .enter()
+        .append("text")
+        .attr("class","label")
+        .attr("x", (function(d) { return x(d.key) + x.rangeBand() / 2 ; }  ))
+        .attr("y", function(d) { return y(d.value) + 1; })
+        .attr("dy", "-1em")
+        .attr("dx", "-1.2em")
+        .text(function(d) { return d.value; })
+        .style("font-weight", "bold")
+        .style("font-size", "8.5px");   	  
 
         var valueline = d3.svg.line()
             .x(function (d) { return x(d.key); })
@@ -104,7 +124,7 @@ $(document).ready(function () {
         var focus = svg
             .append('g')
             .append('circle')
-            .style("fill", "steelblue")
+            .style("fill", "#6b486b")
             .attr("stroke", "black")
             .attr('r', 2.5)
             .style("opacity", 0)
@@ -139,22 +159,21 @@ $(document).ready(function () {
             var j;
             for (j = 0; xPos > (leftEdges[j] + width); j++) { }
             var x0 = x.domain()[j];
-            var i = bisect(data, x0, 1);
-            selectedData = data[i]
+            var i = bisect(finData, x0, 1);
+            selectedData = finData[i]
             focus
                 .attr("cx", x(selectedData.key))
-                .attr("cy", y(selectedData.value))
-            focusText
-                .html(selectedData.key + "\n" + "Tweets: " + selectedData.value)
+                .attr("cy", y1(selectedData.tweets))
+                focusText
+                .html(selectedData.key + "\n" + "tweets: " + selectedData.tweets)
+                .style("font-weight", "bold")
                 .attr("x", x(selectedData.key))
-                .attr("y", y(selectedData.value))
+                .attr("y", y1(selectedData.tweets))
         }
         function mouseout() {
             focus.style("opacity", 0)
             focusText.style("opacity", 0)
         }
-
-
     });
 });
 
@@ -178,7 +197,7 @@ function renderPlots() {
 
     // add the graph canvas to the body of the webpage
     var svgS = d3.select("#scatterPlot").append("svg")
-        .attr("width", widthS + marginS.left + marginS.right)
+        .attr("width", widthS + marginS.left + marginS.right + 150)
         .attr("height", heightS + marginS.top + marginS.bottom)
         .append("g")
         .attr("transform", "translate(" + marginS.left + "," + marginS.top + ")");
@@ -241,7 +260,7 @@ function renderPlots() {
             .attr("r", 3.5)
             .attr("cx", xMap)
             .attr("cy", yMap)
-            .style("fill", "steelblue")
+            .style("fill", "#7b6888")
             .on("mouseover", function (d) {
                 tooltip.transition()
                     .duration(200)

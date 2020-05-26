@@ -9,6 +9,8 @@ $(document).ready(function() {
     $("#map").hide();
     $("#ageB").hide();
     $("#ageS").hide();
+    $("#pie").hide();
+    $("#line").hide();
     $("#alcohol").hide();
     $("#disease").hide();
     $("#creative").hide();
@@ -19,6 +21,8 @@ $(document).ready(function() {
         $("#map").show();
         $("#ageB").hide();
         $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
         $("#alcohol").hide();
         $("#disease").hide();
         $("#creative").hide();
@@ -30,8 +34,23 @@ $(document).ready(function() {
         $("#info").show();
         $("#ageB").hide();
         $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
         $("#alcohol").hide();
         $("#disease").hide();
+        $("#creative").hide();
+    });
+    $("#overallButton").click(function(e) {
+        $("#legend").hide();
+        $(".nicebox").hide();
+        $("#map").hide();
+        $("#info").hide();
+        $("#ageB").hide();
+        $("#ageS").hide();
+        $("#pie").show();
+        $("#line").show();
+        $("#alcohol").hide();
+        $("#disease").show();
         $("#creative").hide();
     });
     $("#ageButton").click(function(e) {
@@ -41,6 +60,8 @@ $(document).ready(function() {
         $("#info").hide();
         $("#ageB").show();
         $("#ageS").show();
+        $("#pie").hide();
+        $("#line").hide();
         $("#alcohol").hide();
         $("#disease").hide();
         $("#creative").hide();
@@ -52,6 +73,8 @@ $(document).ready(function() {
         $("#info").hide();
         $("#ageB").hide();
         $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
         $("#alcohol").show();
         $("#disease").hide();
         $("#creative").hide();
@@ -63,17 +86,21 @@ $(document).ready(function() {
         $("#info").hide();
         $("#ageB").hide();
         $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
         $("#alcohol").hide();
         $("#disease").show();
         $("#creative").hide();
     });
-    $("#alcoholButton").click(function(e) {
+    $("#creativeButton").click(function(e) {
         $("#legend").hide();
         $(".nicebox").hide();
         $("#map").hide();
         $("#info").hide();
         $("#ageB").hide();
         $("#ageS").hide();
+        $("#pie").hide();
+        $("#line").hide();
         $("#alcohol").hide();
         $("#disease").hide();
         $("#creative").show();
