@@ -10,12 +10,12 @@
 
 Assignment 2 for Cloud and Cluster computing : COMP90024
 
-# Configure and deploy instances - 
+# Configure and Deploy instances 
 
 Run Ansible/runTest.sh file to start automated deployment and configuration of NeCTAR instances.
 - Command - sh Ansible/runTest.sh
 
-# Script Behaviour -
+# Script Behaviour 
 This will perform following actions - 
 
 1. Create SSH Key Pair, Security Groups, Volumes & Instances.
