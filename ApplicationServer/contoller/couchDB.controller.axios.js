@@ -1,3 +1,9 @@
+/*
+Team number: 15
+City: Melbourne 
+Team Members: Aayush Mehta (1105081); Abhijeet Singh (1094984); Anoushka Doctor (1012827); Muhammad Atif (924009); Siddharth Agarwal (1077275)
+*/
+
 const axios = require('axios')
 const fs = require('fs');
 const readline = require('readline');
@@ -63,7 +69,7 @@ exports.getTweetCountBySuburb = (req, res) => {
 };
 
 exports.getLateTweetCountBySuburb = (req, res) => {
-  axios.get('tweets/_design/twitter/_view/countLateTweetsInSuburb?group_level=1&update=lazy')
+  axios.get('tweets/_design/twitter/_view/countLateTweetsBySuburb?group_level=1&update=lazy')
     .then(function (response) {
       res.send(response.data);
     })

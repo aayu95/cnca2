@@ -1,3 +1,13 @@
+# Team 15
+# City: Melbourne
+
+# Aayush Mehta (1105081)
+# Abhijeet Singh (1094984)
+# Anoushka Doctor (1012827)
+# Muhammad Atif (924009)
+# Siddharth Agarwal (1077275)
+
+
 import couchdb
 import couchdb.design
 import datetime
@@ -15,8 +25,6 @@ class StreamDatabase(object):
                 self.database = self.databaseServer[databaseName]
             else:
                 self.database = self.databaseServer.create(databaseName)
-
-            self.createViews()
         
         except Exception as e:
             with open('streamdabatase_log','a') as f:

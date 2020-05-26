@@ -9,5 +9,3 @@ server_image: sid26ag/applicationserver
 lb_docker_name: sid26ag/lb
 lb_out_port: 30000
 lb_in_port: 3000
-username: SidAg26
-password: Sanjay587260994

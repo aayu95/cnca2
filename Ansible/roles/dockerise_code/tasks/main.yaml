@@ -76,13 +76,36 @@
     mode: '777'
 
 
+
+- name: current host file for UI folder 
+  become: yes
+  file: 
+    dest: '{{ destdir }}/UI/current.txt'
+    state: touch
+    mode: 777
+
+- name: write current host file to UI folder 
+  become: yes
+  template:
+    src: "{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}.j2"
+    dest: '{{ destdir }}/UI/current.txt'
+
+- name: change permissions of current in UI folder
+  become: yes
+  file:
+    path: '{{ destdir }}/UI/current.txt'
+    mode: '777'
+
+
+
+
 - name: Run the Load AURIN script to Start Harvester
   become: yes
   async: 31536000
   poll: 0
   command: 'python3 load_aurin_data.py &'
   args:
-    chdir: '{{ destdir }}/Database/'
+    chdir: '{{ destdir }}/Database/tweets_Harvester/'
 
 
 
