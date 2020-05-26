@@ -1,35 +1,7 @@
 ---
-
-
-
-
-
-
-# - name: consistent uuid
-#   become: yes
-#   shell: curl -X GET http://localhost:5984/
-
-
-
-# - name: replace the n = 3 master
-#   become: yes
-#   replace:
-#     dest: '{{ local }}'
-#     regexp: 'n = 3'
-#     replace: 'n = 4'
-#   when: " 'Master' in {{ group_names }} "
-
-
-
-# - name: replace the n = 3 workers
-#   become: yes
-#   replace:
-#     dest: '{{ local }}'
-#     regexp: 'n = 3'
-#     replace: 'n = 4'
-#   delegate_to: '{{ item }}'
-#   loop: "{{ groups['Workers'] }}"
-#   when: " 'Master' in {{ group_names }} "
+# Team number: 15
+# City: Melbourne 
+# Team Members: Aayush Mehta (1105081); Abhijeet Singh (1094984); Anoushka Doctor (1012827); Muhammad Atif (924009); Siddharth Agarwal (1077275)
 
 
 
@@ -113,7 +85,7 @@
     line: 'view_index_dir = {{ view_index_dir }}'
   when: " 'Master' in {{ group_names }} "
 
-- name: set the database dir for workers
+- name: set the views dir for workers
   become: yes
   lineinfile: 
     dest: '{{ local }}'
@@ -166,7 +138,7 @@
   when: " 'Master' in {{ group_names }} "
 
 
-- name: print comm1
+- name: print output of coordinator command 1
   debug:
     msg: '{{ comm1 }}'
 
@@ -185,7 +157,7 @@
 
 
 
-- name: print comm2
+- name: print print output of coordinator command 2
   debug:
     msg: '{{ comm2 }}'
 
@@ -201,13 +173,13 @@
   debug:
     msg: '{{ comm }}'
 
-- name: get the output 
+- name: get the output of setup 
   become: yes
   shell: curl http://admin:qweasdzxc@{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}:5984/_cluster_setup
   register: output
   when: " 'Master' in {{ group_names }} "
 
-- name: print output
+- name: print output of setup
   debug:
     msg: '{{ output }}'
   when: " 'Master' in {{ group_names }} "
