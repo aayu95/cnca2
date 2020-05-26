@@ -39,14 +39,14 @@ security_groups:
     port_range_max: 5984
     remote_ip_prefix: 0.0.0.0/0
   - name: CnC_Server_Nodes
-    description: "Port open for K8s node"
+    description: "Port open for Cluster nodes"
     protocol: tcp
     port_range_min: 30000
     port_range_max: 30000
     remote_ip_prefix: 0.0.0.0/0
   
   - name: CnC_Load_Balancer
-    description: "Port open for K8s node"
+    description: "Port open for Cluster master"
     protocol: tcp
     port_range_min: 30001
     port_range_max: 30001
