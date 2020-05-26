@@ -2,9 +2,9 @@
 
 - Aayush Mehta - 1105081 
 - Abhijeet Singh - 1094984
-Anoushka Doctor - 1012827
-Muhammad Atif - 924009
-Siddharth Agarwal - 1077275
+- Anoushka Doctor - 1012827
+- Muhammad Atif - 924009
+- Siddharth Agarwal - 1077275
 
 # cnca2
 
@@ -13,7 +13,7 @@ Assignment 2 for Cloud and Cluster computing : COMP90024
 # CONFIGURING AND DEPLOY INSTANCES - 
 
 Run Ansible/runTest.sh file to start automated deployment and configuration of NeCTAR instances.
-Command - sh Ansible/runTest.sh
+- Command - sh Ansible/runTest.sh
 
 # SCRIPT BEHAVIOUR -
 This will perform following actions - 
