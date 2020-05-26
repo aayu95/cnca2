@@ -8,7 +8,7 @@
 
 # Cluster & Cloud Computing @ The University of Melbourne
 
-Assignment 2 for Cloud and Cluster computing : COMP90024
+Assignment 2 for Cluster and Cloud computing : COMP90024
 
 # Configure and Deploy instances 
 
