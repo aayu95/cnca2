@@ -2,10 +2,10 @@ import json
 import couchdb
 import couchdb.design
 import datetime
-from tweets_Harvester.common import *
+from common import *
 
 try:
-	with open("../Common/current.txt", 'r') as current:
+	with open("../../Common/current.txt", 'r') as current:
 		ipaddress = current.readline().strip()
 		
 	databaseServer = couchdb.Server(("http://%s:%s@%s:5984/" % (username, password, ipaddress))) 	# Connect to CouchDB server
@@ -15,15 +15,15 @@ try:
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 	# Set data file paths
-	posDataFile = 'Data/SA2_Qualification_Field_of_Study/data.json'
-	incomeDataFile = 'Data/SA2_Personal_Income_Distribution/data.json'
-	educationDataFile = 'Data/SA2_Education/data.json'
-	healthDataFile = 'Data/SA2_Self_Assessed_Health/data.json'
-	lifeSatDataFile = 'Data/SA2_Life_Satisfaction_Indicators/data.json'
-	chronicDisDataFile = 'Data/SA2_Chronic_Disease/data.json'
-	countryDataFile = 'Data/SA2_Country_of_Birth/data.json'
-	ageDataFile = 'Data/SA2_Age_Distribution/data.json'
-	alcoholDataFile = 'Data/SA2_Health_Risk_Factors/data.json'
+	posDataFile = '../Data/SA2_Qualification_Field_of_Study/data.json'
+	incomeDataFile = '../Data/SA2_Personal_Income_Distribution/data.json'
+	educationDataFile = '../Data/SA2_Education/data.json'
+	healthDataFile = '../Data/SA2_Self_Assessed_Health/data.json'
+	lifeSatDataFile = '../Data/SA2_Life_Satisfaction_Indicators/data.json'
+	chronicDisDataFile = '../Data/SA2_Chronic_Disease/data.json'
+	countryDataFile = '../Data/SA2_Country_of_Birth/data.json'
+	ageDataFile = '../Data/SA2_Age_Distribution/data.json'
+	alcoholDataFile = '../Data/SA2_Health_Risk_Factors/data.json'
 
 	def couchdb_data_import(databaseName, dataFilePath):
 		# Create database
