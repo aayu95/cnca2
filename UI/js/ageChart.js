@@ -3,6 +3,7 @@ function renderBarGraph(parameter) {
     d3.select("svg").remove();
     var formatNum = d3.format(".1f");
     var file, id, yTitle;
+    
     if(parameter==='age') {
         file = 'http://localhost:3000/getAurinAgeData';
         id = '#barGraph';
@@ -28,6 +29,21 @@ function renderBarGraph(parameter) {
         id = '#incomeBarGraph';
         yTitle = "Income";
     }
+    else if(parameter==='life') {
+        file = 'http://localhost:3000/getAurinLifeSatisfactionData';
+        id = '#lifeBarGraph';
+        yTitle = "Life Satisfaction measure";
+    }
+    else if(parameter==='creative') {
+        file = 'http://localhost:3000/getAurinCreativityData';
+        id = '#creativeBarGraph';
+        yTitle = "Number of creative people";
+    }
+    else if(parameter==='nation') {
+        file = 'http://localhost:3000/getAurinNationalityData';
+        id = '#nationBarGraph';
+        yTitle = "Number of foreign people";
+    }
     var line = 'http://localhost:3000/getLateTweetCountBySuburb';
     d3.select("svg").remove();
     var margin = { top: 30, right: 20, bottom: 80, left: 70 },
@@ -52,21 +68,12 @@ function renderBarGraph(parameter) {
     var yAxisRight = d3.svg.axis().scale(y1)
         .orient("right").ticks(10);
 
-    var tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html(function (d) {
-            return "<strong>Count:</strong> <span style='color:black;'>" + d.value + "</span>";
-        });
-
     var svg = d3.select(id).append("svg")
         .attr("width", width + margin.left + margin.right + 100)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-
-    svg.call(tip);
     var finData;
     d3.json(file, function (error, dataA) {
         finData = dataA.rows;
@@ -83,7 +90,7 @@ function renderBarGraph(parameter) {
         });
         console.log(finData);
         x.domain(finData.map(function (d) { return d.key; }));
-        y.domain([0, d3.max(finData, function (d) { return d.value; })]);
+        y.domain([0, d3.max(finData, function (d) { if(parameter==='nation')return d.value.international_count; else return d.value; })]);
         y1.domain([0, d3.max(finData, function (d) { return d.tweets; })]).nice();
         svg.append("g")
             .attr("class", "x axis")
@@ -121,8 +128,8 @@ function renderBarGraph(parameter) {
             .attr("class", "bar")
             .attr("x", function (d) { return x(d.key); })
             .attr("width", x.rangeBand())
-            .attr("y", function (d) { return y(d.value); })
-            .attr("height", function (d) { return height - y(d.value); });
+            .attr("y", function (d) { if(parameter==='nation') return y(d.value.international_count); else return y(d.value) })
+            .attr("height", function (d) { if(parameter==='nation') return height - y(d.value.international_count); else return height - y(d.value); });
 
 
         svg.selectAll(".text")  		
@@ -131,10 +138,10 @@ function renderBarGraph(parameter) {
         .append("text")
         .attr("class","label")
         .attr("x", (function(d) { return x(d.key) + x.rangeBand() / 2 ; }  ))
-        .attr("y", function(d) { return y(d.value) + 1; })
+        .attr("y", function(d) { if(parameter==='nation') return y(d.value.international_count) + 1; else return y(d.value) + 1;})
         .attr("dy", "-1em")
         .attr("dx", "-1.2em")
-        .text(function(d) { return formatNum(d.value); })
+        .text(function(d) { if(parameter==='nation') return formatNum(d.value.international_count); else return formatNum(d.value); })
         .style("font-weight", "bold")
         .style("font-size", "8.5px");   	  
 
@@ -238,6 +245,24 @@ function renderPlots(parameter) {
         yTitleS = "Income";
         tTip = "#incomeSCard";
     }
+    else if(parameter==='life') {
+        fileS = 'http://localhost:3000/getAurinLifeSatisfactionData';
+        idS = '#lifeScatterPlot';
+        yTitleS = "Life Satisfaction Measure";
+        tTip = "#lifeSCard";
+    }
+    else if(parameter==='creative') {
+        fileS = 'http://localhost:3000/getAurinCreativityData';
+        idS = '#creativeScatterPlot';
+        yTitleS = "Number of Creative People";
+        tTip = "#creativeSCard";
+    }
+    else if(parameter==='nation') {
+        fileS = 'http://localhost:3000/getAurinNationalityData';
+        idS = '#nationScatterPlot';
+        yTitleS = "Number of Foreign People";
+        tTip = "#nationSCard";
+    }
     var lineS = 'http://localhost:3000/getLateTweetCountBySuburb';
     //Scatter Plot 
     var marginS = { top: 20, right: 20, bottom: 30, left: 40 },
@@ -245,15 +270,15 @@ function renderPlots(parameter) {
         heightS = 350 - marginS.top - marginS.bottom;
 
     // setup x 
-    var xValue = function (d) { return d.tweets; }, // data -> value
-        xScale = d3.scale.linear().range([0, widthS]), // value -> display
-        xMap = function (d) { return xScale(xValue(d)); }, // data -> display
+    var xValue = function (d) { return d.tweets; }, 
+        xScale = d3.scale.linear().range([0, widthS]),
+        xMap = function (d) { return xScale(xValue(d)); }, 
         xAxisS = d3.svg.axis().scale(xScale).orient("bottom");
 
     // setup y
-    var yValue = function (d) { return d.value; }, // data -> value
-        yScale = d3.scale.linear().range([heightS, 0]), // value -> display
-        yMap = function (d) { return yScale(yValue(d)); }, // data -> display
+    var yValue = function (d) { if(parameter==='nation')return d.value.international_count; else return d.value; },
+        yScale = d3.scale.linear().range([heightS, 0]), 
+        yMap = function (d) { return yScale(yValue(d)); }, 
         yAxisS = d3.svg.axis().scale(yScale).orient("left");
 
     // add the graph canvas to the body of the webpage

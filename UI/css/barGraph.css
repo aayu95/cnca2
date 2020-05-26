@@ -71,7 +71,8 @@
 
 #barCard, #pieCard, #alcoholBCard,
 #diseaseBCard, #nationBCard, #healthBCard, 
-#incomeBCard{
+#incomeBCard, #lifeBCard, 
+#creativeBCard{
   position: relative;
   text-align: center;
   font-family: "Roboto", "Arial", sans-serif;
@@ -86,7 +87,8 @@
 }
 #scatterCard, #lineCard, #alcoholSCard, 
 #diseaseSCard, #nationSCard, #healthSCard,
-#incomeSCard {
+#incomeSCard, #lifeSCard,
+#creativeSCard {
   position: relative;
   text-align: center;
   font-family: "Roboto", "Arial", sans-serif;

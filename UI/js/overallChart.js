@@ -1,6 +1,5 @@
 var suburbs = ["Albert Park", "Melbourne", "Brighton (Vic.)", "Brunswick", "Burwood", "Carlton", "Caulfield - North", "Clayton", "Dandenong", "Docklands", "East Melbourne", "Fitzroy", "Footscray", "Hawthorn", "Kensington (Vic.)", "Laverton", "Malvern East", "Melbourne Airport", "Mooroolbark", "North Melbourne", "Parkville", "Prahran - Windsor", "Richmond (Vic.)", "Skye - Sandhurst", "South Melbourne", "South Yarra - East", "Southbank", "St Kilda", "Yarra Valley", "Collingwood"];
-$(document).ready(function () {
-    renderLine();
+function renderPie() {
     var file = 'http://localhost:3000/getTweetCountBySuburb'
     var margin = { top: 20, right: 20, bottom: 80, left: 70 },
         width = 700 - margin.left - margin.right + 20,
@@ -39,46 +38,80 @@ $(document).ready(function () {
             .enter().append("g")
             .attr("class", "arc");
 
-        g.append("path")
+            var tooltip = d3.select("#pieCard")
+		        .append('div')
+		        .attr('class', 'tooltip');
+
+		tooltip.append('div')
+		.attr('class', 'label');
+
+		tooltip.append('div')
+		.attr('class', 'count');
+
+        var path = g.append("path")
             .attr("d", arc)
             .style("fill", function (d) { return color(d.data.key); });
 
-        svg
-            .selectAll('allPolylines')
-            .data(pie(data))
-            .enter()
-            .append('polyline')
-            .attr("stroke", "black")
-            .style("fill", "none")
-            .attr("stroke-width", 1)
-            .attr('points', function (d) {
-                var posA = arc.centroid(d) // line insertion in the slice
-                var posB = labelArc.centroid(d) // line break: we use the other arc generator that has been built only for that
-                var posC = labelArc.centroid(d); // Label position = almost the same as posB
-                var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
-                posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
-                return [posA, posB, posC]
-            })
+        path.on('mouseover', function(d){
+            tooltip.select('.label').html(d.data.key).style('color', 'black');
+            tooltip.select('.count').html(d.data.value);
+            tooltip.style('background-color', 'white');
+            tooltip.style('border', 'solid 1px black');
+            tooltip.style('border-radius', '1em');
+            tooltip.style('height', '3.5em');
+            tooltip.style('width', '9em');
+            tooltip.style('text-align', 'center');
+            tooltip.style('padding', '4px');
+            tooltip.style('display', 'block');
+			tooltip.style('opacity',0.9);
+        })
 
-        // Add the polylines between chart and labels:
-        svg
-            .selectAll('allLabels')
-            .data(pie(data))
-            .enter()
-            .append('text')
-            .text(function (d) { return d.data.key + ': ' + d.data.value })
-            .attr('transform', function (d) {
-                var pos = labelArc.centroid(d);
-                var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
-                pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
-                return 'translate(' + pos + ')';
-            })
-            .style('text-anchor', function (d) {
-                var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
-                return (midangle < Math.PI ? 'start' : 'end')
-            })
+        path.on('mousemove', function(d) {
+			tooltip.style('top', (d3.event.pageY + 5) + 'px')
+			.style('left', (d3.event.pageX - 25) + 'px');
+		});
+
+		path.on('mouseout', function() {
+			tooltip.style('display', 'none');
+			tooltip.style('opacity',0);
+		});
+
+        // svg
+        //     .selectAll('allPolylines')
+        //     .data(pie(data))
+        //     .enter()
+        //     .append('polyline')
+        //     .attr("stroke", "black")
+        //     .style("fill", "none")
+        //     .attr("stroke-width", 1)
+        //     .attr('points', function (d) {
+        //         var posA = arc.centroid(d) // line insertion in the slice
+        //         var posB = labelArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+        //         var posC = labelArc.centroid(d); // Label position = almost the same as posB
+        //         var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
+        //         posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+        //         return [posA, posB, posC]
+        //     })
+
+        // // Add the polylines between chart and labels:
+        // svg
+        //     .selectAll('allLabels')
+        //     .data(pie(data))
+        //     .enter()
+        //     .append('text')
+        //     .text(function (d) { return d.data.key + ': ' + d.data.value })
+        //     .attr('transform', function (d) {
+        //         var pos = labelArc.centroid(d);
+        //         var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        //         pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
+        //         return 'translate(' + pos + ')';
+        //     })
+        //     .style('text-anchor', function (d) {
+        //         var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        //         return (midangle < Math.PI ? 'start' : 'end')
+        //     })
     });
-});
+}
 
 function renderLine() {
     //d3.select("svg").remove();
