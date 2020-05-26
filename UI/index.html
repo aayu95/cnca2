@@ -75,7 +75,7 @@
                             Map Visualisation</a>
                         <a class="dropdown-item" href="#" id="overallButton">Overall Analysis</a>
                         <a class="dropdown-item" href="#" id="ageButton">Age Correlation</a>
-                        <a class="dropdown-item" href="#" id="scatterButton">Alcohol Correlation</a>
+                        <a class="dropdown-item" href="#" id="alcoholButton">Alcohol Correlation</a>
                     </div>
                 </li>
             </ul>
@@ -296,18 +296,34 @@
         <div class="row" id="ageB">
             <div class="col-12" id="barCard">
                 <h5 style="text-align: left;">Correlation between age and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with age of the population</h6>
                 <div id="barGraph" style="height: 27em;"></div>
             </div>
         </div>
         <div class="row" id="ageS">
             <div class="col-12" id="scatterCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with age of population</h6>
                 <div class="col-12" id="scatterPlot"></div>
+            </div>
+        </div>
+        <div class="row" id="alcoholB">
+            <div class="col-12" id="alcoholBCard">
+                <h5 style="text-align: left;">Correlation between alcohol consumption and late-night tweets</h5>
+                <h6 style="text-align: left;">Late-night tweet activity per suburb correlated with alcohol consumption</h6>
+                <div id="alcoholBarGraph" style="height: 27em;"></div>
+            </div>
+        </div>
+        <div class="row" id="alcoholS">
+            <div class="col-12" id="alcoholSCard">
+                <h6 style="text-align: left;">Late-night tweet activity correlated with alcohol consumption</h6>
+                <div class="col-12" id="alcoholScatterPlot"></div>
             </div>
         </div>
     </div>
     </div>
     <script src="js/ageChart.js"></script>
     <script src="js/overallChart.js"></script>
+    <script src="js/alcoholChart.js"></script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1ZHe4DN8e7je8A0V55LrYegHTD9P5nPs&callback=initMap">
         </script>

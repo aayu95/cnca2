@@ -11,7 +11,8 @@ $(document).ready(function() {
     $("#ageS").hide();
     $("#pie").hide();
     $("#line").hide();
-    $("#alcohol").hide();
+    $("#alcoholB").hide();
+    $("#alcoholS").hide();
     $("#disease").hide();
     $("#creative").hide();
     $("#mapButton").click(function(e) {
@@ -23,7 +24,8 @@ $(document).ready(function() {
         $("#ageS").hide();
         $("#pie").hide();
         $("#line").hide();
-        $("#alcohol").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
         $("#disease").hide();
         $("#creative").hide();
     });
@@ -36,7 +38,8 @@ $(document).ready(function() {
         $("#ageS").hide();
         $("#pie").hide();
         $("#line").hide();
-        $("#alcohol").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
         $("#disease").hide();
         $("#creative").hide();
     });
@@ -49,7 +52,8 @@ $(document).ready(function() {
         $("#ageS").hide();
         $("#pie").show();
         $("#line").show();
-        $("#alcohol").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
         $("#disease").show();
         $("#creative").hide();
     });
@@ -62,7 +66,8 @@ $(document).ready(function() {
         $("#ageS").show();
         $("#pie").hide();
         $("#line").hide();
-        $("#alcohol").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
         $("#disease").hide();
         $("#creative").hide();
     });
@@ -75,7 +80,8 @@ $(document).ready(function() {
         $("#ageS").hide();
         $("#pie").hide();
         $("#line").hide();
-        $("#alcohol").show();
+        $("#alcoholB").show();
+        $("#alcoholS").show();
         $("#disease").hide();
         $("#creative").hide();
     });
@@ -88,7 +94,8 @@ $(document).ready(function() {
         $("#ageS").hide();
         $("#pie").hide();
         $("#line").hide();
-        $("#alcohol").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
         $("#disease").show();
         $("#creative").hide();
     });
@@ -101,7 +108,8 @@ $(document).ready(function() {
         $("#ageS").hide();
         $("#pie").hide();
         $("#line").hide();
-        $("#alcohol").hide();
+        $("#alcoholB").hide();
+        $("#alcoholS").hide();
         $("#disease").hide();
         $("#creative").show();
     });
