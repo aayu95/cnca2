@@ -15,8 +15,6 @@ class StreamDatabase(object):
                 self.database = self.databaseServer[databaseName]
             else:
                 self.database = self.databaseServer.create(databaseName)
-
-            self.createViews()
         
         except Exception as e:
             with open('streamdabatase_log','a') as f:
