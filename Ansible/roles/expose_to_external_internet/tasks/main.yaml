@@ -1,0 +1,34 @@
+---
+#- hosts: Master
+  
+  
+  
+#  tasks:
+  
+- name: add the proxy to file /etc/environment
+  become: yes
+  blockinfile:
+    path: /etc/environment
+    insertafter: BOF
+    block: |
+      HTTP_PROXY=http://wwwproxy.unimelb.edu.au:8000/
+      HTTPS_PROXY=http://wwwproxy.unimelb.edu.au:8000/
+      http_proxy=http://wwwproxy.unimelb.edu.au:8000/
+      https_proxy=http://wwwproxy.unimelb.edu.au:8000/
+      no_proxy=localhost,127.0.0.1,localaddress,172.16.0.0/12,.melbourne.rc.nector.org.au,.storage.unimelb.edu.au,.cloud.unimelb.edu.au
+
+
+
+# - name: reboot the machines
+#   become: yes
+#   reboot:
+#     reboot_timeout: 3000
+#   retries: 5
+#   delay: 4
+
+
+- name: Upgrade all packages to the latest version
+  become: yes
+  apt:
+    name: "*"
+    state: latest

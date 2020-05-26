@@ -1,0 +1,94 @@
+---
+
+
+#sudo apt-get update
+- name: apt get update
+  become: yes
+  retries: 5
+  delay: 4
+  apt:
+    update_cache: yes
+
+
+#sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+- name: add key from the url
+  become: yes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+#sudo chmod 777 /etc/apt/sources.list.d/
+- name: edit permissions for root user
+  become: yes
+  file:
+    path: /etc/apt/sources.list.d
+    mode: 777
+
+#touch kubernetes.list
+#deb http://apt.kubernetes.io/ kubernetes-xenial main
+
+- name: create .list file and add content
+  become: yes
+  lineinfile:
+    path: /etc/apt/sources.list.d/kubernetes.list
+    line: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    create: yes
+
+#sudo apt-get update
+- name: apt get update
+  become: yes
+  apt:
+    update_cache: yes
+
+
+#install k8s modules
+- name: install K8s modules
+  become: yes
+  retries: 5
+  delay: 4
+  apt:
+    name: ['kubelet','kubeadm','kubectl','kubernetes-cni']
+    state: latest
+    update_cache: yes
+    install_recommends: no
+
+
+#sudo swapoff -a
+- name: swappoff
+  become: yes
+  shell: swapoff -a
+
+- name: update the .bashrc file 
+  #become: yes
+  blockinfile:
+    path: /home/ubuntu/.bashrc
+    insertafter: BOF
+    block: |
+      export http_proxy=http://wwwproxy.unimelb.edu.au:8000/
+      export HTTP_PROXY=$http_proxy
+      export https_proxy=$http_proxy
+      export HTTPS_PROXY=$http_proxy
+      printf -v lan ‘%s,’ {{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}
+      printf -v pool ‘%s,’ 198.168.0.{1..253}
+      printf -v service ‘%s,’ 10.96.0.{1..253}
+      printf -v pods '%s,' 10.244.0.{1..253}
+      export no_proxy=”${lan%,},${service%,},${pool%,},${pods%,},127.0.0.1”;
+      export NO_PROXY=$no_proxy
+  when: " 'Master' in {{ group_names }}"
+
+- name: source bashrc
+  #become: yes
+  shell: . {{ ansible_env.HOME }}/.bashrc
+  
+
+
+# export http_proxy=http://wwwproxy.unimelb.edu.au:8000/
+# export HTTP_PROXY=$http_proxy
+# export https_proxy=$http_proxy
+# export HTTPS_PROXY=$http_proxy
+# printf -v lan ‘%s,’ 172.26.133.30
+# printf -v pool ‘%s,’ 198.168.0.{1..253}
+# printf -v service ‘%s,’ 10.96.0.{1..253}
+# printf -v pods '%s,' 10.244.0.{1..253}
+# export no_proxy=”${lan%,},${service%,},${pool%,},${pods%,},127.0.0.1”;
+# export NO_PROXY=$no_proxy

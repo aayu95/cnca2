@@ -1,0 +1,225 @@
+---
+
+
+
+
+
+
+# - name: consistent uuid
+#   become: yes
+#   shell: curl -X GET http://localhost:5984/
+
+
+
+# - name: replace the n = 3 master
+#   become: yes
+#   replace:
+#     dest: '{{ local }}'
+#     regexp: 'n = 3'
+#     replace: 'n = 4'
+#   when: " 'Master' in {{ group_names }} "
+
+
+
+# - name: replace the n = 3 workers
+#   become: yes
+#   replace:
+#     dest: '{{ local }}'
+#     regexp: 'n = 3'
+#     replace: 'n = 4'
+#   delegate_to: '{{ item }}'
+#   loop: "{{ groups['Workers'] }}"
+#   when: " 'Master' in {{ group_names }} "
+
+
+
+- name: get the uuid
+  become: yes
+  shell: curl http://localhost:5984/_uuids?count=1 | cut -d '"' -f 4
+  register: uuid
+  when: " 'Master' in {{ group_names }} "
+
+
+
+- name: set the uuid for coordinator
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couchdb\]$'
+    line: 'uuid = {{ uuid.stdout }}'
+  when: " 'Master' in {{ group_names }} "
+
+- name: set the uuid for workers
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couchdb\]$'
+    line: 'uuid = {{ uuid.stdout }}'
+  delegate_to: '{{ item }}'
+  loop: "{{ groups['Workers'] }}"
+  when: " 'Master' in {{ group_names }} "
+
+
+
+- name: get the secret
+  become: yes
+  shell: curl http://localhost:5984/_uuids?count=1 | cut -d '"' -f 4
+  register: sec
+  when: " 'Master' in {{ group_names }} "
+
+
+- name: set the secret for coordinator
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couch_httpd_auth\]$'
+    line: 'secret = {{ sec.stdout }}'
+  when: " 'Master' in {{ group_names }} "
+
+- name: set the secret when workers
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couch_httpd_auth\]$'
+    line: 'secret = {{ sec.stdout }}'
+  delegate_to: '{{ item }}'
+  loop: "{{ groups['Workers'] }}"
+  when: " 'Master' in {{ group_names }} "
+
+- name: set the database dir for coordinator
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couchdb\]$'
+    line: 'database_dir = {{ database_dir }}'
+  when: " 'Master' in {{ group_names }} "
+
+- name: set the database dir for workers
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couchdb\]$'
+    line: 'database_dir = {{ database_dir }}'
+  delegate_to: '{{ item }}'
+  loop: "{{ groups['Workers'] }}"
+  when: " 'Master' in {{ group_names }} "
+
+
+- name: set the views dir for coordinator
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couchdb\]$'
+    line: 'view_index_dir = {{ view_index_dir }}'
+  when: " 'Master' in {{ group_names }} "
+
+- name: set the database dir for workers
+  become: yes
+  lineinfile: 
+    dest: '{{ local }}'
+    insertafter: '^\[couchdb\]$'
+    line: 'view_index_dir = {{ view_index_dir }}'
+  delegate_to: '{{ item }}'
+  loop: "{{ groups['Workers'] }}"
+  when: " 'Master' in {{ group_names }} "
+
+
+- name: wait command
+  become: yes 
+  wait_for:
+    timeout: 10 
+  when: " 'Master' in {{ group_names }} "
+
+- name: restart the service master
+  become: yes
+  retries: 5
+  delay: 4
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: couchdb
+  when: " 'Master' in {{ group_names }} "
+
+- name: restart the service
+  become: yes
+  retries: 5
+  delay: 4
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: couchdb
+  delegate_to: '{{ item }}'
+  loop: "{{ groups['Workers'] }}"
+  when: " 'Master' in {{ group_names }} "
+
+
+- name: command to be run to join all nodes on coordinator - 1
+  become: yes
+  shell: " curl -X POST -H \"Content-Type: application/json\" \ 
+          http://admin:qweasdzxc@{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}:5984/_cluster_setup -d \ 
+          '{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\", \
+          \"username\": \"admin\", \"password\":\"qweasdzxc\", \"port\": 5984,\
+          \"node_count\": \"{{ nodes }}\", \"remote_node\": \"{{ item }}\", 
+          \"remote_current_user\": \"admin\", \"remote_current_password\": \"qweasdzxc\" }'"
+  loop: "{{ groups['Workers'] }}"
+  register: comm1
+  when: " 'Master' in {{ group_names }} "
+
+
+- name: print comm1
+  debug:
+    msg: '{{ comm1 }}'
+
+
+
+- name: command to be run to join all nodes on coordinator - 2
+  become: yes
+  shell: " curl -X POST -H \"Content-Type: application/json\" \
+          http://admin:qweasdzxc@{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}:5984/_cluster_setup -d \ 
+          '{\"action\": \"add_node\", \"host\":\"{{ item }}\", \"port\": 5984, \
+          \"username\": \"admin\", \"password\":\"qweasdzxc\"}' "
+  loop:  "{{ groups['Workers'] }}"
+  register: comm2
+  when: " 'Master' in {{ group_names }} "
+
+
+
+
+- name: print comm2
+  debug:
+    msg: '{{ comm2 }}'
+
+- name: finish clster command
+  become: yes
+  shell: " curl -X POST -H \"Content-Type: application/json\" \
+          http://admin:qweasdzxc@{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}:5984/_cluster_setup -d \
+          '{\"action\": \"finish_cluster\"}' "
+  register: comm
+  when: " 'Master' in {{ group_names }} "
+
+- name: print comm
+  debug:
+    msg: '{{ comm }}'
+
+- name: get the output 
+  become: yes
+  shell: curl http://admin:qweasdzxc@{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}:5984/_cluster_setup
+  register: output
+  when: " 'Master' in {{ group_names }} "
+
+- name: print output
+  debug:
+    msg: '{{ output }}'
+  when: " 'Master' in {{ group_names }} "
+
+
+- name: run the membership and register
+  become: yes
+  shell: curl http://admin:qweasdzxc@{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}:5984/_membership
+  register: member
+  when: " 'Master' in {{ group_names }} "
+
+- name: get the output of membership
+  debug:
+    msg: '{{ member }}' 
+  when: " 'Master' in {{ group_names }} "

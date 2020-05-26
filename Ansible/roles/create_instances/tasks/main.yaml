@@ -1,0 +1,101 @@
+---
+# Create an instance on NeCTAR
+- name: Create an instance
+  os_server:
+    name: '{{ item.name }}'
+    image: '{{ instance_image }}'
+    key_name: '{{ instance_key_name }}'
+    flavor: '{{ instance_flavor }}'
+    availability_zone: '{{ availability_zone }}'
+    network: qh2-uom-internal
+    security_groups: "{{ sg_names + ['default'] }}"
+    interface: public
+    volumes: '{{ item.volumes }}'
+    auto_floating_ip: yes
+    wait: yes
+    timeout: 600
+    state: present
+  loop: '{{ instances }}'
+  register: os_instance
+
+
+
+- name: Wait for connection
+  wait_for:
+    host: "{{ item.openstack.public_v4 }}"
+    port: 22
+    timeout: 120
+    search_regex: OpenSSH
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+
+
+
+
+- name: Set list of node names
+  set_fact: 
+    host_names: '{{ host_names|default([]) + [ item.openstack.name ] }}'
+    host_ids: '{{ host_ids|default([]) + [ item.openstack.public_v4 ] }}'
+  loop: '{{ os_instance.results }}'
+
+
+
+- debug:
+    msg: "Host node(s) {{ host_names }} have been created with ips {{ host_ids }}."
+
+
+
+- name: Add hosts to hosts.ini file
+  become: yes
+  replace:
+    dest: ./inventory/hosts
+    regexp: '^{{ item.openstack.name }}$'
+    replace: '{{ item.openstack.public_v4 }}'
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+
+- name: Add hosts to the hosts jijna template
+  become:
+  replace:
+    dest: ./roles/dockerise_code/templates/hosts.j2
+    regexp: '^{{ item.openstack.name }}$'
+    replace: '{{ item.openstack.public_v4 }}'
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+
+
+
+- name: Add workers to the loadbalancer jijna template
+  become:
+  replace:
+    dest: ./roles/deploy_server/templates/loadbalancer.j2
+    regexp: '{{ item.openstack.name }}'
+    replace: '{{ item.openstack.public_v4 }}'
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+
+
+- name: add to the variable file of API keys
+  become: yes
+  replace:
+    dest: ./roles/dockerise_code/templates/{{ item.openstack.name }}.j2
+    regexp: '{{ item.openstack.name }}'
+    replace: '{{ item.openstack.public_v4 }}'
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+
+
+- name: Rename the files for jinja template
+  become: yes
+  command: ' mv {{ item.openstack.name }}.j2 {{ item.openstack.public_v4 }}.j2 '
+  args:
+    chdir: ./roles/dockerise_code/templates
+  loop: '{{ os_instance.results }}'
+  when: item.openstack is defined
+
+
+
+- name: Wait for some time so that others can access the nodes
+  wait_for:
+    timeout: 40
+    
